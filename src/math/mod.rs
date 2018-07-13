@@ -15,10 +15,9 @@ mod sqrtf;
 mod logf;
 mod expf;
 mod floor;
+mod cosf;
 mod trunc;
 mod truncf;
-
-//mod service;
 
 pub use self::{
     fabs::fabs,
@@ -32,8 +31,21 @@ pub use self::{
     logf::logf,
     expf::expf,
     floor::floor,
+    cosf::cosf,
     trunc::trunc,
     truncf::truncf,
+};
+
+mod sindf;
+mod cosdf;
+mod rem_pio2f;
+mod rem_pio2_large;
+
+use self::{
+    sindf::sindf,
+    cosdf::cosdf,
+    rem_pio2f::rem_pio2f,
+    rem_pio2_large::rem_pio2_large,
 };
 
 fn isnanf(x: f32) -> bool {
