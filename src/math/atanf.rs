@@ -1,5 +1,4 @@
 use super::fabsf;
-use super::isnanf;
 use core::f32;
 
 const ATANHI: [f32; 4] = [
@@ -32,7 +31,7 @@ pub fn atanf(x: f32) -> f32 {
     ix &= 0x7fffffff;
     if ix >= 0x4c800000 {
         /* if |x| >= 2**26 */
-        if isnanf(x) {
+        if x.is_nan() {
             return x;
         }
         let z = ATANHI[3] + f32::from_bits(0x3800000); // 0x1p-120f
