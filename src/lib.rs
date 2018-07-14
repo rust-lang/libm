@@ -70,7 +70,6 @@ pub trait F32Ext: private::Sealed {
 
     fn exp(self) -> Self;
 
-    #[cfg(todo)]
     fn exp2(self) -> Self;
 
     fn ln(self) -> Self;
@@ -81,7 +80,6 @@ pub trait F32Ext: private::Sealed {
 
     fn log10(self) -> Self;
 
-    #[cfg(todo)]
     fn cbrt(self) -> Self;
 
     fn hypot(self, other: Self) -> Self;
@@ -209,7 +207,6 @@ impl F32Ext for f32 {
         expf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn exp2(self) -> Self {
         exp2f(self)
@@ -235,7 +232,6 @@ impl F32Ext for f32 {
         log10f(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn cbrt(self) -> Self {
         cbrtf(self)
@@ -377,7 +373,6 @@ pub trait F64Ext: private::Sealed {
 
     fn exp(self) -> Self;
 
-    #[cfg(todo)]
     fn exp2(self) -> Self;
 
     fn ln(self) -> Self;
@@ -388,7 +383,6 @@ pub trait F64Ext: private::Sealed {
 
     fn log10(self) -> Self;
 
-    #[cfg(todo)]
     fn cbrt(self) -> Self;
 
     fn hypot(self, other: Self) -> Self;
@@ -405,7 +399,6 @@ pub trait F64Ext: private::Sealed {
     #[cfg(todo)]
     fn asin(self) -> Self;
 
-    #[cfg(todo)]
     fn acos(self) -> Self;
 
     #[cfg(todo)]
@@ -523,7 +516,6 @@ impl F64Ext for f64 {
         exp(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn exp2(self) -> Self {
         exp2(self)
@@ -549,7 +541,6 @@ impl F64Ext for f64 {
         log10(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn cbrt(self) -> Self {
         cbrt(self)
@@ -584,7 +575,6 @@ impl F64Ext for f64 {
         asin(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn acos(self) -> Self {
         acos(self)
