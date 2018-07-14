@@ -8,7 +8,7 @@ const ATANHI: [f32; 4] = [
     1.5707962513e+00, /* atan(inf)hi 0x3fc90fda */
 ];
 
-const ATAHLO: [f32; 4] = [
+const ATANLO: [f32; 4] = [
     5.0121582440e-09, /* atan(0.5)lo 0x31ac3769 */
     3.7748947079e-08, /* atan(1.0)lo 0x33222168 */
     3.4473217170e-08, /* atan(1.5)lo 0x33140fb4 */
@@ -87,7 +87,7 @@ pub fn atanf(x: f32) -> f32 {
         return x - x * (s1 + s2);
     }
 
-    let z = ATANHI[id as usize] - ((x * (s1 + s2) - ATAHLO[id as usize]) - x);
+    let z = ATANHI[id as usize] - ((x * (s1 + s2) - ATANLO[id as usize]) - x);
 
     if sign != 0 {
         -z
