@@ -6,6 +6,7 @@ macro_rules! force_eval {
     };
 }
 
+mod atanf;
 mod ceil;
 mod ceilf;
 mod cosf;
@@ -36,6 +37,7 @@ mod trunc;
 mod truncf;
 
 // Use separated imports instead of {}-grouped imports for easier merging.
+pub use self::atanf::atanf;
 pub use self::ceil::ceil;
 pub use self::ceilf::ceilf;
 pub use self::cosf::cosf;

@@ -655,7 +655,7 @@ f32_f32! {
     floorf,
     truncf,
     // asinf,
-    // atanf,
+    atanf,
     // cbrtf,
     cosf,
     ceilf,
