@@ -7,19 +7,25 @@ macro_rules! force_eval {
 }
 
 mod acosf;
-mod asinf;
-mod atan2f;
 mod atanf;
+mod acos;
+mod cbrt;
+mod cbrtf;
 mod ceil;
 mod ceilf;
 mod cosf;
-mod coshf;
+mod exp;
+mod exp2;
+mod exp2f;
 mod expf;
 mod expm1f;
 mod fabs;
 mod fabsf;
+mod fdim;
+mod fdimf;
 mod floor;
 mod floorf;
+mod fmod;
 mod fmodf;
 mod hypot;
 mod hypotf;
@@ -46,19 +52,25 @@ mod trunc;
 mod truncf;
 
 pub use self::acosf::acosf;
-pub use self::asinf::asinf;
-pub use self::atan2f::atan2f;
 pub use self::atanf::atanf;
+pub use self::acos::acos;
+pub use self::cbrt::cbrt;
+pub use self::cbrtf::cbrtf;
 pub use self::ceil::ceil;
 pub use self::ceilf::ceilf;
 pub use self::cosf::cosf;
-pub use self::coshf::coshf;
+pub use self::exp::exp;
+pub use self::exp2::exp2;
+pub use self::exp2f::exp2f;
 pub use self::expf::expf;
 pub use self::expm1f::expm1f;
 pub use self::fabs::fabs;
 pub use self::fabsf::fabsf;
+pub use self::fdim::fdim;
+pub use self::fdimf::fdimf;
 pub use self::floor::floor;
 pub use self::floorf::floorf;
+pub use self::fmod::fmod;
 pub use self::fmodf::fmodf;
 pub use self::hypot::hypot;
 pub use self::hypotf::hypotf;
@@ -95,7 +107,3 @@ use self::{
     k_cosf::k_cosf, k_expo2f::k_expo2f, k_sinf::k_sinf, k_tanf::k_tanf,
     rem_pio2_large::rem_pio2_large, rem_pio2f::rem_pio2f,
 };
-
-fn isnanf(x: f32) -> bool {
-    x.to_bits() & 0x7fffffff > 0x7f800000
-}

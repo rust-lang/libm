@@ -654,13 +654,14 @@ f32_f32! {
     acosf,
     floorf,
     truncf,
-    asinf,
     atanf,
-    // cbrtf,
+    // asinf,
+    cbrtf,
     cosf,
     ceilf,
-    coshf,
     // exp2f,
+    // coshf,
+    exp2f,
     expf,
     expm1f,
     // fdimf,
@@ -679,7 +680,8 @@ f32_f32! {
 
 // With signature `fn(f32, f32) -> f32`
 f32f32_f32! {
-    atan2f,
+    // atan2f,
+    fdimf,
     hypotf,
     fmodf,
     powf,
@@ -697,15 +699,15 @@ f32i32_f32! {
 
 // With signature `fn(f64) -> f64`
 f64_f64! {
-    // acos,
+    acos,
     // asin,
     // atan,
-    // cbrt,
+    cbrt,
     ceil,
     // cos,
     // cosh,
-    // exp,
-    // exp2,
+    exp,
+    exp2,
     // expm1,
     floor,
     log,
@@ -725,8 +727,8 @@ f64_f64! {
 // With signature `fn(f64, f64) -> f64`
 f64f64_f64! {
     // atan2,
-    // fdim,
-    // fmod,
+    fdim,
+    fmod,
     hypot,
     // pow,
 }
