@@ -8,10 +8,12 @@ macro_rules! force_eval {
 
 mod acosf;
 mod asinf;
+mod atan2f;
 mod atanf;
 mod ceil;
 mod ceilf;
 mod cosf;
+mod coshf;
 mod expf;
 mod expm1f;
 mod fabs;
@@ -39,15 +41,18 @@ mod sinhf;
 mod sqrt;
 mod sqrtf;
 mod tanf;
+mod tanhf;
 mod trunc;
 mod truncf;
 
 pub use self::acosf::acosf;
 pub use self::asinf::asinf;
+pub use self::atan2f::atan2f;
 pub use self::atanf::atanf;
 pub use self::ceil::ceil;
 pub use self::ceilf::ceilf;
 pub use self::cosf::cosf;
+pub use self::coshf::coshf;
 pub use self::expf::expf;
 pub use self::expm1f::expm1f;
 pub use self::fabs::fabs;
@@ -75,6 +80,7 @@ pub use self::sinhf::sinhf;
 pub use self::sqrt::sqrt;
 pub use self::sqrtf::sqrtf;
 pub use self::tanf::tanf;
+pub use self::tanhf::tanhf;
 pub use self::trunc::trunc;
 pub use self::truncf::truncf;
 
