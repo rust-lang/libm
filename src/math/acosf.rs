@@ -21,7 +21,7 @@ pub fn acosf(x: f32) -> f32 {
     let w: f32;
     let s: f32;
 
-    let mut hx = x.to_bits();;
+    let mut hx = x.to_bits();
     let ix = hx & 0x7fffffff;
     /* |x| >= 1 or nan */
     if ix >= 0x3f800000 {
@@ -51,7 +51,7 @@ pub fn acosf(x: f32) -> f32 {
     /* x > 0.5 */
     z = (1. - x) * 0.5;
     s = sqrtf(z);
-    hx = s.to_bits();;
+    hx = s.to_bits();
     let df = f32::from_bits(hx & 0xfffff000);
     let c = (z - df * df) / (s + df);
     w = r(z) * s + c;
