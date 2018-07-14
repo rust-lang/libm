@@ -78,7 +78,7 @@ pub fn asin(mut x : f64) -> f64
         lx = get_low_word(x);
         if (ix-0x3ff00000 | lx) == 0 {
             /* asin(1) = +-pi/2 with inexact */
-            return x * PIO2_HI + 1.0 - 120f64;
+            return x * PIO2_HI + f64::from_bits(0x3870000000000000);
         } else {
             return 0.0/(x-x);
         }
