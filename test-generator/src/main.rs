@@ -655,7 +655,7 @@ f32_f32! {
     floorf,
     truncf,
     // asinf,
-    // atanf,
+    atanf,
     // cbrtf,
     ceilf,
     // cosf,
@@ -698,7 +698,7 @@ f32i32_f32! {
 f64_f64! {
     // acos,
     // asin,
-    // atan,
+    atan,
     // cbrt,
     // ceil,
     // cos,
