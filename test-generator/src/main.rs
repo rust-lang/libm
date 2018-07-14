@@ -701,7 +701,7 @@ f64_f64! {
     // asin,
     // atan,
     // cbrt,
-    // ceil,
+    ceil,
     // cos,
     // cosh,
     // exp,
