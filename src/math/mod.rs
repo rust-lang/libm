@@ -69,7 +69,3 @@ mod rem_pio2_large;
 mod rem_pio2f;
 
 use self::{k_cosf::k_cosf, k_sinf::k_sinf, rem_pio2_large::rem_pio2_large, rem_pio2f::rem_pio2f};
-
-fn isnanf(x: f32) -> bool {
-    x.to_bits() & 0x7fffffff > 0x7f800000
-}
