@@ -84,24 +84,18 @@ pub trait F32Ext: private::Sealed {
 
     fn hypot(self, other: Self) -> Self;
 
-    #[cfg(todo)]
     fn sin(self) -> Self;
 
     fn cos(self) -> Self;
 
-    #[cfg(todo)]
     fn tan(self) -> Self;
 
-    #[cfg(todo)]
     fn asin(self) -> Self;
 
-    #[cfg(todo)]
     fn acos(self) -> Self;
 
-    #[cfg(todo)]
     fn atan(self) -> Self;
 
-    #[cfg(todo)]
     fn atan2(self, other: Self) -> Self;
 
     #[cfg(todo)]
@@ -110,18 +104,14 @@ pub trait F32Ext: private::Sealed {
         (self.sin(), self.cos())
     }
 
-    #[cfg(todo)]
     fn exp_m1(self) -> Self;
 
     fn ln_1p(self) -> Self;
 
-    #[cfg(todo)]
     fn sinh(self) -> Self;
 
-    #[cfg(todo)]
     fn cosh(self) -> Self;
 
-    #[cfg(todo)]
     fn tanh(self) -> Self;
 
     #[cfg(todo)]
@@ -248,7 +238,6 @@ impl F32Ext for f32 {
         hypotf(self, other)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn sin(self) -> Self {
         sinf(self)
@@ -259,37 +248,31 @@ impl F32Ext for f32 {
         cosf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn tan(self) -> Self {
         tanf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn asin(self) -> Self {
         asinf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn acos(self) -> Self {
         acosf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn atan(self) -> Self {
         atanf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn atan2(self, other: Self) -> Self {
         atan2f(self, other)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn exp_m1(self) -> Self {
         expm1f(self)
@@ -300,19 +283,16 @@ impl F32Ext for f32 {
         log1pf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn sinh(self) -> Self {
         sinhf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn cosh(self) -> Self {
         coshf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn tanh(self) -> Self {
         tanhf(self)
