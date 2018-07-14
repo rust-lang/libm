@@ -110,7 +110,6 @@ pub trait F32Ext: private::Sealed {
 
     fn ln_1p(self) -> Self;
 
-    #[cfg(todo)]
     fn sinh(self) -> Self;
 
     #[cfg(todo)]
@@ -287,7 +286,6 @@ impl F32Ext for f32 {
         log1pf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn sinh(self) -> Self {
         sinhf(self)

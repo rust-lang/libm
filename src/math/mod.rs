@@ -34,6 +34,7 @@ mod roundf;
 mod scalbn;
 mod scalbnf;
 mod sinf;
+mod sinhf;
 mod sqrt;
 mod sqrtf;
 mod tanf;
@@ -68,6 +69,7 @@ pub use self::roundf::roundf;
 pub use self::scalbn::scalbn;
 pub use self::scalbnf::scalbnf;
 pub use self::sinf::sinf;
+pub use self::sinhf::sinhf;
 pub use self::sqrt::sqrt;
 pub use self::sqrtf::sqrtf;
 pub use self::tanf::tanf;
@@ -75,14 +77,15 @@ pub use self::trunc::trunc;
 pub use self::truncf::truncf;
 
 mod k_cosf;
+mod k_expo2f;
 mod k_sinf;
 mod k_tanf;
 mod rem_pio2_large;
 mod rem_pio2f;
 
 use self::{
-    k_cosf::k_cosf, k_sinf::k_sinf, k_tanf::k_tanf, rem_pio2_large::rem_pio2_large,
-    rem_pio2f::rem_pio2f,
+    k_cosf::k_cosf, k_expo2f::k_expo2f, k_sinf::k_sinf, k_tanf::k_tanf,
+    rem_pio2_large::rem_pio2_large, rem_pio2f::rem_pio2f,
 };
 
 fn isnanf(x: f32) -> bool {
