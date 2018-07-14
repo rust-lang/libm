@@ -28,7 +28,7 @@ Check [PR #65] for an example.
   have any external dependencies (other than `core` itself).
 
 - Only use relative imports within the `math` directory / module, e.g. `use self::fabs::fabs` or
-`use super::isnanf`. Absolute imports from core are OK, e.g. `use core::u64`.
+`use super::fabsf`. Absolute imports from core are OK, e.g. `use core::u64`.
 
 - To reinterpret a float as an integer use the `to_bits` method. The MUSL code uses the
   `GET_FLOAT_WORD` macro, or a union, to do this operation.
