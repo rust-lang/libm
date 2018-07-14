@@ -40,14 +40,39 @@ mod tanf;
 mod trunc;
 mod truncf;
 
-pub use self::{
-    acosf::acosf, asinf::asinf, atanf::atanf, ceilf::ceilf, cosf::cosf, expf::expf, expm1f::expm1f,
-    fabs::fabs, fabsf::fabsf, floor::floor, floorf::floorf, fmodf::fmodf, hypot::hypot,
-    hypotf::hypotf, log::log, log10::log10, log10f::log10f, log1p::log1p, log1pf::log1pf,
-    log2::log2, log2f::log2f, logf::logf, powf::powf, round::round, roundf::roundf, scalbn::scalbn,
-    scalbnf::scalbnf, sinf::sinf, sqrt::sqrt, sqrtf::sqrtf, tanf::tanf, trunc::trunc,
-    truncf::truncf,
-};
+pub use self::acosf::acosf;
+pub use self::asinf::asinf;
+pub use self::atanf::atanf;
+pub use self::ceilf::ceilf;
+pub use self::cosf::cosf;
+pub use self::expf::expf;
+pub use self::expm1f::expm1f;
+pub use self::fabs::fabs;
+pub use self::fabsf::fabsf;
+pub use self::floor::floor;
+pub use self::floorf::floorf;
+pub use self::fmodf::fmodf;
+pub use self::hypot::hypot;
+pub use self::hypotf::hypotf;
+pub use self::log::log;
+pub use self::log10::log10;
+pub use self::log10f::log10f;
+pub use self::log1p::log1p;
+pub use self::log1pf::log1pf;
+pub use self::log2::log2;
+pub use self::log2f::log2f;
+pub use self::logf::logf;
+pub use self::powf::powf;
+pub use self::round::round;
+pub use self::roundf::roundf;
+pub use self::scalbn::scalbn;
+pub use self::scalbnf::scalbnf;
+pub use self::sinf::sinf;
+pub use self::sqrt::sqrt;
+pub use self::sqrtf::sqrtf;
+pub use self::tanf::tanf;
+pub use self::trunc::trunc;
+pub use self::truncf::truncf;
 
 mod k_cosf;
 mod k_sinf;
