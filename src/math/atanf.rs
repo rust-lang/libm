@@ -80,6 +80,7 @@ pub fn atanf(x: f32) -> f32 {
 
     let z = x * x;
     let w = z * z;
+    /* break sum from i=0 to 10 AT[i]z**(i+1) into odd and even poly */
     let s1 = z * (AT[0] + w * (AT[2] + w * AT[4]));
     let s2 = w * (AT[1] + w * AT[3]);
 
