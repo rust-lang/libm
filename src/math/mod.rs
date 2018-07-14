@@ -36,7 +36,7 @@ mod trunc;
 mod truncf;
 
 // Use separated imports instead of {}-grouped imports for easier merging.
-pub use self::atanf;
+pub use self::atanf::atanf;
 pub use self::ceilf::ceilf;
 pub use self::cosf::cosf;
 pub use self::expf::expf;
