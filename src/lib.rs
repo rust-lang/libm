@@ -42,6 +42,8 @@ pub trait F32Ext: private::Sealed {
 
     fn trunc(self) -> Self;
 
+    fn fdim(self, rhs: Self) -> Self;
+
     #[cfg(todo)]
     fn fract(self) -> Self;
 
@@ -147,6 +149,11 @@ impl F32Ext for f32 {
     #[inline]
     fn trunc(self) -> Self {
         truncf(self)
+    }
+
+    #[inline]
+    fn fdim(self, rhs: Self) -> Self {
+        fdimf(self, rhs)
     }
 
     #[cfg(todo)]
@@ -341,6 +348,8 @@ pub trait F64Ext: private::Sealed {
 
     fn trunc(self) -> Self;
 
+    fn fdim(self, rhs: Self) -> Self;
+
     #[cfg(todo)]
     fn fract(self) -> Self;
 
@@ -366,7 +375,6 @@ pub trait F64Ext: private::Sealed {
 
     fn sqrt(self) -> Self;
 
-    #[cfg(todo)]
     fn exp(self) -> Self;
 
     #[cfg(todo)]
@@ -457,6 +465,10 @@ impl F64Ext for f64 {
         trunc(self)
     }
 
+    #[inline]
+    fn fdim(self, rhs: Self) -> Self {
+        fdim(self, rhs)
+    }
     #[cfg(todo)]
     #[inline]
     fn fract(self) -> Self {
@@ -506,7 +518,6 @@ impl F64Ext for f64 {
         sqrt(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn exp(self) -> Self {
         exp(self)

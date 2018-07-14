@@ -12,10 +12,13 @@ mod atanf;
 mod ceil;
 mod ceilf;
 mod cosf;
+mod exp;
 mod expf;
 mod expm1f;
 mod fabs;
 mod fabsf;
+mod fdim;
+mod fdimf;
 mod floor;
 mod floorf;
 mod fmodf;
@@ -48,10 +51,13 @@ pub use self::atanf::atanf;
 pub use self::ceil::ceil;
 pub use self::ceilf::ceilf;
 pub use self::cosf::cosf;
+pub use self::exp::exp;
 pub use self::expf::expf;
 pub use self::expm1f::expm1f;
 pub use self::fabs::fabs;
 pub use self::fabsf::fabsf;
+pub use self::fdim::fdim;
+pub use self::fdimf::fdimf;
 pub use self::floor::floor;
 pub use self::floorf::floorf;
 pub use self::fmodf::fmodf;
@@ -89,7 +95,3 @@ use self::{
     k_cosf::k_cosf, k_expo2f::k_expo2f, k_sinf::k_sinf, k_tanf::k_tanf,
     rem_pio2_large::rem_pio2_large, rem_pio2f::rem_pio2f,
 };
-
-fn isnanf(x: f32) -> bool {
-    x.to_bits() & 0x7fffffff > 0x7f800000
-}
