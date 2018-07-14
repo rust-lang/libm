@@ -98,7 +98,6 @@ pub trait F32Ext: private::Sealed {
     #[cfg(todo)]
     fn acos(self) -> Self;
 
-    #[cfg(todo)]
     fn atan(self) -> Self;
 
     #[cfg(todo)]
@@ -274,7 +273,6 @@ impl F32Ext for f32 {
         acosf(self)
     }
 
-    #[cfg(todo)]
     #[inline]
     fn atan(self) -> Self {
         atanf(self)
