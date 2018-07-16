@@ -144,10 +144,8 @@ mod tests {
                 input * 16.0,
                 answer,
                 atan(*input)
-
             );
         }
-
     }
 
     #[test]
