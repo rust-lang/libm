@@ -55,9 +55,7 @@ pub fn atan(x: f64) -> f64 {
     let mut ix = (x.to_bits() >> 32) as u32;
     let sign = ix >> 31;
     ix &= 0x7fff_ffff;
-    //println!("{:#x}", ix); // if |x| >= 2^66
     if ix >= 0x4410_0000 {
-        //println!("ix >= 0x4410_0000, x: {}, ix: {:x}", x, ix);
         if x.is_nan() {
             return x;
         }
@@ -73,7 +71,6 @@ pub fn atan(x: f64) -> f64 {
                 /* raise underflow for subnormal x */
                 force_eval!(x as f32);
             }
-            //println!("x < 0x3e40_0000, x: {}, ix: {:x}", x, ix);
 
             return x;
         }
@@ -111,13 +108,6 @@ pub fn atan(x: f64) -> f64 {
     let s1 = z * (AT[0] + w * (AT[2] + w * (AT[4] + w * (AT[6] + w * (AT[8] + w * AT[10])))));
     let s2 = w * (AT[1] + w * (AT[3] + w * (AT[5] + w * (AT[7] + w * AT[9]))));
 
-    /*
-    if id < 0 {
-        println!("id = -1, x: {}, s1: {}, s2: {}", x, s1, s2);
-    } else {
-        println!("atanhi: {}, atanlo: {}, x: {}, s1: {}, s2: {}", ATANHI[id as usize], ATANLO[id as usize], x, s1, s2);
-    }
-    */
     if id < 0 {
         return x - x * (s1 + s2);
     }
