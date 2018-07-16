@@ -60,7 +60,8 @@ pub fn atan(x: f64) -> f64 {
             return x;
         }
 
-        return if sign != 0 { f64::NEG_INFINITY } else { f64::INFINITY };
+        let z = ATANHI[3] + f64::from_bits(0x0380_0000); // 0x1p-120f
+        return if sign != 0 { -z } else { z };
     }
 
     let id = if ix < 0x3fdc_0000 {
@@ -156,12 +157,12 @@ mod tests {
 
     #[test]
     fn infinity() {
-        assert_eq!(atan(f64::INFINITY), f64::INFINITY);
+        assert_eq!(atan(f64::INFINITY), f64::consts::FRAC_PI_2);
     }
 
     #[test]
     fn minus_infinity() {
-        assert_eq!(atan(f64::NEG_INFINITY), f64::NEG_INFINITY);
+        assert_eq!(atan(f64::NEG_INFINITY), -f64::consts::FRAC_PI_2);
     }
 
     #[test]
