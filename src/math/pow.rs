@@ -390,3 +390,47 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
     }
     return s*z;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::pow;
+
+    #[test]
+    fn sanity_check() {
+        for (input, answer) in [
+            ((0., 0.), 1.),
+            ((1., 0.), 1.),
+            ((2., 1.), 2.),
+            ((2., 2.), 4.),
+            ((2., 0.5), 1.4142135623730951),
+        ].iter()
+        {
+            assert!(
+                (pow(input.0, input.1) - answer) / answer < 1e-5,
+                "\npow({:.4}, {:.4}) = {:.4}, actual: {}",
+                input.0,
+                input.1,
+                answer,
+                pow(input.0, input.1)
+            );
+        }
+    }
+
+    #[test]
+    fn zero() {
+        for (input, answer) in [
+            ((0., 1.), 0.),
+            ((0., 10.), 0.),
+        ].iter()
+        {
+            assert!(
+                pow(input.0, input.1) == 0.,
+                "\npow({:.4}, {:.4}) = {:.4}, actual: {}",
+                input.0,
+                input.1,
+                answer,
+                pow(input.0, input.1)
+            );
+        }
+    }
+}
