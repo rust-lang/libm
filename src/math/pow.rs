@@ -104,7 +104,7 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
     let z_l: f64;
     let mut p_h: f64;
     let mut p_l: f64;
-    let mut y1: f64;
+    let y1: f64;
     let mut t1: f64;
     let t2: f64;
     let mut r: f64;
@@ -289,13 +289,12 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
         w = (t * t) * (0.5 - t * (0.3333333333333333333333 - t * 0.25));
         u = IVLN2_H * t; /* ivln2_h has 21 sig. bits */
         v = t * IVLN2_L - w * IVLN2;
-        t1 = u + v;
-        t1 = with_set_low_word(t1, 0);
+        t1 = with_set_low_word(u + v, 0);
         t2 = v - (t1 - u);
     } else {
         let ss: f64;
         let mut s2: f64;
-        let mut s_h: f64;
+        let s_h: f64;
         let s_l: f64;
         let mut t_h: f64;
         let mut t_l: f64;
@@ -327,12 +326,10 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
         u = ax - BP[k as usize]; /* bp[0]=1.0, bp[1]=1.5 */
         v = 1.0 / (ax + BP[k as usize]);
         ss = u * v;
-        s_h = ss;
-        s_h = with_set_low_word(s_h, 0);
+        s_h = with_set_low_word(ss, 0);
         /* t_h=ax+bp[k] High */
-        t_h = 0.0;
         t_h = with_set_high_word(
-            t_h,
+            0.0,
             i32_to_u32(((ix >> 1) | 0x20000000) + 0x00080000 + (k << 18)),
         );
         t_l = ax - (t_h - BP[k as usize]);
@@ -342,15 +339,13 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
         r = s2 * s2 * (L1 + s2 * (L2 + s2 * (L3 + s2 * (L4 + s2 * (L5 + s2 * L6)))));
         r += s_l * (s_h + ss);
         s2 = s_h * s_h;
-        t_h = 3.0 + s2 + r;
-        t_h = with_set_low_word(t_h, 0);
+        t_h = with_set_low_word(3.0 + s2 + r, 0);
         t_l = r - ((t_h - 3.0) - s2);
         /* u+v = ss*(1+...) */
         u = s_h * t_h;
         v = s_l * t_h + t_l * ss;
         /* 2/(3log2)*(ss+...) */
-        p_h = u + v;
-        p_h = with_set_low_word(p_h, 0);
+        p_h = with_set_low_word(u + v, 0);
         p_l = v - (p_h - u);
         z_h = CP_H * p_h; /* cp_h+cp_l = 2/(3*log2) */
         z_l = CP_L * p_h + p_l * CP + DP_L[k as usize];
@@ -362,8 +357,7 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
     }
 
     /* split up y into y1+y2 and compute (y1+y2)*(t1+t2) */
-    y1 = y;
-    y1 = with_set_low_word(y1, 0);
+    y1 = with_set_low_word(y, 0);
     p_l = (y - y1) * t1 + y * t2;
     p_h = y1 * t1;
     z = p_l + p_h;
@@ -380,7 +374,7 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
         }
     } else if (j & 0x7fffffff) >= 0x4090cc00 {
         /* z <= -1075 */
- // FIXME: instead of abs(j) use unsigned j
+        // FIXME: instead of abs(j) use unsigned j
         if (j - u32_to_i32(0xc090cc00)) | i != 0 {
             /* z < -1075 */
             return s * TINY * TINY; /* underflow */
@@ -399,16 +393,14 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
         /* if |z| > 0.5, set n = [z+0.5] */
         n = j + (0x00100000 >> (k + 1));
         k = ((n & 0x7fffffff) >> 20) - 0x3ff; /* new k for n */
-        t = 0.0;
-        t = with_set_low_word(t, i32_to_u32(n & !(0x000fffff >> k)));
+        t = with_set_low_word(0.0, i32_to_u32(n & !(0x000fffff >> k)));
         n = ((n & 0x000fffff) | 0x00100000) >> (20 - k);
         if j < 0 {
             n = -n;
         }
         p_h -= t;
     }
-    t = p_l + p_h;
-    t = with_set_low_word(t, 0);
+    t = with_set_low_word(p_l + p_h, 0);
     u = t * LG2_H;
     v = (p_l - (t - p_h)) * LG2 + t * LG2_L;
     z = u + v;
