@@ -198,16 +198,6 @@ pub fn pow(x: f64, mut y: f64) -> f64 {
                 return x;
             }
             y = 1. / x;
-            /*
-#if FLT_EVAL_METHOD!=0
-            {
-                union {double f; uint64_t i;} u = {y};
-                uint64_t i = u.i & -1ULL/2;
-                if (i>>52 == 0 && (i&(i-1)))
-                    FORCE_EVAL((float)y);
-            }
-#endif
-*/
             return y;
         }
         if hy == 0x40000000 {
