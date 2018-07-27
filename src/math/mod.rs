@@ -6,158 +6,171 @@ macro_rules! force_eval {
     };
 }
 
-// Public modules
-mod acos;
+// Public modules for f32
 mod acosf;
-mod asin;
 mod asinf;
-mod atan;
-mod atan2;
 mod atan2f;
 mod atanf;
-mod cbrt;
 mod cbrtf;
-mod ceil;
 mod ceilf;
-mod cos;
+#[cfg(not(feature="newlib"))]
 mod cosf;
-mod cosh;
 mod coshf;
-mod exp;
-mod exp2;
 mod exp2f;
 mod expf;
-mod expm1;
 mod expm1f;
-mod fabs;
 mod fabsf;
-mod fdim;
 mod fdimf;
-mod floor;
+#[cfg(not(feature="newlib"))]
 mod floorf;
-mod fma;
 mod fmaf;
-mod fmod;
 mod fmodf;
-mod hypot;
 mod hypotf;
-mod log;
-mod log10;
 mod log10f;
-mod log1p;
 mod log1pf;
-mod log2;
 mod log2f;
 mod logf;
-mod pow;
 mod powf;
-mod round;
 mod roundf;
-mod scalbn;
 mod scalbnf;
-mod sin;
+#[cfg(not(feature="newlib"))]
 mod sinf;
-mod sinh;
 mod sinhf;
-mod sqrt;
 mod sqrtf;
-mod tan;
+#[cfg(not(feature="newlib"))]
 mod tanf;
-mod tanh;
 mod tanhf;
-mod trunc;
 mod truncf;
 
-// Use separated imports instead of {}-grouped imports for easier merging.
-pub use self::acos::acos;
+// Public modules for f64
+mod acos;
+mod asin;
+mod atan;
+mod atan2;
+mod cbrt;
+mod ceil;
+mod cos;
+mod cosh;
+mod exp;
+mod exp2;
+mod expm1;
+mod fabs;
+mod fdim;
+mod floor;
+mod fma;
+mod fmod;
+mod hypot;
+mod log;
+mod log10;
+mod log1p;
+mod log2;
+mod pow;
+mod round;
+mod scalbn;
+mod sin;
+mod sinh;
+mod sqrt;
+mod tan;
+mod tanh;
+mod trunc;
+
+#[cfg(not(feature="newlib"))]
+pub use self::{cosf::cosf, floorf::floorf, sinf::sinf, tanf::tanf};
+
+#[cfg(feature="newlib")]
+mod newlib;
+#[cfg(feature="newlib")]
+pub use self::newlib::*;
+
 pub use self::acosf::acosf;
-pub use self::asin::asin;
 pub use self::asinf::asinf;
-pub use self::atan::atan;
-pub use self::atan2::atan2;
 pub use self::atan2f::atan2f;
 pub use self::atanf::atanf;
 pub use self::cbrt::cbrt;
 pub use self::cbrtf::cbrtf;
-pub use self::ceil::ceil;
 pub use self::ceilf::ceilf;
-pub use self::cos::cos;
-pub use self::cosf::cosf;
-pub use self::cosh::cosh;
 pub use self::coshf::coshf;
-pub use self::exp::exp;
-pub use self::exp2::exp2;
 pub use self::exp2f::exp2f;
-pub use self::expf::expf;
-pub use self::expm1::expm1;
 pub use self::expm1f::expm1f;
-pub use self::fabs::fabs;
 pub use self::fabsf::fabsf;
-pub use self::fdim::fdim;
 pub use self::fdimf::fdimf;
-pub use self::floor::floor;
-pub use self::floorf::floorf;
-pub use self::fma::fma;
 pub use self::fmaf::fmaf;
-pub use self::fmod::fmod;
 pub use self::fmodf::fmodf;
-pub use self::hypot::hypot;
 pub use self::hypotf::hypotf;
-pub use self::log::log;
-pub use self::log10::log10;
 pub use self::log10f::log10f;
-pub use self::log1p::log1p;
 pub use self::log1pf::log1pf;
-pub use self::log2::log2;
 pub use self::log2f::log2f;
 pub use self::logf::logf;
-pub use self::pow::pow;
 pub use self::powf::powf;
-pub use self::round::round;
 pub use self::roundf::roundf;
-pub use self::scalbn::scalbn;
 pub use self::scalbnf::scalbnf;
-pub use self::sin::sin;
-pub use self::sinf::sinf;
-pub use self::sinh::sinh;
 pub use self::sinhf::sinhf;
-pub use self::sqrt::sqrt;
 pub use self::sqrtf::sqrtf;
-pub use self::tan::tan;
-pub use self::tanf::tanf;
-pub use self::tanh::tanh;
 pub use self::tanhf::tanhf;
-pub use self::trunc::trunc;
 pub use self::truncf::truncf;
+
+pub use self::acos::acos;
+pub use self::asin::asin;
+pub use self::atan::atan;
+pub use self::atan2::atan2;
+pub use self::ceil::ceil;
+pub use self::cos::cos;
+pub use self::cosh::cosh;
+pub use self::exp::exp;
+pub use self::exp2::exp2;
+pub use self::expf::expf;
+pub use self::expm1::expm1;
+pub use self::fabs::fabs;
+pub use self::fdim::fdim;
+pub use self::floor::floor;
+pub use self::fma::fma;
+pub use self::fmod::fmod;
+pub use self::hypot::hypot;
+pub use self::log::log;
+pub use self::log10::log10;
+pub use self::log1p::log1p;
+pub use self::log2::log2;
+pub use self::pow::pow;
+pub use self::round::round;
+pub use self::scalbn::scalbn;
+pub use self::sin::sin;
+pub use self::sinh::sinh;
+pub use self::sqrt::sqrt;
+pub use self::tan::tan;
+pub use self::tanh::tanh;
+pub use self::trunc::trunc;
 
 // Private modules
 mod expo2;
 mod fenv;
 mod k_cos;
+#[cfg(not(feature="newlib"))]
 mod k_cosf;
 mod k_expo2;
 mod k_expo2f;
 mod k_sin;
+#[cfg(not(feature="newlib"))]
 mod k_sinf;
 mod k_tan;
+#[cfg(not(feature="newlib"))]
 mod k_tanf;
 mod rem_pio2;
 mod rem_pio2_large;
+#[cfg(not(feature="newlib"))]
 mod rem_pio2f;
 
 // Private re-imports
 use self::expo2::expo2;
 use self::k_cos::k_cos;
-use self::k_cosf::k_cosf;
 use self::k_expo2::k_expo2;
 use self::k_expo2f::k_expo2f;
 use self::k_sin::k_sin;
-use self::k_sinf::k_sinf;
 use self::k_tan::k_tan;
-use self::k_tanf::k_tanf;
 use self::rem_pio2::rem_pio2;
 use self::rem_pio2_large::rem_pio2_large;
-use self::rem_pio2f::rem_pio2f;
+
+#[cfg(not(feature="newlib"))]
+use self::{k_cosf::k_cosf, k_sinf::k_sinf, k_tanf::k_tanf, rem_pio2f::rem_pio2f};
 
 #[inline]
 fn get_high_word(x: f64) -> u32 {
