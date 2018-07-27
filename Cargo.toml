@@ -9,8 +9,19 @@ name = "libm"
 repository = "https://github.com/japaric/libm"
 version = "0.1.2"
 
-[workspace]
-members = ["cb", "test-generator"]
-
 [features]
+# only used to run our test suite
+checked = []
 newlib = []
+
+[workspace]
+members = [
+  "cb",
+  "input-generator",
+  "musl-generator",
+  "newlib-generator",
+  "shared",
+]
+
+[dev-dependencies]
+shared = { path = "shared" }
