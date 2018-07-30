@@ -89,7 +89,7 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
                simply return -1.0/(x+r) here */
         /*  compute -1.0/(x+r) accurately */
         let mut i = w.to_bits() as i32;
-        z = f32::from_bits(i as u32 & 0xfffff000 );
+        z = f32::from_bits(i as u32 & 0xfffff000);
         v = r - (z - x); /* z+v = r+x */
         let a = -1. / w; /* a = -1.0/w */
         i = a.to_bits() as i32;

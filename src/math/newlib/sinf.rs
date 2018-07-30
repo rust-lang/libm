@@ -1,5 +1,3 @@
-
-
 use super::{k_cosf, k_sinf, rem_pio2f};
 
 #[inline]
@@ -11,7 +9,7 @@ pub fn sinf(x: f32) -> f32 {
     ix &= 0x7fffffff;
     if ix <= 0x3f490fd8 {
         k_sinf(x, z, false)
-    } else if !(ix<0x7f800000) {
+    } else if !(ix < 0x7f800000) {
         /* sin(Inf or NaN) is NaN */
         x - x
     } else {

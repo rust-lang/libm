@@ -24,7 +24,7 @@ pub fn cosf(x: f32) -> f32 {
     ix &= 0x7fffffff;
     if ix <= 0x3f490fd8 {
         k_cosf(x, z)
-    } else if !(ix<0x7f800000) {
+    } else if !(ix < 0x7f800000) {
         /* cos(Inf or NaN) is NaN */
         x - x
     } else {

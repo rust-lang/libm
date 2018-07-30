@@ -13,19 +13,15 @@
  * ====================================================
  */
 
-use math::floorf;
+use super::floorf;
 use math::scalbnf;
 
 #[allow(dead_code)]
 pub enum Precision {
-  Zero,
-  One,
-  Two,
+    Zero,
+    One,
+    Two,
 }
-
-/* In the float version, the input parameter x contains 8 bit
-   integers, not 24 bit integers.  113 bit precision is not supported.  */
-//const INIT_JK: [u8; 3] = [4, 7, 9]; /* initial value for jk */
 
 const PI_O2: [f32; 11] = [
     1.5703125000e+00, /* 0x3fc90000 */
@@ -47,13 +43,7 @@ const TWO8: f32 = 2.5600000000e+02; /* 0x43800000 */
 const TWON8: f32 = 3.9062500000e-03; /* 0x3b800000 */
 
 #[inline]
-pub fn k_rem_pio2f(
-    x: &[f32],
-    e0: i32,
-    prec: Precision,
-    ipio2: &'static [u8],
-//) -> (i32, [f32; 3]) {
-) -> (i32, f32, f32) {
+pub fn k_rem_pio2f(x: &[f32], e0: i32, prec: Precision, ipio2: &'static [u8]) -> (i32, f32, f32) {
     let nx = x.len();
 
     let mut f = [0f32; 20];
@@ -66,11 +56,10 @@ pub fn k_rem_pio2f(
     let mut n: i32;
 
     /* initialize jk*/
-    //let jk = INIT_JK[prec as usize];
     let jk = match prec {
-      Precision::Zero => 4,
-      Precision::One => 7,
-      Precision::Two => 9,
+        Precision::Zero => 4,
+        Precision::One => 7,
+        Precision::Two => 9,
     };
     let jp = jk;
 
@@ -87,7 +76,11 @@ pub fn k_rem_pio2f(
     let mut j = (jv - jx) as i32;
     let m = jx + jk;
     for i in 0..=m {
-        f[i] = if j < 0 { ZERO } else { ipio2[j as usize] as f32 };
+        i!(f, i, =, if j < 0 {
+            ZERO
+        } else {
+            i!(ipio2, j as usize) as f32
+        });
         j += 1;
     }
 
@@ -95,8 +88,8 @@ pub fn k_rem_pio2f(
     for i in 0..=jk {
         fw = 0.;
         for j in 0..=jx {
-            fw += x[j] * f[jx + i - j];
-            q[i] = fw;
+            fw += i!(x, j) * i!(f, jx + i - j);
+            i!(q, i, =, fw);
         }
     }
 
@@ -104,11 +97,11 @@ pub fn k_rem_pio2f(
     'recompute: loop {
         /* distill q[] into iq[] reversingly */
         let mut i = 0i32;
-        z = q[jz];
+        z = i!(q, jz);
         for j in (1..=jz).rev() {
             fw = (TWON8 * z) as i32 as f32;
-            iq[i as usize] = (z - TWO8 * fw) as i32;
-            z = q[j - 1] + fw;
+            i!(iq, i as usize, =, (z - TWO8 * fw) as i32);
+            z = i!(q, j - 1) + fw;
             i += 1;
         }
 
@@ -120,12 +113,12 @@ pub fn k_rem_pio2f(
         ih = 0;
         if q0 > 0 {
             /* need iq[jz-1] to determine n */
-            i = iq[jz - 1] >> (8 - q0);
+            i = i!(iq, jz - 1) >> (8 - q0);
             n += i;
-            iq[jz - 1] -= i << (8 - q0);
-            ih = iq[jz - 1] >> (7 - q0);
+            i!(iq, jz - 1, -=, i << (8 - q0));
+            ih = i!(iq, jz - 1) >> (7 - q0);
         } else if q0 == 0 {
-            ih = iq[jz - 1] >> 8;
+            ih = i!(iq, jz - 1) >> 8;
         } else if z >= 0.5 {
             ih = 2;
         }
@@ -136,21 +129,25 @@ pub fn k_rem_pio2f(
             let mut carry = 0i32;
             for i in 0..jz {
                 /* compute 1-q */
-                j = iq[i];
+                j = i!(iq, i);
                 if carry == 0 {
                     if j != 0 {
                         carry = 1;
-                        iq[i] = 0x100 - j;
+                        i!(iq, i, =, 0x100 - j);
                     }
                 } else {
-                    iq[i] = 0xff - j;
+                    i!(iq, i, =, 0xff - j);
                 }
             }
             if q0 > 0 {
                 /* rare case: chance is 1 in 12 */
                 match q0 {
-                    1 => iq[jz - 1] &= 0x7f,
-                    2 => iq[jz - 1] &= 0x3f,
+                    1 => {
+                        i!(iq, jz - 1, &=, 0x7f);
+                    }
+                    2 => {
+                        i!(iq, jz - 1, &=, 0x3f);
+                    }
                     _ => {}
                 }
             }
@@ -166,23 +163,23 @@ pub fn k_rem_pio2f(
         if z == ZERO {
             j = 0;
             for i in (jk..=jz - 1).rev() {
-                j |= iq[i];
+                j |= i!(iq, i);
             }
             if j == 0 {
                 /* need recomputation */
                 let mut k = 1;
-                while iq[jk - k] == 0 {
+                while i!(iq, jk - k) == 0 {
                     k += 1; /* k = no. of terms needed */
                 }
 
                 for i in (jz + 1)..=(jz + k) {
                     /* add q[jz+1] to q[jz+k] */
-                    f[jx + i] = ipio2[jv + i] as f32;
+                    i!(f, jx + i, =, i!(ipio2, jv + i) as f32);
                     fw = 0.;
                     for j in 0..=jx {
-                        fw += x[j] * f[jx + i - j];
+                        fw += i!(x, j) * i!(f, jx + i - j);
                     }
-                    q[i] = fw;
+                    i!(q, i, =, fw);
                 }
                 jz += k;
                 continue 'recompute;
@@ -195,7 +192,7 @@ pub fn k_rem_pio2f(
     if z == 0. {
         jz -= 1;
         q0 -= 8;
-        while iq[jz] == 0 {
+        while i!(iq, jz) == 0 {
             jz -= 1;
             q0 -= 8;
         }
@@ -204,19 +201,19 @@ pub fn k_rem_pio2f(
         z = scalbnf(z, -q0);
         if z >= TWO8 {
             fw = (TWON8 * z) as i32 as f32;
-            iq[jz] = (z - TWO8 * fw) as i32;
+            i!(iq, jz, =, (z - TWO8 * fw) as i32);
             jz += 1;
             q0 += 8;
-            iq[jz] = fw as i32;
+            i!(iq, jz, =, fw as i32);
         } else {
-            iq[jz] = z as i32;
+            i!(iq, jz, =, z as i32);
         }
     }
 
     /* convert integer "bit" chunk to floating-point value */
     fw = scalbnf(ONE, q0);
     for i in (0..=jz).rev() {
-        q[i] = fw * (iq[i] as f32);
+        i!(q, i, =, fw * (i!(iq, i) as f32));
         fw *= TWON8;
     }
 
@@ -225,63 +222,32 @@ pub fn k_rem_pio2f(
         fw = 0.;
         let mut k = 0;
         while (k <= jp) && (k <= jz - i) {
-            fw += PI_O2[k] * q[i + k];
+            fw += i!(PI_O2, k) * i!(q, i + k);
             k += 1;
         }
-        fq[jz - i] = fw;
+        i!(fq, jz - i, =, fw);
     }
 
-    /* compress fq[] into y[] */
-    //let mut y = [0f32; 3];
+    /* compress fq[] */
     match prec {
         Precision::Zero => {
             fw = 0.;
             for i in (0..=jz).rev() {
-                fw += fq[i];
+                fw += i!(fq, i);
             }
-            //y[0] = if ih == 0 { fw } else { -fw };
             (n & 7, if ih == 0 { fw } else { -fw }, 0.)
-        },
+        }
         Precision::One | Precision::Two => {
             fw = 0.;
             for i in (0..=jz).rev() {
-                fw += fq[i];
+                fw += i!(fq, i);
             }
             let y0 = if ih == 0 { fw } else { -fw };
-            fw = fq[0] - fw;
+            fw = i!(fq, 0) - fw;
             for i in 1..=jz {
-                fw += fq[i];
+                fw += i!(fq, i);
             }
-            //y[1] = if ih == 0 { fw } else { -fw };
             (n & 7, y0, if ih == 0 { fw } else { -fw })
-        },
-        /*3 => {
-            /* painful */
-            for i in (1..=jz).rev() {
-                fw = fq[i - 1] + fq[i];
-                fq[i] += fq[i - 1] - fw;
-                fq[i - 1] = fw;
-            }
-            for i in (2..=jz).rev() {
-                fw = fq[i - 1] + fq[i];
-                fq[i] += fq[i - 1] - fw;
-                fq[i - 1] = fw;
-            }
-            fw = 0.;
-            for i in (2..=jz).rev() {
-                fw += fq[i];
-            }
-            if ih == 0 {
-                y[0] = fq[0];
-                y[1] = fq[1];
-                y[2] = fw;
-            } else {
-                y[0] = -fq[0];
-                y[1] = -fq[1];
-                y[2] = -fw;
-            }
-        },*/
-        //_ => unreachable!(),
+        }
     }
-    //(n & 7, y)
 }

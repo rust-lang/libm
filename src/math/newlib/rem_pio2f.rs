@@ -13,9 +13,9 @@
  * ====================================================
  *
  */
-use math::fabsf;
 use super::k_rem_pio2f;
 use super::Precision;
+use math::fabsf;
 
 /* Table of constants for 2/pi, 396 Hex digits (476 decimal) of 2/pi */
 const TWO_OVER_PI: [u8; 198] = [
@@ -66,8 +66,8 @@ const PIO2_3T: f32 = 6.1232342629e-17; /* 0x248d3132 */
 /// Return the remainder of x rem pi/2 in y[0]+y[1]
 #[inline]
 pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
-    let mut y0 : f32;
-    let y1 : f32;
+    let mut y0: f32;
+    let y1: f32;
     let mut z: f32;
 
     let hx = x.to_bits() as i32;
@@ -139,16 +139,12 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
             }
         }
         y1 = (r - y0) - w;
-        return if hx < 0 {
-            (-n, -y0, -y1)
-        } else {
-            (n, y0, y1)
-        };
+        return if hx < 0 { (-n, -y0, -y1) } else { (n, y0, y1) };
     }
     /*
      * all other (large) arguments
      */
-    if !(ix<0x7f800000) {
+    if !(ix < 0x7f800000) {
         y0 = x - x;
         return (0, y0, y0);
     }
@@ -170,6 +166,6 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
     if hx < 0 {
         (-n, -y0, -y1)
     } else {
-      (n, y0, y1)
+        (n, y0, y1)
     }
 }

@@ -52,7 +52,7 @@ pub fn floorf(x: f32) -> f32 {
             }
         }
     } else {
-        return if !(ix<0x7f800000) {
+        return if !(ix < 0x7f800000) {
             /* inf or NaN */
             x + x
         } else {
