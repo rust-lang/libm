@@ -135,6 +135,9 @@ mod newlib;
 #[cfg(feature = "newlib")]
 pub use self::newlib::*;
 
+mod fp;
+pub use self::fp::asinef;
+
 pub use self::acosf::acosf;
 pub use self::atan2f::atan2f;
 pub use self::atanf::atanf;
