@@ -1,24 +1,9 @@
-/* @(#)z_asinef.c 1.0 98/08/13 */
 /******************************************************************
  * The following routines are coded directly from the algorithms
  * and coefficients given in "Software Manual for the Elementary
  * Functions" by William J. Cody, Jr. and William Waite, Prentice
  * Hall, 1980.
  ******************************************************************/
-/******************************************************************
- * Arcsine
- *
- * Input:
- *   x - floating point value
- *   acosine - indicates acos calculation
- *
- * Output:
- *   Arcsine of x.
- *
- * Description:
- *   This routine calculates arcsine / arccosine.
- *
- *****************************************************************/
 
 use math::fabsf;
 use math::sqrtf;
@@ -31,6 +16,17 @@ const Q: [f32; 2] = [0.560363004e+1, -0.554846723e+1];
 const A: [f32; 2] = [0.0, 0.785398163];
 const B: [f32; 2] = [1.570796326, 0.785398163];
 
+/// Arcsine
+///
+///  Input:
+///    x - floating point value
+///    acosine - indicates acos calculation
+///
+///  Output:
+///    Arcsine of x.
+///
+///  Description:
+///    This routine calculates arcsine / arccosine.
 #[inline]
 pub fn asinef(x: f32, acosine: bool) -> f32 {
     let mut branch = 0;
@@ -70,7 +66,7 @@ pub fn asinef(x: f32, acosine: bool) -> f32 {
             g = y * y;
         }
     }
-    let i = if i { 1 } else { 0 };
+    let i = i as usize;
 
     if (y >= Z_ROOTEPS_F) || (branch == 1) {
         /* Calculate the Taylor series. */

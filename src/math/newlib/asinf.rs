@@ -34,7 +34,7 @@ const Q_S3: f32 = -6.8828397989e-01; /* 0xbf303361 */
 const Q_S4: f32 = 7.7038154006e-02; /* 0x3d9dc62e */
 
 #[inline]
-pub fn asinf(mut x: f32) -> f32 {
+pub fn asinf(x: f32) -> f32 {
     let mut w: f32;
     let mut t: f32;
     let mut p: f32;
@@ -76,7 +76,7 @@ pub fn asinf(mut x: f32) -> f32 {
     } else {
         w = s;
         let iw = w.to_bits() as i32;
-        w = f32::from_bits((iw & 0xfffff000) as u32);
+        w = f32::from_bits((iw as u32) & 0xfffff000);
         let c = (t - w * w) / (s + w);
         let r = p / q;
         p = 2. * s * r - (PIO2_LO - 2. * c);

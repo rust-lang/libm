@@ -25,3 +25,9 @@ use self::k_rem_pio2f::Precision;
 use self::k_sinf::k_sinf;
 use self::k_tanf::k_tanf;
 use self::rem_pio2f::rem_pio2f;
+
+use math::powf;
+#[inline]
+pub fn exp2f(x: f32) -> f32 {
+    powf(2.0, x)
+}

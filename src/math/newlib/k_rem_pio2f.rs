@@ -1,3 +1,4 @@
+#![allow(unused_unsafe)]
 /* kf_rem_pio2.c -- float version of k_rem_pio2.c
  * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
  */

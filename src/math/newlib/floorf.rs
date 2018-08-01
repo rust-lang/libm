@@ -34,7 +34,7 @@ pub fn floorf(x: f32) -> f32 {
                 if i0 >= 0 {
                     i0 = 0;
                 } else if !(ix == 0) {
-                    i0 = 0xbf800000;
+                    i0 = 0xbf800000 as i32;
                 }
             }
         } else {

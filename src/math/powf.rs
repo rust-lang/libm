@@ -44,48 +44,27 @@ const IVLN2_H: f32 = 1.4426879883e+00;
 const IVLN2_L: f32 = 7.0526075433e-06;
 
 #[inline]
+fn high_low(x: f32) -> (f32, f32) {
+    let high = f32::from_bits(x.to_bits() & 0xfffff000);
+    (high, x - high)
+}
+
+#[inline]
 pub fn powf(x: f32, y: f32) -> f32 {
-    let mut z: f32;
-    let mut ax: f32;
-    let z_h: f32;
-    let z_l: f32;
-    let mut p_h: f32;
-    let mut p_l: f32;
-    let y1: f32;
-    let mut t1: f32;
-    let t2: f32;
-    let mut r: f32;
-    let s: f32;
-    let mut sn: f32;
-    let mut t: f32;
-    let mut u: f32;
-    let mut v: f32;
-    let mut w: f32;
-    let i: i32;
-    let mut j: i32;
-    let mut k: i32;
-    let mut yisint: i32;
-    let mut n: i32;
-    let hx: i32;
-    let hy: i32;
-    let mut ix: i32;
-    let iy: i32;
-    let mut is: i32;
+    let hx = x.to_bits() as i32;
+    let hy = y.to_bits() as i32;
 
-    hx = x.to_bits() as i32;
-    hy = y.to_bits() as i32;
-
-    ix = hx & 0x7fffffff;
-    iy = hy & 0x7fffffff;
+    let mut ix = hx & 0x7fffffff;
+    let iy = hy & 0x7fffffff;
 
     /* x**0 = 1, even if x is NaN */
     if iy == 0 {
-        return 1.0;
+        return 1.;
     }
 
     /* 1**y = 1, even if y is NaN */
     if hx == 0x3f800000 {
-        return 1.0;
+        return 1.;
     }
 
     /* NaN if either arg is NaN */
@@ -98,13 +77,13 @@ pub fn powf(x: f32, y: f32) -> f32 {
      * yisint = 1       ... y is an odd int
      * yisint = 2       ... y is an even int
      */
-    yisint = 0;
+    let mut yisint = 0;
     if hx < 0 {
         if iy >= 0x4b800000 {
             yisint = 2; /* even integer y */
         } else if iy >= 0x3f800000 {
-            k = (iy >> 23) - 0x7f; /* exponent */
-            j = iy >> (23 - k);
+            let k = (iy >> 23) - 0x7f; /* exponent */
+            let j = iy >> (23 - k);
             if (j << (23 - k)) == iy {
                 yisint = 2 - (j & 1);
             }
@@ -114,20 +93,28 @@ pub fn powf(x: f32, y: f32) -> f32 {
     /* special value of y */
     if iy == 0x7f800000 {
         /* y is +-inf */
-        if ix == 0x3f800000 {
+        return if ix == 0x3f800000 {
             /* (-1)**+-inf is 1 */
-            return 1.0;
+            1.
         } else if ix > 0x3f800000 {
             /* (|x|>1)**+-inf = inf,0 */
-            return if hy >= 0 { y } else { 0.0 };
+            if hy >= 0 {
+                y
+            } else {
+                0.
+            }
         } else {
             /* (|x|<1)**+-inf = 0,inf */
-            return if hy >= 0 { 0.0 } else { -y };
-        }
+            if hy >= 0 {
+                0.
+            } else {
+                -y
+            }
+        };
     }
     if iy == 0x3f800000 {
         /* y is +-1 */
-        return if hy >= 0 { x } else { 1.0 / x };
+        return if hy >= 0 { x } else { 1. / x };
     }
 
     if hy == 0x40000000 {
@@ -135,23 +122,22 @@ pub fn powf(x: f32, y: f32) -> f32 {
         return x * x;
     }
 
-    if hy == 0x3f000000 {
+    if (hy == 0x3f000000) && (hx >= 0) {
         /* y is  0.5 */
-        if hx >= 0 {
-            /* x >= +0 */
-            return sqrtf(x);
-        }
+        /* x >= +0 */
+        return sqrtf(x);
     }
 
-    ax = fabsf(x);
+    let ax = fabsf(x);
     /* special value of x */
     if ix == 0x7f800000 || ix == 0 || ix == 0x3f800000 {
         /* x is +-0,+-inf,+-1 */
-        z = ax;
-        if hy < 0 {
+        let mut z = if hy < 0 {
             /* z = (1/|x|) */
-            z = 1.0 / z;
-        }
+            1. / ax
+        } else {
+            ax
+        };
 
         if hx < 0 {
             if ((ix - 0x3f800000) | yisint) == 0 {
@@ -163,7 +149,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         return z;
     }
 
-    sn = 1.0; /* sign of result */
+    let mut sn = 1.; /* sign of result */
     if hx < 0 {
         if yisint == 0 {
             /* (x<0)**(non-int) is NaN */
@@ -172,12 +158,12 @@ pub fn powf(x: f32, y: f32) -> f32 {
 
         if yisint == 1 {
             /* (x<0)**(odd int) */
-            sn = -1.0;
+            sn = -1.;
         }
     }
 
     /* |y| is HUGE */
-    if iy > 0x4d000000 {
+    let (t1, t2) = if iy > 0x4d000000 {
         /* if |y| > 2**27 */
         /* over/underflow if x is not close to one */
         if ix < 0x3f7ffff8 {
@@ -198,91 +184,67 @@ pub fn powf(x: f32, y: f32) -> f32 {
 
         /* now |1-x| is TINY <= 2**-20, suffice to compute
        log(x) by x-x^2/2+x^3/3-x^4/4 */
-        t = ax - 1.; /* t has 20 trailing zeros */
-        w = (t * t) * (0.5 - t * (0.333333333333 - t * 0.25));
-        u = IVLN2_H * t; /* IVLN2_H has 16 sig. bits */
-        v = t * IVLN2_L - w * IVLN2;
-        t1 = u + v;
-        is = t1.to_bits() as i32;
-        t1 = f32::from_bits(is as u32 & 0xfffff000);
-        t2 = v - (t1 - u);
+        let t = ax - 1.; /* t has 20 trailing zeros */
+        let w = (t * t) * (0.5 - t * (0.333333333333 - t * 0.25));
+        let u = IVLN2_H * t; /* IVLN2_H has 16 sig. bits */
+        let v = t * IVLN2_L - w * IVLN2;
+        high_low(u + v)
     } else {
-        let mut s2: f32;
-        let mut s_h: f32;
-        let s_l: f32;
-        let mut t_h: f32;
-        let mut t_l: f32;
-
-        n = 0;
+        let mut n = 0;
         /* take care subnormal number */
         if ix < 0x00800000 {
-            ax *= TWO24;
-            n -= 24;
-            ix = ax.to_bits() as i32;
+            ix = (ax * TWO24).to_bits() as i32;
+            n = -24;
         }
         n += ((ix) >> 23) - 0x7f;
-        j = ix & 0x007fffff;
+        let j = ix & 0x007fffff;
         /* determine interval */
         ix = j | 0x3f800000; /* normalize ix */
-        if j <= 0x1cc471 {
+        let k = if j <= 0x1cc471 {
             /* |x|<sqrt(3/2) */
-            k = 0;
+            0usize
         } else if j < 0x5db3d7 {
             /* |x|<sqrt(3)   */
-            k = 1;
+            1
         } else {
-            k = 0;
             n += 1;
             ix -= 0x00800000;
-        }
-        ax = f32::from_bits(ix as u32);
+            0
+        };
+        let ax = f32::from_bits(ix as u32);
 
         /* compute s = s_h+s_l = (x-1)/(x+1) or (x-1.5)/(x+1.5) */
-        u = ax - BP[k as usize]; /* bp[0]=1.0, bp[1]=1.5 */
-        v = 1.0 / (ax + BP[k as usize]);
-        s = u * v;
-        s_h = s;
-        is = s_h.to_bits() as i32;
-        s_h = f32::from_bits(is as u32 & 0xfffff000);
+        let u = ax - BP[k]; /* bp[0]=1.0, bp[1]=1.5 */
+        let v = 1. / (ax + BP[k]);
+        let s = u * v;
+        let s_h = f32::from_bits(s.to_bits() & 0xfffff000);
         /* t_h=ax+bp[k] High */
-        is = (((ix as u32 >> 1) & 0xfffff000) | 0x20000000) as i32;
-        t_h = f32::from_bits(is as u32 + 0x00400000 + ((k as u32) << 21));
-        t_l = ax - (t_h - BP[k as usize]);
-        s_l = v * ((u - s_h * t_h) - s_h * t_l);
+        let t_h = f32::from_bits(((ix as u32 >> 1) | 0x20000000) + 0x00400000 + ((k as u32) << 21));
+        let t_l = ax - (t_h - BP[k]);
+        let s_l = v * ((u - s_h * t_h) - s_h * t_l);
         /* compute log(ax) */
-        s2 = s * s;
-        r = s2 * s2 * (L1 + s2 * (L2 + s2 * (L3 + s2 * (L4 + s2 * (L5 + s2 * L6)))));
-        r += s_l * (s_h + s);
-        s2 = s_h * s_h;
-        t_h = 3.0 + s2 + r;
-        is = t_h.to_bits() as i32;
-        t_h = f32::from_bits(is as u32 & 0xfffff000);
-        t_l = r - ((t_h - 3.0) - s2);
+        let s2 = s * s;
+        let r = s2 * s2 * (L1 + s2 * (L2 + s2 * (L3 + s2 * (L4 + s2 * (L5 + s2 * L6)))))
+            + s_l * (s_h + s);
+        let s2 = s_h * s_h;
+        let (t_h, t_l) = high_low(3. + s2 + r);
         /* u+v = s*(1+...) */
-        u = s_h * t_h;
-        v = s_l * t_h + t_l * s;
+        let u = s_h * t_h;
+        let v = s_l * t_h + t_l * s;
         /* 2/(3log2)*(s+...) */
-        p_h = u + v;
-        is = p_h.to_bits() as i32;
-        p_h = f32::from_bits(is as u32 & 0xfffff000);
-        p_l = v - (p_h - u);
-        z_h = CP_H * p_h; /* cp_h+cp_l = 2/(3*log2) */
-        z_l = CP_L * p_h + p_l * CP + DP_L[k as usize];
+        let (p_h, p_l) = high_low(u + v);
+        let z_h = CP_H * p_h; /* cp_h+cp_l = 2/(3*log2) */
+        let z_l = CP_L * p_h + p_l * CP + DP_L[k];
         /* log2(ax) = (s+..)*2/(3*log2) = n + dp_h + z_h + z_l */
-        t = n as f32;
-        t1 = ((z_h + z_l) + DP_H[k as usize]) + t;
-        is = t1.to_bits() as i32;
-        t1 = f32::from_bits(is as u32 & 0xfffff000);
-        t2 = z_l - (((t1 - t) - DP_H[k as usize]) - z_h);
+        high_low(z_h + z_l + DP_H[k] + (n as f32))
     };
 
     /* split up y into y1+y2 and compute (y1+y2)*(t1+t2) */
-    is = y.to_bits() as i32;
-    y1 = f32::from_bits(is as u32 & 0xfffff000);
-    p_l = (y - y1) * t1 + y * t2;
-    p_h = y1 * t1;
-    z = p_l + p_h;
-    j = z.to_bits() as i32;
+    let (y1, y2) = high_low(y);
+    let p_l = y2 * t1 + y * t2;
+    let mut p_h = y1 * t1;
+    let mut z = p_l + p_h;
+    let j = z.to_bits() as i32;
     if j > 0x43000000 {
         /* if z > 128 */
         return sn * HUGE * HUGE; /* overflow */
@@ -305,38 +267,35 @@ pub fn powf(x: f32, y: f32) -> f32 {
     /*
      * compute 2**(p_h+p_l)
      */
-    i = j & 0x7fffffff;
-    k = (i >> 23) - 0x7f;
-    n = 0;
+    let i = j & 0x7fffffff;
+    let k = (i >> 23) - 0x7f;
+    let mut n = 0;
     if i > 0x3f000000 {
         /* if |z| > 0.5, set n = [z+0.5] */
         n = j + (0x00800000 >> (k + 1));
-        k = ((n & 0x7fffffff) >> 23) - 0x7f; /* new k for n */
-        t = f32::from_bits(n as u32 & !(0x007fffff >> k));
+        let k = ((n & 0x7fffffff) >> 23) - 0x7f; /* new k for n */
+        let t = f32::from_bits(n as u32 & !(0x007fffff >> k));
         n = ((n & 0x007fffff) | 0x00800000) >> (23 - k);
         if j < 0 {
             n = -n;
         }
         p_h -= t;
     }
-    t = p_l + p_h;
-    is = t.to_bits() as i32;
-    t = f32::from_bits(is as u32 & 0xffff8000);
-    u = t * LG2_H;
-    v = (p_l - (t - p_h)) * LG2 + t * LG2_L;
+    let t = f32::from_bits((p_l + p_h).to_bits() & 0xffff8000);
+    let u = t * LG2_H;
+    let v = (p_l - (t - p_h)) * LG2 + t * LG2_L;
     z = u + v;
-    w = v - (z - u);
-    t = z * z;
-    t1 = z - t * (P1 + t * (P2 + t * (P3 + t * (P4 + t * P5))));
-    r = (z * t1) / (t1 - 2.0) - (w + z * w);
-    z = 1.0 - (r - z);
-    j = z.to_bits() as i32;
-    j += n << 23;
-    if (j >> 23) <= 0 {
+    let w = v - (z - u);
+    let t = z * z;
+    let t1 = z - t * (P1 + t * (P2 + t * (P3 + t * (P4 + t * P5))));
+    let r = (z * t1) / (t1 - 2.) - (w + z * w);
+    z = 1. - (r - z);
+    let j = z.to_bits() as i32 + (n << 23);
+    z = if (j >> 23) <= 0 {
         /* subnormal output */
-        z = scalbnf(z, n);
+        scalbnf(z, n)
     } else {
-        z = f32::from_bits(j as u32);
-    }
-    return sn * z;
+        f32::from_bits(j as u32)
+    };
+    sn * z
 }
