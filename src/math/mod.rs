@@ -64,6 +64,7 @@ mod acosf;
 mod asinf;
 mod atan2f;
 mod atanf;
+#[cfg(not(feature = "newlib"))]
 mod cbrtf;
 mod ceilf;
 #[cfg(not(feature = "newlib"))]
@@ -131,7 +132,8 @@ mod trunc;
 
 #[cfg(not(feature = "newlib"))]
 pub use self::{
-    asinf::asinf, cosf::cosf, exp2f::exp2f, floorf::floorf, hypotf::hypotf, sinf::sinf, tanf::tanf,
+    asinf::asinf, cbrtf::cbrtf, cosf::cosf, exp2f::exp2f, floorf::floorf, hypotf::hypotf,
+    sinf::sinf, tanf::tanf,
 };
 
 pub mod newlib;
@@ -144,7 +146,6 @@ pub use self::acosf::acosf;
 pub use self::atan2f::atan2f;
 pub use self::atanf::atanf;
 pub use self::cbrt::cbrt;
-pub use self::cbrtf::cbrtf;
 pub use self::ceilf::ceilf;
 pub use self::coshf::coshf;
 pub use self::expm1f::expm1f;

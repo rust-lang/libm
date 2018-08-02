@@ -1,5 +1,6 @@
 // Public modules
 mod asinf;
+mod cbrtf;
 mod cosf;
 mod floorf;
 mod hypotf;
@@ -7,6 +8,7 @@ mod sinf;
 mod tanf;
 
 pub use self::asinf::asinf;
+pub use self::cbrtf::cbrtf;
 pub use self::cosf::cosf;
 pub use self::floorf::floorf;
 pub use self::hypotf::hypotf;
