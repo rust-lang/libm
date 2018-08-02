@@ -6,6 +6,7 @@ macro_rules! f32 {
             fs::create_dir_all("math/src")?;
 
             let main = format!("
+#![feature(int_to_from_bytes)]
 #![no_main]
 #![no_std]
 

@@ -1,4 +1,5 @@
 #![feature(exact_chunks)]
+#![feature(int_to_from_bytes)]
 
 #[macro_use]
 extern crate lazy_static;
