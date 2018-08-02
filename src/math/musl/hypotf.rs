@@ -1,6 +1,6 @@
 use core::f32;
 
-use super::sqrtf;
+use math::sqrtf;
 
 #[inline]
 pub fn hypotf(mut x: f32, mut y: f32) -> f32 {

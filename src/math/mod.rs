@@ -59,29 +59,16 @@ macro_rules! i {
 }
 
 // Public modules for f32
-mod acosf;
-#[cfg(not(feature = "newlib"))]
-mod asinf;
 mod atan2f;
 mod atanf;
-#[cfg(not(feature = "newlib"))]
-mod cbrtf;
 mod ceilf;
-#[cfg(not(feature = "newlib"))]
-mod cosf;
 mod coshf;
-#[cfg(not(feature = "newlib"))]
-mod exp2f;
 mod expf;
 mod expm1f;
 mod fabsf;
 mod fdimf;
-#[cfg(not(feature = "newlib"))]
-mod floorf;
 mod fmaf;
 mod fmodf;
-#[cfg(not(feature = "newlib"))]
-mod hypotf;
 mod log10f;
 mod log1pf;
 mod log2f;
@@ -89,12 +76,8 @@ mod logf;
 mod powf;
 mod roundf;
 mod scalbnf;
-#[cfg(not(feature = "newlib"))]
-mod sinf;
 mod sinhf;
 mod sqrtf;
-#[cfg(not(feature = "newlib"))]
-mod tanf;
 mod tanhf;
 mod truncf;
 
@@ -130,19 +113,16 @@ mod tan;
 mod tanh;
 mod trunc;
 
-#[cfg(not(feature = "newlib"))]
-pub use self::{
-    asinf::asinf, cbrtf::cbrtf, cosf::cosf, exp2f::exp2f, floorf::floorf, hypotf::hypotf,
-    sinf::sinf, tanf::tanf,
-};
-
 pub mod newlib;
 #[cfg(feature = "newlib")]
 pub use self::newlib::*;
 
+pub mod musl;
+#[cfg(not(feature = "newlib"))]
+pub use self::musl::*;
+
 pub mod fp;
 
-pub use self::acosf::acosf;
 pub use self::atan2f::atan2f;
 pub use self::atanf::atanf;
 pub use self::cbrt::cbrt;
@@ -200,20 +180,12 @@ pub use self::trunc::trunc;
 mod expo2;
 mod fenv;
 mod k_cos;
-#[cfg(not(feature = "newlib"))]
-mod k_cosf;
 mod k_expo2;
 mod k_expo2f;
 mod k_sin;
-#[cfg(not(feature = "newlib"))]
-mod k_sinf;
 mod k_tan;
-#[cfg(not(feature = "newlib"))]
-mod k_tanf;
 mod rem_pio2;
 mod rem_pio2_large;
-#[cfg(not(feature = "newlib"))]
-mod rem_pio2f;
 
 // Private re-imports
 use self::expo2::expo2;
@@ -224,9 +196,6 @@ use self::k_sin::k_sin;
 use self::k_tan::k_tan;
 use self::rem_pio2::rem_pio2;
 use self::rem_pio2_large::rem_pio2_large;
-
-#[cfg(not(feature = "newlib"))]
-use self::{k_cosf::k_cosf, k_sinf::k_sinf, k_tanf::k_tanf, rem_pio2f::rem_pio2f};
 
 #[inline]
 fn get_high_word(x: f64) -> u32 {

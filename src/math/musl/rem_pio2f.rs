@@ -14,7 +14,7 @@
  * ====================================================
  */
 
-use super::rem_pio2_large;
+use math::rem_pio2_large;
 
 use core::f64;
 

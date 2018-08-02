@@ -83,9 +83,8 @@ pub fn sinef(x: f32, cosine: bool) -> f32 {
     }
 
     y = fabsf(x) - xn * PI;
-    let mut res: f32;
-    if (-Z_ROOTEPS_F < y) && (y < Z_ROOTEPS_F) {
-        res = y;
+    let res = if (-Z_ROOTEPS_F < y) && (y < Z_ROOTEPS_F) {
+        y
     } else {
         let g = y * y;
 
@@ -93,8 +92,8 @@ pub fn sinef(x: f32, cosine: bool) -> f32 {
         let r = (((R[3] * g + R[2]) * g + R[1]) * g + R[0]) * g;
 
         /* Finally, compute the result. */
-        res = y + y * r;
-    }
+        y + y * r
+    };
 
     res * (sgn as f32)
 }
