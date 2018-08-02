@@ -2,12 +2,14 @@
 mod asinf;
 mod cosf;
 mod floorf;
+mod hypotf;
 mod sinf;
 mod tanf;
 
 pub use self::asinf::asinf;
 pub use self::cosf::cosf;
 pub use self::floorf::floorf;
+pub use self::hypotf::hypotf;
 pub use self::sinf::sinf;
 pub use self::tanf::tanf;
 

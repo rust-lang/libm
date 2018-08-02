@@ -96,7 +96,5 @@ pub fn sinef(x: f32, cosine: bool) -> f32 {
         res = y + y * r;
     }
 
-    res *= sgn as f32;
-
-    res
+    res * (sgn as f32)
 }

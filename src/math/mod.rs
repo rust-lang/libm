@@ -79,6 +79,7 @@ mod fdimf;
 mod floorf;
 mod fmaf;
 mod fmodf;
+#[cfg(not(feature = "newlib"))]
 mod hypotf;
 mod log10f;
 mod log1pf;
@@ -129,7 +130,9 @@ mod tanh;
 mod trunc;
 
 #[cfg(not(feature = "newlib"))]
-pub use self::{asinf::asinf, cosf::cosf, exp2f::exp2f, floorf::floorf, sinf::sinf, tanf::tanf};
+pub use self::{
+    asinf::asinf, cosf::cosf, exp2f::exp2f, floorf::floorf, hypotf::hypotf, sinf::sinf, tanf::tanf,
+};
 
 pub mod newlib;
 #[cfg(feature = "newlib")]
@@ -149,7 +152,6 @@ pub use self::fabsf::fabsf;
 pub use self::fdimf::fdimf;
 pub use self::fmaf::fmaf;
 pub use self::fmodf::fmodf;
-pub use self::hypotf::hypotf;
 pub use self::log10f::log10f;
 pub use self::log1pf::log1pf;
 pub use self::log2f::log2f;
