@@ -1,3 +1,5 @@
+#![feature(int_to_from_bytes)]
+
 extern crate rand;
 
 use std::collections::BTreeSet;
@@ -43,7 +45,7 @@ fn f32(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
 
     let mut f = File::create("bin/input/f32")?;
     for i in set {
-        f.write_all(&i.to_bytes())?;
+        f.write_all(&i.to_ne_bytes())?;
     }
 
     Ok(())
@@ -61,8 +63,8 @@ fn f32f32(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
         }
 
         i += 1;
-        f.write_all(&x0.to_bits().to_bytes())?;
-        f.write_all(&x1.to_bits().to_bytes())?;
+        f.write_all(&x0.to_bits().to_ne_bytes())?;
+        f.write_all(&x1.to_bits().to_ne_bytes())?;
     }
 
     Ok(())
@@ -80,8 +82,8 @@ fn f32i16(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
         }
 
         i += 1;
-        f.write_all(&x0.to_bits().to_bytes())?;
-        f.write_all(&x1.to_bytes())?;
+        f.write_all(&x0.to_bits().to_ne_bytes())?;
+        f.write_all(&x1.to_ne_bytes())?;
     }
 
     Ok(())
@@ -100,9 +102,9 @@ fn f32f32f32(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
         }
 
         i += 1;
-        f.write_all(&x0.to_bits().to_bytes())?;
-        f.write_all(&x1.to_bits().to_bytes())?;
-        f.write_all(&x2.to_bits().to_bytes())?;
+        f.write_all(&x0.to_bits().to_ne_bytes())?;
+        f.write_all(&x1.to_bits().to_ne_bytes())?;
+        f.write_all(&x2.to_bits().to_ne_bytes())?;
     }
 
     Ok(())
@@ -123,7 +125,7 @@ fn f64(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
 
     let mut f = File::create("bin/input/f64")?;
     for i in set {
-        f.write_all(&i.to_bytes())?;
+        f.write_all(&i.to_ne_bytes())?;
     }
 
     Ok(())
@@ -141,8 +143,8 @@ fn f64f64(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
         }
 
         i += 1;
-        f.write_all(&x0.to_bits().to_bytes())?;
-        f.write_all(&x1.to_bits().to_bytes())?;
+        f.write_all(&x0.to_bits().to_ne_bytes())?;
+        f.write_all(&x1.to_bits().to_ne_bytes())?;
     }
 
     Ok(())
@@ -161,9 +163,9 @@ fn f64f64f64(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
         }
 
         i += 1;
-        f.write_all(&x0.to_bits().to_bytes())?;
-        f.write_all(&x1.to_bits().to_bytes())?;
-        f.write_all(&x2.to_bits().to_bytes())?;
+        f.write_all(&x0.to_bits().to_ne_bytes())?;
+        f.write_all(&x1.to_bits().to_ne_bytes())?;
+        f.write_all(&x2.to_bits().to_ne_bytes())?;
     }
 
     Ok(())
@@ -181,8 +183,8 @@ fn f64i16(rng: &mut XorShiftRng) -> Result<(), Box<Error>> {
         }
 
         i += 1;
-        f.write_all(&x0.to_bits().to_bytes())?;
-        f.write_all(&x1.to_bytes())?;
+        f.write_all(&x0.to_bits().to_ne_bytes())?;
+        f.write_all(&x1.to_ne_bytes())?;
     }
 
     Ok(())
