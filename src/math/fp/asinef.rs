@@ -6,7 +6,7 @@
  ******************************************************************/
 
 use math::fabsf;
-use math::sqrtf;
+use math::sqrt;
 
 use super::consts::*;
 use super::{numtestf, NumState};
@@ -56,7 +56,7 @@ pub fn asinef(x: f32, acosine: bool) -> f32 {
         }
 
         g = (1. - y) / 2.;
-        y = -2. * sqrtf(g);
+        y = (-2. * sqrt(g as f64)) as f32;
         branch = 1;
     } else {
         i = flag;
