@@ -61,16 +61,12 @@ pub fn __errno() -> *mut i32 {{
                 .success()
             );
 
-            let mut qemu = match {
-                Command::new("qemu-arm")
-                    .arg("math/target/thumbv7em-none-eabi/release/math")
-                    .stdin(Stdio::piped())
-                    .stdout(Stdio::piped())
-                    .spawn()
-                } {
-                    Ok(qemu) => qemu,
-                    Err(_) => panic!("missing qemu-arm!")
-                };
+            let mut qemu = Command::new("qemu-arm")
+                .arg("math/target/thumbv7em-none-eabi/release/math")
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .spawn()
+                .map_err(|_| "missing qemu-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 
@@ -151,16 +147,12 @@ pub fn __errno() -> *mut i32 {{
                 .success()
             );
 
-            let mut qemu = match {
-                Command::new("qemu-arm")
-                    .arg("math/target/thumbv7em-none-eabi/release/math")
-                    .stdin(Stdio::piped())
-                    .stdout(Stdio::piped())
-                    .spawn()
-                } {
-                    Ok(qemu) => qemu,
-                    Err(_) => panic!("missing qemu-arm!")
-                };
+            let mut qemu = Command::new("qemu-arm")
+                .arg("math/target/thumbv7em-none-eabi/release/math")
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .spawn()
+                .map_err(|_| "missing qemu-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 
@@ -244,16 +236,12 @@ pub fn __errno() -> *mut i32 {{
                 .success()
             );
 
-            let mut qemu = match {
-                Command::new("qemu-arm")
-                    .arg("math/target/thumbv7em-none-eabi/release/math")
-                    .stdin(Stdio::piped())
-                    .stdout(Stdio::piped())
-                    .spawn()
-                } {
-                    Ok(qemu) => qemu,
-                    Err(_) => panic!("missing qemu-arm!")
-                };
+            let mut qemu = Command::new("qemu-arm")
+                .arg("math/target/thumbv7em-none-eabi/release/math")
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .spawn()
+                .map_err(|_| "missing qemu-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 
