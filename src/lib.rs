@@ -15,6 +15,10 @@
     all(target_arch = "wasm32", not(feature = "stable")),
     feature(core_intrinsics)
 )]
+#![cfg_attr(
+    all(target_os = "cuda", not(feature = "stable")),
+    feature(core_intrinsics, link_llvm_intrinsics)
+)]
 
 mod math;
 

@@ -207,6 +207,8 @@ mod k_tanf;
 mod rem_pio2;
 mod rem_pio2_large;
 mod rem_pio2f;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+mod cuda_intrinsics;
 
 // Private re-imports
 use self::expo2::expo2;

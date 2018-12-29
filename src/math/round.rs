@@ -1,9 +1,17 @@
 use core::f64;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
 
 const TOINT: f64 = 1.0 / f64::EPSILON;
 
 #[inline]
 pub fn round(mut x: f64) -> f64 {
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::round(x) }
+        }
+    }
+
     let (f, i) = (x, x.to_bits());
     let e: u64 = i >> 52 & 0x7ff;
     let mut y: f64;

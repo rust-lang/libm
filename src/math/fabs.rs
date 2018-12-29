@@ -1,4 +1,6 @@
 use core::u64;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
 
 #[inline]
 pub fn fabs(x: f64) -> f64 {
@@ -8,6 +10,11 @@ pub fn fabs(x: f64) -> f64 {
     llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
             return unsafe { ::core::intrinsics::fabsf64(x) }
+        }
+    }
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::abs(x) }
         }
     }
     f64::from_bits(x.to_bits() & (u64::MAX / 2))

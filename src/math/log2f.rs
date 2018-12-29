@@ -14,6 +14,8 @@
  */
 
 use core::f32;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
 
 const IVLN2HI: f32 = 1.4428710938e+00; /* 0x3fb8b000 */
 const IVLN2LO: f32 = -1.7605285393e-04; /* 0xb9389ad4 */
@@ -25,6 +27,11 @@ const LG4: f32 = 0.24279078841; /* 0xf89e26.0p-26 */
 
 #[inline]
 pub fn log2f(mut x: f32) -> f32 {
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::lg2f_approx(x) }
+        }
+    }
     let x1p25f = f32::from_bits(0x4c000000); // 0x1p25f === 2 ^ 25
 
     let mut ui: u32 = x.to_bits();

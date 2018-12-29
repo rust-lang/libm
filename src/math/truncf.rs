@@ -1,4 +1,6 @@
 use core::f32;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
 
 #[inline]
 pub fn truncf(x: f32) -> f32 {
@@ -8,6 +10,11 @@ pub fn truncf(x: f32) -> f32 {
     llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
             return unsafe { ::core::intrinsics::truncf32(x) }
+        }
+    }
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::truncf(x) }
         }
     }
     let x1p120 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120

@@ -15,6 +15,8 @@
  */
 
 use super::{k_cosf, k_sinf, rem_pio2f};
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
 
 use core::f64::consts::FRAC_PI_2;
 
@@ -26,6 +28,12 @@ const C4_PIO2: f64 = 4. * FRAC_PI_2; /* 0x401921FB, 0x54442D18 */
 
 #[inline]
 pub fn cosf(x: f32) -> f32 {
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::cosf_approx(x) }
+        }
+    }
+
     let x64 = x as f64;
 
     let x1p120 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120

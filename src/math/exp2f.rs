@@ -25,6 +25,8 @@
 // SUCH DAMAGE.
 
 const TBLSIZE: usize = 16;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
 
 static EXP2FT: [u64; TBLSIZE] = [
     0x3fe6a09e667f3bcd,
@@ -71,6 +73,12 @@ static EXP2FT: [u64; TBLSIZE] = [
 //      in IEEE Floating-Point Arithmetic.  TOMS 15(2), 144-157 (1989).
 #[inline]
 pub fn exp2f(mut x: f32) -> f32 {
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::exp2f_approx(x) }
+        }
+    }
+
     let redux = f32::from_bits(0x4b400000) / TBLSIZE as f32;
     let p1 = f32::from_bits(0x3f317218);
     let p2 = f32::from_bits(0x3e75fdf0);
