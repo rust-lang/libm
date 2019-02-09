@@ -1,5 +1,3 @@
-#![rustfmt::skip]
-
 macro_rules! force_eval {
     ($e:expr) => {
         unsafe {
@@ -140,6 +138,7 @@ pub use self::musl::*;
 
 pub mod fp;
 
+#[rustfmt::skip]
 pub use self::{
     atan2f::atan2f,
     atanf::atanf,
@@ -164,6 +163,7 @@ pub use self::{
     truncf::truncf,
 };
 
+#[rustfmt::skip]
 pub use self::{
     acos::acos,
     asin::asin,
@@ -209,6 +209,7 @@ mod rem_pio2;
 mod rem_pio2_large;
 
 // Private re-imports
+#[rustfmt::skip]
 use self::{
     expo2::expo2,
     k_cos::k_cos,

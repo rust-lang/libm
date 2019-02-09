@@ -1,5 +1,3 @@
-#![rustfmt::skip]
-
 // Public modules
 mod acosf;
 mod asinf;
@@ -11,6 +9,7 @@ mod hypotf;
 mod sinf;
 mod tanf;
 
+#[rustfmt::skip]
 pub use self::{
     acosf::acosf,
     asinf::asinf,
@@ -30,6 +29,7 @@ mod k_tanf;
 mod rem_pio2f;
 
 // Private re-imports
+#[rustfmt::skip]
 use self::{
     k_cosf::k_cosf,
     k_sinf::k_sinf,
