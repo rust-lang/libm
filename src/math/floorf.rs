@@ -11,7 +11,7 @@ pub fn floorf(x: f32) -> f32 {
         }
     }
     let mut ui = x.to_bits();
-    let e = (((ui >> 23) & 0xff) - 0x7f) as i32;
+    let e = (((ui >> 23) & 0xff).wrapping_sub(0x7f)) as i32;
 
     if e >= 23 {
         return x;
