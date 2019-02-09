@@ -1,3 +1,5 @@
+#![rustfmt::skip]
+
 // Public modules
 mod acosf;
 mod asinf;
@@ -9,15 +11,17 @@ mod hypotf;
 mod sinf;
 mod tanf;
 
-pub use self::acosf::acosf;
-pub use self::asinf::asinf;
-pub use self::cbrtf::cbrtf;
-pub use self::cosf::cosf;
-pub use self::exp2f::exp2f;
-pub use self::floorf::floorf;
-pub use self::hypotf::hypotf;
-pub use self::sinf::sinf;
-pub use self::tanf::tanf;
+pub use self::{
+    acosf::acosf,
+    asinf::asinf,
+    cbrtf::cbrtf,
+    cosf::cosf,
+    exp2f::exp2f,
+    floorf::floorf,
+    hypotf::hypotf,
+    sinf::sinf,
+    tanf::tanf,
+};
 
 // Private modules
 mod k_cosf;
@@ -26,7 +30,9 @@ mod k_tanf;
 mod rem_pio2f;
 
 // Private re-imports
-use self::k_cosf::k_cosf;
-use self::k_sinf::k_sinf;
-use self::k_tanf::k_tanf;
-use self::rem_pio2f::rem_pio2f;
+use self::{
+    k_cosf::k_cosf,
+    k_sinf::k_sinf,
+    k_tanf::k_tanf,
+    rem_pio2f::rem_pio2f,
+};

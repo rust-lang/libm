@@ -13,8 +13,8 @@
  * See comments in log10.c.
  */
 
-use math::consts::*;
 use core::f32;
+use math::consts::*;
 
 const IVLN10HI: f32 = 4.3432617188e-01; /* 0x3ede6000 */
 const IVLN10LO: f32 = -3.1689971365e-05; /* 0xb804ead9 */

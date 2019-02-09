@@ -30,6 +30,6 @@ pub fn tanf(x: f32) -> f32 {
     } else {
         let (n, y0, y1) = rem_pio2f(x);
         k_tanf(y0, y1, 1 - ((n & 1) << 1)) /*   1 -- n even
-                                  -1 -- n odd */
+                                           -1 -- n odd */
     }
 }

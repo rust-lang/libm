@@ -86,8 +86,8 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
     if iy == 1 {
         w
     } else {
-        /* if allow error up to 2 ulp, 
-               simply return -1.0/(x+r) here */
+        /* if allow error up to 2 ulp,
+        simply return -1.0/(x+r) here */
         /*  compute -1.0/(x+r) accurately */
         let mut i = w.to_bits() as i32;
         z = f32::from_bits(i as u32 & 0xfffff000);

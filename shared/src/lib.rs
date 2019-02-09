@@ -13,7 +13,8 @@ lazy_static! {
                 let mut buf = [0; 4];
                 buf.copy_from_slice(chunk);
                 f32::from_bits(u32::from_le(u32::from_bytes(buf)))
-            }).collect()
+            })
+            .collect()
     };
     pub static ref F32F32: Vec<(f32, f32)> = {
         let bytes = include_bytes!("../../bin/input/f32f32");
@@ -30,7 +31,8 @@ lazy_static! {
                     f32::from_bits(u32::from_le(u32::from_bytes(x0))),
                     f32::from_bits(u32::from_le(u32::from_bytes(x1))),
                 )
-            }).collect()
+            })
+            .collect()
     };
     pub static ref F32F32F32: Vec<(f32, f32, f32)> = {
         let bytes = include_bytes!("../../bin/input/f32f32f32");
@@ -50,7 +52,8 @@ lazy_static! {
                     f32::from_bits(u32::from_le(u32::from_bytes(x1))),
                     f32::from_bits(u32::from_le(u32::from_bytes(x2))),
                 )
-            }).collect()
+            })
+            .collect()
     };
     pub static ref F32I32: Vec<(f32, i32)> = {
         let bytes = include_bytes!("../../bin/input/f32i16");
@@ -67,7 +70,8 @@ lazy_static! {
                     f32::from_bits(u32::from_le(u32::from_bytes(x0))),
                     i16::from_le(i16::from_bytes(x1)) as i32,
                 )
-            }).collect()
+            })
+            .collect()
     };
     pub static ref F64: Vec<f64> = {
         let bytes = include_bytes!("../../bin/input/f64");
@@ -78,7 +82,8 @@ lazy_static! {
                 let mut buf = [0; 8];
                 buf.copy_from_slice(chunk);
                 f64::from_bits(u64::from_le(u64::from_bytes(buf)))
-            }).collect()
+            })
+            .collect()
     };
     pub static ref F64F64: Vec<(f64, f64)> = {
         let bytes = include_bytes!("../../bin/input/f64f64");
@@ -95,7 +100,8 @@ lazy_static! {
                     f64::from_bits(u64::from_le(u64::from_bytes(x0))),
                     f64::from_bits(u64::from_le(u64::from_bytes(x1))),
                 )
-            }).collect()
+            })
+            .collect()
     };
     pub static ref F64F64F64: Vec<(f64, f64, f64)> = {
         let bytes = include_bytes!("../../bin/input/f64f64f64");
@@ -115,7 +121,8 @@ lazy_static! {
                     f64::from_bits(u64::from_le(u64::from_bytes(x1))),
                     f64::from_bits(u64::from_le(u64::from_bytes(x2))),
                 )
-            }).collect()
+            })
+            .collect()
     };
     pub static ref F64I32: Vec<(f64, i32)> = {
         let bytes = include_bytes!("../../bin/input/f64i16");
@@ -132,7 +139,8 @@ lazy_static! {
                     f64::from_bits(u64::from_le(u64::from_bytes(x0))),
                     i16::from_le(i16::from_bytes(x1)) as i32,
                 )
-            }).collect()
+            })
+            .collect()
     };
 }
 

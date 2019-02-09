@@ -1,7 +1,7 @@
-use math::consts::*;
 use super::expf;
 use super::expm1f;
 use super::k_expo2f;
+use math::consts::*;
 
 #[inline]
 pub fn coshf(mut x: f32) -> f32 {

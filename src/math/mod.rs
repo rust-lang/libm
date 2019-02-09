@@ -1,3 +1,5 @@
+#![rustfmt::skip]
+
 macro_rules! force_eval {
     ($e:expr) => {
         unsafe {
@@ -55,6 +57,17 @@ macro_rules! i {
     };
     ($array:expr, $index:expr, == , $rhs:expr) => {
         *$array.get_mut($index).unwrap() == $rhs
+    };
+}
+
+macro_rules! llvm_intrinsically_optimized {
+    (#[cfg($($clause:tt)*)] $e:expr) => {
+        #[cfg(all(not(feature = "stable"), $($clause)*))]
+        {
+            if true { // thwart the dead code lint
+                $e
+            }
+        }
     };
 }
 
@@ -127,58 +140,62 @@ pub use self::musl::*;
 
 pub mod fp;
 
-pub use self::atan2f::atan2f;
-pub use self::atanf::atanf;
-pub use self::cbrt::cbrt;
-pub use self::ceilf::ceilf;
-pub use self::coshf::coshf;
-pub use self::expm1f::expm1f;
-pub use self::fabsf::fabsf;
-pub use self::fdimf::fdimf;
-pub use self::fmaf::fmaf;
-pub use self::fmodf::fmodf;
-pub use self::log10f::log10f;
-pub use self::log1pf::log1pf;
-pub use self::log2f::log2f;
-pub use self::logf::logf;
-pub use self::powf::powf;
-pub use self::roundf::roundf;
-pub use self::scalbnf::scalbnf;
-pub use self::sinhf::sinhf;
-pub use self::sqrtf::sqrtf;
-pub use self::tanhf::tanhf;
-pub use self::truncf::truncf;
+pub use self::{
+    atan2f::atan2f,
+    atanf::atanf,
+    cbrt::cbrt,
+    ceilf::ceilf,
+    coshf::coshf,
+    expm1f::expm1f,
+    fabsf::fabsf,
+    fdimf::fdimf,
+    fmaf::fmaf,
+    fmodf::fmodf,
+    log10f::log10f,
+    log1pf::log1pf,
+    log2f::log2f,
+    logf::logf,
+    powf::powf,
+    roundf::roundf,
+    scalbnf::scalbnf,
+    sinhf::sinhf,
+    sqrtf::sqrtf,
+    tanhf::tanhf,
+    truncf::truncf,
+};
 
-pub use self::acos::acos;
-pub use self::asin::asin;
-pub use self::atan::atan;
-pub use self::atan2::atan2;
-pub use self::ceil::ceil;
-pub use self::cos::cos;
-pub use self::cosh::cosh;
-pub use self::exp::exp;
-pub use self::exp2::exp2;
-pub use self::expf::expf;
-pub use self::expm1::expm1;
-pub use self::fabs::fabs;
-pub use self::fdim::fdim;
-pub use self::floor::floor;
-pub use self::fma::fma;
-pub use self::fmod::fmod;
-pub use self::hypot::hypot;
-pub use self::log::log;
-pub use self::log10::log10;
-pub use self::log1p::log1p;
-pub use self::log2::log2;
-pub use self::pow::pow;
-pub use self::round::round;
-pub use self::scalbn::scalbn;
-pub use self::sin::sin;
-pub use self::sinh::sinh;
-pub use self::sqrt::sqrt;
-pub use self::tan::tan;
-pub use self::tanh::tanh;
-pub use self::trunc::trunc;
+pub use self::{
+    acos::acos,
+    asin::asin,
+    atan::atan,
+    atan2::atan2,
+    ceil::ceil,
+    cos::cos,
+    cosh::cosh,
+    exp::exp,
+    exp2::exp2,
+    expf::expf,
+    expm1::expm1,
+    fabs::fabs,
+    fdim::fdim,
+    floor::floor,
+    fma::fma,
+    fmod::fmod,
+    hypot::hypot,
+    log::log,
+    log10::log10,
+    log1p::log1p,
+    log2::log2,
+    pow::pow,
+    round::round,
+    scalbn::scalbn,
+    sin::sin,
+    sinh::sinh,
+    sqrt::sqrt,
+    tan::tan,
+    tanh::tanh,
+    trunc::trunc,
+};
 
 // Private modules
 mod expo2;
@@ -192,14 +209,16 @@ mod rem_pio2;
 mod rem_pio2_large;
 
 // Private re-imports
-use self::expo2::expo2;
-use self::k_cos::k_cos;
-use self::k_expo2::k_expo2;
-use self::k_expo2f::k_expo2f;
-use self::k_sin::k_sin;
-use self::k_tan::k_tan;
-use self::rem_pio2::rem_pio2;
-use self::rem_pio2_large::rem_pio2_large;
+use self::{
+    expo2::expo2,
+    k_cos::k_cos,
+    k_expo2::k_expo2,
+    k_expo2f::k_expo2f,
+    k_sin::k_sin,
+    k_tan::k_tan,
+    rem_pio2::rem_pio2,
+    rem_pio2_large::rem_pio2_large,
+};
 
 #[inline]
 fn get_high_word(x: f64) -> u32 {

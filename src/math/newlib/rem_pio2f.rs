@@ -35,7 +35,7 @@ const TWO_OVER_PI: [u8; 198] = [
 ];
 
 /* This array is like the one in e_rem_pio2.c, but the numbers are
-   single precision and the last 8 bits are forced to 0.  */
+single precision and the last 8 bits are forced to 0.  */
 const NPIO2_HW: [u32; 32] = [
     0x3fc90f00, 0x40490f00, 0x4096cb00, 0x40c90f00, 0x40fb5300, 0x4116cb00, 0x412fed00, 0x41490f00,
     0x41623100, 0x417b5300, 0x418a3a00, 0x4196cb00, 0x41a35c00, 0x41afed00, 0x41bc7e00, 0x41c90f00,
