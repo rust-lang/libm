@@ -27,7 +27,7 @@ const G: f32 = 3.5714286566e-01; /* 5/14      = 0x3eb6db6e */
 #[inline]
 pub fn cbrtf(mut x: f32) -> f32 {
     let mut hx = x.to_bits() as i32;
-    let sign = (hx & 0x80000000) as u32; /* sign= sign(x) */
+    let sign = (hx as u32) & 0x80000000; /* sign= sign(x) */
     hx ^= sign as i32;
     if !(hx < 0x7f800000) {
         return x + x; /* cbrt(NaN,INF) is itself */

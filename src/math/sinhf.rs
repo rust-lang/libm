@@ -1,3 +1,4 @@
+use math::consts::*;
 use super::expm1f;
 use super::k_expo2f;
 
@@ -16,8 +17,8 @@ pub fn sinhf(x: f32) -> f32 {
     /* |x| < log(FLT_MAX) */
     if w < 0x42b17217 {
         let t = expm1f(absx);
-        if w < 0x3f800000 {
-            if w < (0x3f800000 - (12 << 23)) {
+        if w < UF_1 {
+            if w < (UF_1 - (12 << 23)) {
                 return x;
             }
             return h * (2. * t - t * t / (t + 1.));

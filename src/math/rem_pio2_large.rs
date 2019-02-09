@@ -131,7 +131,7 @@ const PIO2: [f64; 8] = [
     2.16741683877804819444e-51, /* 0x3569F31D, 0x00000000 */
 ];
 
-// fn rem_pio2_large(x : &[f64], y : &mut [f64], e0 : i32, prec : usize) -> i32
+// fn rem_pio2_large(x: &[f64], e0: i32, prec: usize) -> (i32, [f64; 3])
 //
 // Input parameters:
 //      x[]     The input value (must be positive) is broken into nx
@@ -223,7 +223,7 @@ const PIO2: [f64; 8] = [
 /// more accurately, = 0 mod 8 ). Thus the number of operations are
 /// independent of the exponent of the input.
 #[inline]
-pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
+pub fn rem_pio2_large(x: &[f64], e0: i32, prec: usize) -> (i32, [f64; 3]) {
     let x1p24 = f64::from_bits(0x4170000000000000); // 0x1p24 === 2 ^ 24
     let x1p_24 = f64::from_bits(0x3e70000000000000); // 0x1p_24 === 2 ^ (-24)
 
@@ -268,7 +268,7 @@ pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
 
     /* compute q[0],q[1],...q[jk] */
     for i in 0..=jk {
-        fw = 0f64;
+        fw = 0.;
         for j in 0..=jx {
             fw += i!(x, j) * i!(f, jx + i - j);
         }
@@ -279,7 +279,7 @@ pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
 
     'recompute: loop {
         /* distill q[] into iq[] reversingly */
-        let mut i = 0i32;
+        let mut i = 0_i32;
         z = i!(q, jz);
         for j in (1..=jz).rev() {
             fw = (x1p_24 * z) as i32 as f64;
@@ -309,7 +309,7 @@ pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
         if ih > 0 {
             /* q > 0.5 */
             n += 1;
-            let mut carry = 0i32;
+            let mut carry = 0_i32;
             for i in 0..jz {
                 /* compute 1-q */
                 let j = i!(iq, i);
@@ -358,7 +358,7 @@ pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
                 for i in (jz + 1)..=(jz + k) {
                     /* add q[jz+1] to q[jz+k] */
                     i!(f, jx + i, =, i!(IPIO2, jv + i) as f64);
-                    fw = 0f64;
+                    fw = 0.;
                     for j in 0..=jx {
                         fw += i!(x, j) * i!(f, jx + i - j);
                     }
@@ -403,7 +403,7 @@ pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
 
     /* compute PIo2[0,...,jp]*q[jz,...,0] */
     for i in (0..=jz).rev() {
-        fw = 0f64;
+        fw = 0.;
         let mut k = 0;
         while (k <= jp) && (k <= jz - i) {
             fw += i!(PIO2, k) * i!(q, i + k);
@@ -413,27 +413,27 @@ pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
     }
 
     /* compress fq[] into y[] */
-    match prec {
+    let y = match prec {
         0 => {
-            fw = 0f64;
+            fw = 0.;
             for i in (0..=jz).rev() {
                 fw += i!(fq, i);
             }
-            i!(y, 0, =, if ih == 0 { fw } else { -fw });
+            [if ih == 0 { fw } else { -fw }, 0., 0.]
         }
         1 | 2 => {
-            fw = 0f64;
+            fw = 0.;
             for i in (0..=jz).rev() {
                 fw += i!(fq, i);
             }
             // TODO: drop excess precision here once double_t is used
             fw = fw as f64;
-            i!(y, 0, =, if ih == 0 { fw } else { -fw });
+            let y0 = if ih == 0 { fw } else { -fw };
             fw = i!(fq, 0) - fw;
             for i in 1..=jz {
                 fw += i!(fq, i);
             }
-            i!(y, 1, =, if ih == 0 { fw } else { -fw });
+            [y0, if ih == 0 { fw } else { -fw }, 0.]
         }
         3 => {
             /* painful */
@@ -447,24 +447,20 @@ pub fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
                 i!(fq, i, +=, i!(fq, i - 1) - fw);
                 i!(fq, i - 1, =, fw);
             }
-            fw = 0f64;
+            fw = 0.;
             for i in (2..=jz).rev() {
                 fw += i!(fq, i);
             }
             if ih == 0 {
-                i!(y, 0, =, i!(fq, 0));
-                i!(y, 1, =, i!(fq, 1));
-                i!(y, 2, =, fw);
+                [i!(fq, 0), i!(fq, 1), fw]
             } else {
-                i!(y, 0, =, -i!(fq, 0));
-                i!(y, 1, =, -i!(fq, 1));
-                i!(y, 2, =, -fw);
+                [-i!(fq, 0), -i!(fq, 1), -fw]
             }
         }
         #[cfg(feature = "checked")]
         _ => unreachable!(),
         #[cfg(not(feature = "checked"))]
-        _ => {}
-    }
-    n & 7
+        _ => [0., 0., 0.],
+    };
+    (n & 7, y)
 }

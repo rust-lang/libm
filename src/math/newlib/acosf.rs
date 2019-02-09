@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 const ONE: f32 = 1.0000000000e+00; /* 0x3F800000 */
 const PI: f32 = 3.1415925026e+00; /* 0x40490fda */
 const PIO2_HI: f32 = 1.5707962513e+00; /* 0x3fc90fda */
@@ -34,14 +35,14 @@ pub fn acosf(x: f32) -> f32 {
     let hx = x.to_bits() as i32;
     let ix = hx & 0x7fffffff;
 
-    if ix == 0x3f800000 {
+    if ix == UF_1 {
         /* |x|==1 */
         if (hx > 0) {
             return 0.0; /* acos(1) = 0  */
         } else {
             return PI + 2. * PIO2_LO; /* acos(-1)= pi */
         }
-    } else if ix > 0x3f800000 {
+    } else if ix > UF_1 {
         /* |x| >= 1 */
         return (x - x) / (x - x); /* acos(|x|>1) is NaN */
     }

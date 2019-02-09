@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 use math::fabsf;
 use math::sqrt;
 
@@ -23,6 +24,8 @@ const P_S0: f32 = 1.6666586697e-01;
 const P_S1: f32 = -4.2743422091e-02;
 const P_S2: f32 = -8.6563630030e-03;
 const Q_S1: f32 = -7.0662963390e-01;
+
+const UF_0_5: u32 = 0x3f000000;
 
 #[inline]
 fn r(z: f32) -> f32 {
@@ -38,16 +41,16 @@ pub fn asinf(mut x: f32) -> f32 {
     let hx = x.to_bits();
     let ix = hx & 0x7fffffff;
 
-    if ix >= 0x3f800000 {
+    if ix >= UF_1 {
         /* |x| >= 1 */
-        if ix == 0x3f800000 {
+        if ix == UF_1 {
             /* |x| == 1 */
             return ((x as f64) * PIO2 + x1p_120) as f32; /* asin(+-1) = +-pi/2 with inexact */
         }
         return 0. / (x - x); /* asin(|x|>1) is NaN */
     }
 
-    if ix < 0x3f000000 {
+    if ix < UF_0_5 {
         /* |x| < 0.5 */
         /* if 0x1p-126 <= |x| < 0x1p-12, avoid raising underflow */
         if (ix < 0x39800000) && (ix >= 0x00800000) {

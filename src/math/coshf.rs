@@ -1,3 +1,4 @@
+use math::consts::*;
 use super::expf;
 use super::expm1f;
 use super::k_expo2f;
@@ -14,7 +15,7 @@ pub fn coshf(mut x: f32) -> f32 {
 
     /* |x| < log(2) */
     if w < 0x3f317217 {
-        if w < (0x3f800000 - (12 << 23)) {
+        if w < (UF_1 - (12 << 23)) {
             force_eval!(x + x1p120);
             return 1.;
         }

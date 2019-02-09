@@ -180,8 +180,7 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
     while i != 0 && tx[i] == 0.0 {
         i -= 1;
     }
-    let mut ty = [0.0; 3];
-    let n = rem_pio2_large(&tx[..=i], &mut ty, ((ix >> 20) - (0x3ff + 23)) as i32, 1);
+    let (n, ty) = rem_pio2_large(&tx[..=i], ((ix >> 20) - (0x3ff + 23)) as i32, 1);
     if sign != 0 {
         return (-n, -ty[0], -ty[1]);
     }

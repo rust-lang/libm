@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 use super::atanf;
 use super::fabsf;
 
@@ -27,7 +28,7 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
     let mut ix = x.to_bits();
     let mut iy = y.to_bits();
 
-    if ix == 0x3f800000 {
+    if ix == UF_1 {
         /* x=1.0 */
         return atanf(y);
     }

@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 use math::fabsf;
 use math::sqrtf;
 
@@ -40,12 +41,12 @@ pub fn asinf(x: f32) -> f32 {
     let mut p: f32;
     let mut q: f32;
     let hx = x.to_bits() as i32;
-    let ix = hx & 0x7fffffff;
+    let ix = (hx as u32) & 0x7fffffff;
 
-    if ix == 0x3f800000 {
+    if ix == UF_1 {
         /* asin(1)=+-pi/2 with inexact */
         return x * PIO2_HI + x * PIO2_LO;
-    } else if ix > 0x3f800000 {
+    } else if ix > UF_1 {
         /* |x|>= 1 */
         return (x - x) / (x - x); /* asin(|x|>1) is NaN */
     } else if ix < 0x3f000000 {

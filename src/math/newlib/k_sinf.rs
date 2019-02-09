@@ -23,7 +23,7 @@ const S6: f32 = 1.5896910177e-10; /* 0x2f2ec9d3 */
 
 #[inline]
 pub fn k_sinf(x: f32, y: f32, iy: bool) -> f32 {
-    let mut ix = x.to_bits() as i32;
+    let mut ix = x.to_bits();
     ix &= 0x7fffffff; /* high word of x */
     if ix < 0x32000000 {
         /* |x| < 2**-27 */

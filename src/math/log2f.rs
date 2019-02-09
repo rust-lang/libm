@@ -13,6 +13,7 @@
  * See comments in log2.c.
  */
 
+use math::consts::*;
 use core::f32;
 
 const IVLN2HI: f32 = 1.4428710938e+00; /* 0x3fb8b000 */
@@ -58,12 +59,12 @@ pub fn log2f(mut x: f32) -> f32 {
         ix = ui;
     } else if ix >= 0x7f800000 {
         return x;
-    } else if ix == 0x3f800000 {
+    } else if ix == UF_1 {
         return 0.;
     }
 
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    ix += 0x3f800000 - 0x3f3504f3;
+    ix += UF_1 - 0x3f3504f3;
     k += (ix >> 23) as i32 - 0x7f;
     ix = (ix & 0x007fffff) + 0x3f3504f3;
     ui = ix;

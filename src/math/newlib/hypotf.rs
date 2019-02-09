@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 use math::sqrtf;
 
 #[inline]
@@ -83,7 +84,7 @@ pub fn hypotf(x: f32, y: f32) -> f32 {
         sqrtf(t1 * y1 - (w * (-w) - (t1 * y2 + t2 * b)))
     };
     if k != 0 {
-        w * f32::from_bits(0x3f800000 + ((k as u32) << 23))
+        w * f32::from_bits(UF_1 + ((k as u32) << 23))
     } else {
         w
     }

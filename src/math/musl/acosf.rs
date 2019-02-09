@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 use math::sqrtf;
 
 const PIO2_HI: f32 = 1.5707962513e+00; /* 0x3fc90fda */
@@ -21,6 +22,8 @@ const P_S0: f32 = 1.6666586697e-01;
 const P_S1: f32 = -4.2743422091e-02;
 const P_S2: f32 = -8.6563630030e-03;
 const Q_S1: f32 = -7.0662963390e-01;
+
+const UF_0_5: u32 = 0x3f000000;
 
 #[inline]
 fn r(z: f32) -> f32 {
@@ -38,11 +41,12 @@ pub fn acosf(x: f32) -> f32 {
     let s: f32;
 
     let mut hx = x.to_bits();
+    let sign = (hx >> 31) != 0;
     let ix = hx & 0x7fffffff;
     /* |x| >= 1 or nan */
-    if ix >= 0x3f800000 {
-        if ix == 0x3f800000 {
-            if (hx >> 31) != 0 {
+    if ix >= UF_1 {
+        if ix == UF_1 {
+            if sign {
                 return 2. * PIO2_HI + x1p_120;
             }
             return 0.;
@@ -50,7 +54,7 @@ pub fn acosf(x: f32) -> f32 {
         return 0. / (x - x);
     }
     /* |x| < 0.5 */
-    if ix < 0x3f000000 {
+    if ix < UF_0_5 {
         if ix <= 0x32800000 {
             /* |x| < 2**-26 */
             return PIO2_HI + x1p_120;
@@ -58,7 +62,7 @@ pub fn acosf(x: f32) -> f32 {
         return PIO2_HI - (x - (PIO2_LO - x * r(x * x)));
     }
     /* x < -0.5 */
-    if (hx >> 31) != 0 {
+    if sign {
         z = (1. + x) * 0.5;
         s = sqrtf(z);
         w = r(z) * s - PIO2_LO;

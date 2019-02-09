@@ -17,15 +17,13 @@ use super::{k_tanf, rem_pio2f};
 
 #[inline]
 pub fn tanf(x: f32) -> f32 {
-    let z = 0f32;
-
-    let mut ix = x.to_bits() as i32;
+    let mut ix = x.to_bits();
+    ix &= 0x7fffffff;
 
     /* |x| ~< pi/4 */
-    ix &= 0x7fffffff;
     if ix <= 0x3f490fda {
-        k_tanf(x, z, 1)
-    } else if !(ix < 0x7f800000) {
+        k_tanf(x, 0., 1)
+    } else if ix >= 0x7f800000 {
         /* tan(Inf or NaN) is NaN */
         x - x /* NaN */
     /* argument reduction needed */

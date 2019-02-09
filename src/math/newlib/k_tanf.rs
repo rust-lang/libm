@@ -12,6 +12,7 @@
  * is preserved.
  * ====================================================
  */
+
 use math::fabsf;
 
 const ONE: f32 = 1.0000000000e+00; /* 0x3f800000 */
@@ -82,7 +83,7 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
         v = iy as f32;
         return ((1 - ((hx >> 30) & 2)) as f32) * (v - 2. * (x - (w * w / (w + v) - r)));
     }
-    return if iy == 1 {
+    if iy == 1 {
         w
     } else {
         /* if allow error up to 2 ulp, 
@@ -96,5 +97,5 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
         let t = f32::from_bits(i as u32 & 0xfffff000);
         s = 1. + t * z;
         t + a * (s + t * v)
-    };
+    }
 }

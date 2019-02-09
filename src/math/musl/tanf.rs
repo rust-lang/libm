@@ -24,6 +24,13 @@ const T2_PIO2: f64 = 2. * FRAC_PI_2; /* 0x400921FB, 0x54442D18 */
 const T3_PIO2: f64 = 3. * FRAC_PI_2; /* 0x4012D97C, 0x7F3321D2 */
 const T4_PIO2: f64 = 4. * FRAC_PI_2; /* 0x401921FB, 0x54442D18 */
 
+const UF_INF: u32 = 0x7f800000;
+const UF_1_PI_4: u32 = 0x3f490fdb;
+const UF_3_PI_4: u32 = 0x4016cbe4;
+const UF_5_PI_4: u32 = 0x407b53d1;
+const UF_7_PI_4: u32 = 0x40afeddf;
+const UF_9_PI_4: u32 = 0x40e231d6;
+
 #[inline]
 pub fn tanf(x: f32) -> f32 {
     let x64 = x as f64;
@@ -34,7 +41,7 @@ pub fn tanf(x: f32) -> f32 {
     let sign = (ix >> 31) != 0;
     ix &= 0x7fffffff;
 
-    if ix <= 0x3f490fda {
+    if ix < UF_1_PI_4 {
         /* |x| ~<= pi/4 */
         if ix < 0x39800000 {
             /* |x| < 2**-12 */
@@ -48,18 +55,18 @@ pub fn tanf(x: f32) -> f32 {
         }
         return k_tanf(x64, false);
     }
-    if ix <= 0x407b53d1 {
+    if ix <= UF_5_PI_4 {
         /* |x| ~<= 5*pi/4 */
-        if ix <= 0x4016cbe3 {
+        if ix < UF_3_PI_4 {
             /* |x| ~<= 3pi/4 */
             return k_tanf(if sign { x64 + T1_PIO2 } else { x64 - T1_PIO2 }, true);
         } else {
             return k_tanf(if sign { x64 + T2_PIO2 } else { x64 - T2_PIO2 }, false);
         }
     }
-    if ix <= 0x40e231d5 {
+    if ix < UF_9_PI_4 {
         /* |x| ~<= 9*pi/4 */
-        if ix <= 0x40afeddf {
+        if ix <= UF_7_PI_4 {
             /* |x| ~<= 7*pi/4 */
             return k_tanf(if sign { x64 + T3_PIO2 } else { x64 - T3_PIO2 }, true);
         } else {
@@ -68,7 +75,7 @@ pub fn tanf(x: f32) -> f32 {
     }
 
     /* tan(Inf or NaN) is NaN */
-    if ix >= 0x7f800000 {
+    if ix >= UF_INF {
         return x - x;
     }
 

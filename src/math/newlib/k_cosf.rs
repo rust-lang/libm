@@ -23,7 +23,7 @@ const C6: f32 = -1.1359647598e-11; /* 0xad47d74e */
 
 #[inline]
 pub fn k_cosf(x: f32, y: f32) -> f32 {
-    let mut ix = x.to_bits() as i32;
+    let mut ix = x.to_bits();
     ix &= 0x7fffffff; /* ix = |x|'s high word*/
     if ix < 0x32000000 {
         /* if x < 2**27 */

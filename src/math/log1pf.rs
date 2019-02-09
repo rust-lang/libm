@@ -10,6 +10,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 use core::f32;
 
 const LN2_HI: f32 = 6.9313812256e-01; /* 0x3f317180 */
@@ -68,7 +69,7 @@ pub fn log1pf(x: f32) -> f32 {
     if k > 0 {
         ui = (1. + x).to_bits();
         iu = ui;
-        iu += 0x3f800000 - 0x3f3504f3;
+        iu += UF_1 - 0x3f3504f3;
         k = (iu >> 23) as i32 - 0x7f;
         /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
         if k < 25 {

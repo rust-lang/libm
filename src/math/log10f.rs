@@ -13,6 +13,7 @@
  * See comments in log10.c.
  */
 
+use math::consts::*;
 use core::f32;
 
 const IVLN10HI: f32 = 4.3432617188e-01; /* 0x3ede6000 */
@@ -61,12 +62,12 @@ pub fn log10f(mut x: f32) -> f32 {
         ix = ui;
     } else if ix >= 0x7f800000 {
         return x;
-    } else if ix == 0x3f800000 {
+    } else if ix == UF_1 {
         return 0.;
     }
 
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    ix += 0x3f800000 - 0x3f3504f3;
+    ix += UF_1 - 0x3f3504f3;
     k += (ix >> 23) as i32 - 0x7f;
     ix = (ix & 0x007fffff) + 0x3f3504f3;
     ui = ix;

@@ -63,24 +63,28 @@ const PIO2_2T: f32 = 6.0770999344e-11; /* 0x2e85a308 */
 const PIO2_3: f32 = 6.0770943833e-11; /* 0x2e85a300 */
 const PIO2_3T: f32 = 6.1232342629e-17; /* 0x248d3132 */
 
+const UF_INF: u32 = 0x7f800000;
+//const UF_1_PI_4: u32 = 0x3f490fdb;
+const UF_3_PI_4: u32 = 0x4016cbe4;
+
 /// Return the remainder of x rem pi/2 in y[0]+y[1]
 #[inline]
 pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
     let mut y0: f32;
-    let y1: f32;
     let mut z: f32;
 
-    let hx = x.to_bits() as i32;
+    let hx = x.to_bits();
     let ix = hx & 0x7fffffff;
+    let sign = (hx >> 31) != 0;
     if ix <= 0x3f490fd8 {
         /* |x| ~<= pi/4 , no need for reduction */
         return (0, x, 0.);
     }
-    if ix < 0x4016cbe4 {
+    if ix < UF_3_PI_4 {
         /* |x| < 3pi/4, special case with n=+-1 */
-        return if hx > 0 {
+        return if !sign {
             z = x - PIO2_1;
-            if (ix as u32 & 0xfffffff0) != 0x3fc90fd0 {
+            if (ix & 0xfffffff0) != 0x3fc90fd0 {
                 /* 24+24 bit pi OK */
                 y0 = z - PIO2_1T;
                 (1, y0, (z - y0) - PIO2_1T)
@@ -93,7 +97,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
         } else {
             /* negative x */
             z = x + PIO2_1;
-            if (ix as u32 & 0xfffffff0) != 0x3fc90fd0 {
+            if (ix & 0xfffffff0) != 0x3fc90fd0 {
                 /* 24+24 bit pi OK */
                 y0 = z + PIO2_1T;
                 (-1, y0, (z - y0) + PIO2_1T)
@@ -107,30 +111,30 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
     }
     if ix <= 0x43490f80 {
         /* |x| ~<= 2^7*(pi/2), medium size */
-        let mut t = fabsf(x);
+        let t = fabsf(x);
         let n = (t * INV_PIO2 + HALF) as i32;
         let nf = n as f32;
         let mut r = t - nf * PIO2_1;
         let mut w = nf * PIO2_1T; /* 1st round good to 40 bit */
-        if (n < 32) && (ix as u32 & 0xffffff00 != NPIO2_HW[(n - 1) as usize]) {
+        if (n < 32) && (ix & 0xffffff00 != NPIO2_HW[(n - 1) as usize]) {
             y0 = r - w; /* quick check no cancellation */
         } else {
-            let j = ix >> 23;
+            let j = (ix as i32) >> 23;
             y0 = r - w;
-            let mut high = y0.to_bits();
-            let mut i = j - ((high >> 23) & 0xff) as i32;
+            let high = y0.to_bits();
+            let i = j - ((high >> 23) & 0xff) as i32;
             if i > 8 {
                 /* 2nd iteration needed, good to 57 */
-                t = r;
+                let t = r;
                 w = nf * PIO2_2;
                 r = t - w;
                 w = nf * PIO2_2T - ((t - r) - w);
                 y0 = r - w;
-                high = y0.to_bits();
-                i = j - ((high >> 23) & 0xff) as i32;
+                let high = y0.to_bits();
+                let i = j - ((high >> 23) & 0xff) as i32;
                 if i > 25 {
                     /* 3rd iteration need, 74 bits acc */
-                    t = r; /* will cover all possible cases */
+                    let t = r; /* will cover all possible cases */
                     w = nf * PIO2_3;
                     r = t - w;
                     w = nf * PIO2_3T - ((t - r) - w);
@@ -138,18 +142,19 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
                 }
             }
         }
-        y1 = (r - y0) - w;
-        return if hx < 0 { (-n, -y0, -y1) } else { (n, y0, y1) };
+        let y1 = (r - y0) - w;
+        return if sign { (-n, -y0, -y1) } else { (n, y0, y1) };
     }
     /*
      * all other (large) arguments
      */
-    if !(ix < 0x7f800000) {
+    if ix >= UF_INF {
         y0 = x - x;
         return (0, y0, y0);
     }
     /* set z = scalbn(|x|,ilogb(x)-7) */
-    let e0 = ((ix >> 23) - 134) as i32; /* e0 = ilogb(z)-7; */
+    let ix = ix as i32;
+    let e0 = (ix >> 23) - 134; /* e0 = ilogb(z)-7; */
     z = f32::from_bits((ix - (e0 << 23)) as u32);
     let mut tx = [0f32; 3];
     for i in 0..2 {
@@ -163,7 +168,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
         nx -= 1;
     }
     let (n, y0, y1) = k_rem_pio2f(&tx[..nx], e0, Precision::Two, &TWO_OVER_PI);
-    if hx < 0 {
+    if sign {
         (-n, -y0, -y1)
     } else {
         (n, y0, y1)

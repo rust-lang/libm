@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use math::consts::*;
 const LN2_HI: f32 = 6.9313812256e-01; /* 0x3f317180 */
 const LN2_LO: f32 = 9.0580006145e-06; /* 0x3717f7d1 */
 /* |(log(1+s)-log(1-s))/s - Lg(s)| < 2**-34.24 (~[-4.95e-11, 4.97e-11]). */
@@ -42,12 +43,12 @@ pub fn logf(mut x: f32) -> f32 {
         ix = x.to_bits();
     } else if ix >= 0x7f800000 {
         return x;
-    } else if ix == 0x3f800000 {
+    } else if ix == UF_1 {
         return 0.;
     }
 
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    ix += 0x3f800000 - 0x3f3504f3;
+    ix += UF_1 - 0x3f3504f3;
     k += ((ix >> 23) as i32) - 0x7f;
     ix = (ix & 0x007fffff) + 0x3f3504f3;
     x = f32::from_bits(ix);

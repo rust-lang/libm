@@ -22,6 +22,8 @@ use core::f32;
 const B1: u32 = 709958130; /* B1 = (127-127.0/3-0.03306235651)*2**23 */
 const B2: u32 = 642849266; /* B2 = (127-127.0/3-24/3-0.03306235651)*2**23 */
 
+const UF_INF: u32 = 0x7f800000;
+
 #[inline]
 pub fn cbrtf(x: f32) -> f32 {
     let x1p24 = f32::from_bits(0x4b800000); // 0x1p24f === 2 ^ 24
@@ -31,7 +33,7 @@ pub fn cbrtf(x: f32) -> f32 {
     let mut ui: u32 = x.to_bits();
     let mut hx: u32 = ui & 0x7fffffff;
 
-    if hx >= 0x7f800000 {
+    if hx >= UF_INF {
         /* cbrt(NaN,INF) is itself */
         return x + x;
     }

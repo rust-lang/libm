@@ -17,14 +17,13 @@ use super::{k_cosf, k_sinf, rem_pio2f};
 
 #[inline]
 pub fn cosf(x: f32) -> f32 {
-    let z = 0f32;
-    let mut ix = x.to_bits() as i32;
+    let mut ix = x.to_bits();
+    ix &= 0x7fffffff;
 
     /* |x| ~< pi/4 */
-    ix &= 0x7fffffff;
     if ix <= 0x3f490fd8 {
-        k_cosf(x, z)
-    } else if !(ix < 0x7f800000) {
+        k_cosf(x, 0.)
+    } else if ix >= 0x7f800000 {
         /* cos(Inf or NaN) is NaN */
         x - x
     } else {
