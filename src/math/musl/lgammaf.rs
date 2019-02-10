@@ -13,7 +13,8 @@
  * ====================================================
  */
 
-use super::{floorf, k_cosf, k_sinf, logf};
+use super::{floorf, k_cosf, k_sinf};
+use crate::math::logf;
 
 const PI: f32  =  3.1415927410e+00; /* 0x40490fdb */
 const A0: f32  =  7.7215664089e-02; /* 0x3d9e233f */

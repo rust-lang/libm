@@ -95,7 +95,6 @@ mod ilogbf;
 mod j0f;
 mod j1f;
 mod jnf;
-mod lgammaf;
 mod log10f;
 mod log1pf;
 mod log2f;
@@ -105,7 +104,6 @@ mod powf;
 mod remquof;
 mod roundf;
 mod scalbnf;
-mod sincosf;
 mod sinhf;
 mod sqrtf;
 mod tanhf;
@@ -197,8 +195,6 @@ pub use self::{
     j1f::y1f,
     jnf::jnf,
     jnf::ynf,
-    lgammaf::lgammaf,
-    lgammaf::lgammaf_r,
     log10f::log10f,
     log1pf::log1pf,
     log2f::log2f,
@@ -208,7 +204,6 @@ pub use self::{
     remquof::remquof,
     roundf::roundf,
     scalbnf::scalbnf,
-    sincosf::sincosf,
     sinhf::sinhf,
     sqrtf::sqrtf,
     tanhf::tanhf,

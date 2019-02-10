@@ -6,7 +6,9 @@ mod cosf;
 mod exp2f;
 mod floorf;
 mod hypotf;
+mod lgammaf;
 mod sinf;
+mod sincosf;
 mod tanf;
 
 #[rustfmt::skip]
@@ -18,6 +20,9 @@ pub use self::{
     exp2f::exp2f,
     floorf::floorf,
     hypotf::hypotf,
+    lgammaf::lgammaf,
+    lgammaf::lgammaf_r,
+    sincosf::sincosf,
     sinf::sinf,
     tanf::tanf,
 };
