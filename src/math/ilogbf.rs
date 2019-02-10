@@ -1,7 +1,9 @@
+use core::f32;
+
+#[allow(clippy::eq_op)]
 const FP_ILOGBNAN: isize = -1 - ((!0) >> 1);
 const FP_ILOGB0: isize = FP_ILOGBNAN;
 
-#[allow(clippy::zero_divided_by_zero)]
 pub fn ilogbf(x: f32) -> isize {
     let mut i = x.to_bits();
     let e = ((i>>23) & 0xff) as isize;
@@ -9,7 +11,7 @@ pub fn ilogbf(x: f32) -> isize {
     if e == 0 {
         i <<= 9;
         if i == 0 {
-            force_eval!(0./0.);
+            force_eval!(f32::NAN);
             return FP_ILOGB0;
         }
         /* subnormal x */
@@ -21,7 +23,7 @@ pub fn ilogbf(x: f32) -> isize {
         return e;
     }
     if e == 0xff {
-        force_eval!(0./0.);
+        force_eval!(f32::NAN);
         if (i<<9) != 0 {
             return FP_ILOGBNAN;
         } else {

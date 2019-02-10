@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use core::f32;
 use super::{floorf, k_cosf, k_sinf};
 use crate::math::logf;
 
@@ -87,7 +88,7 @@ fn sin_pi(mut x: f32) -> f32
     let mut n: isize;
 
     /* spurious inexact if odd int */
-    x = 2.0*(x*0.5 - floorf(x*0.5));  /* x mod 2.0 */
+    x = 2.*(x*0.5 - floorf(x*0.5));  /* x mod 2. */
 
     n = (x*4.0) as isize;
     n = (n+1)/2;
@@ -141,47 +142,47 @@ pub fn lgammaf_r(mut x: f32) -> (f32, isize)
     if sign {
         x = -x;
         t = sin_pi(x);
-        if t == 0.0 { /* -integer */
-            return (1.0/(x-x), signgam);
+        if t == 0. { /* -integer */
+            return (f32::INFINITY, signgam);
         }
-        if t > 0.0 {
+        if t > 0. {
             signgam = -1;
         } else {
             t = -t;
         }
         nadj = logf(PI/(t*x));
     } else {
-        nadj = 0.0;
+        nadj = 0.;
     }
 
     /* purge off 1 and 2 */
     if ix == 0x_3f80_0000 || ix == 0x_4000_0000 {
-        r = 0.0;
+        r = 0.;
     }
-    /* for x < 2.0 */
+    /* for x < 2. */
     else if ix < 0x_4000_0000 {
         if ix <= 0x_3f66_6666 {  /* lgamma(x) = lgamma(x+1)-log(x) */
             r = -logf(x);
             if ix >= 0x_3f3b_4a20 {
-                y = 1.0 - x;
+                y = 1. - x;
                 i = 0;
             } else if ix >= 0x_3e6d_3308 {
-                y = x - (TC-1.0);
+                y = x - (TC-1.);
                 i = 1;
             } else {
                 y = x;
                 i = 2;
             }
         } else {
-            r = 0.0;
-            if ix >= 0x_3fdd_a618 {  /* [1.7316,2] */
-                y = 2.0 - x;
+            r = 0.;
+            if ix >= 0x_3fdd_a618 { /* [1.7316,2] */
+                y = 2. - x;
                 i = 0;
-            } else if ix >= 0x_3f9d_a620 {  /* [1.23,1.73] */
+            } else if ix >= 0x_3f9d_a620 { /* [1.23,1.73] */
                 y = x - TC;
                 i = 1;
             } else {
-                y = x - 1.0;
+                y = x - 1.;
                 i = 2;
             }
         }
@@ -204,7 +205,7 @@ pub fn lgammaf_r(mut x: f32) -> (f32, isize)
             }
             2 => {
                 p1 = y*(U0+y*(U1+y*(U2+y*(U3+y*(U4+y*U5)))));
-                p2 = 1.0+y*(V1+y*(V2+y*(V3+y*(V4+y*V5))));
+                p2 = 1.+y*(V1+y*(V2+y*(V3+y*(V4+y*V5))));
                 r += -0.5*y + p1/p2;
             }
             #[cfg(feature = "checked")]
@@ -212,31 +213,31 @@ pub fn lgammaf_r(mut x: f32) -> (f32, isize)
             #[cfg(not(feature = "checked"))]
             _ => {}
         }
-    } else if ix < 0x_4100_0000 {  /* x < 8.0 */
+    } else if ix < 0x_4100_0000 {  /* x < 8. */
         i = x as isize;
         y = x - (i as f32);
         p = y*(S0+y*(S1+y*(S2+y*(S3+y*(S4+y*(S5+y*S6))))));
-        q = 1.0+y*(R1+y*(R2+y*(R3+y*(R4+y*(R5+y*R6)))));
+        q = 1.+y*(R1+y*(R2+y*(R3+y*(R4+y*(R5+y*R6)))));
         r = 0.5*y+p/q;
-        z = 1.0;    /* lgamma(1+s) = log(s) + lgamma(s) */
+        z = 1.;    /* lgamma(1+s) = log(s) + lgamma(s) */
         // TODO: In C, this was implemented using switch jumps with fallthrough.
         // Does this implementation have performance problems?
-        if i >= 7 { z *= y + 6.0; }
-        if i >= 6 { z *= y + 5.0; }
-        if i >= 5 { z *= y + 4.0; }
-        if i >= 4 { z *= y + 3.0; }
+        if i >= 7 { z *= y + 6.; }
+        if i >= 6 { z *= y + 5.; }
+        if i >= 5 { z *= y + 4.; }
+        if i >= 4 { z *= y + 3.; }
         if i >= 3 {
-            z *= y + 2.0;
+            z *= y + 2.;
             r += logf(z);
         }
-    } else if ix < 0x_5c80_0000 {  /* 8.0 <= x < 2**58 */
+    } else if ix < 0x_5c80_0000 {  /* 8. <= x < 2**58 */
         t = logf(x);
-        z = 1.0/x;
+        z = 1./x;
         y = z*z;
         w = W0+z*(W1+y*(W2+y*(W3+y*(W4+y*(W5+y*W6)))));
-        r = (x-0.5)*(t-1.0)+w;
-    } else {                     /* 2**58 <= x <= inf */
-        r =  x*(logf(x)-1.0);
+        r = (x-0.5)*(t-1.)+w;
+    } else { /* 2**58 <= x <= inf */
+        r = x*(logf(x)-1.);
     }
     if sign {
         r = nadj - r;

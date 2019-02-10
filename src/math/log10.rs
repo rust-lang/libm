@@ -57,10 +57,10 @@ pub fn log10(mut x: f64) -> f64 {
     k = 0;
     if hx < 0x_0010_0000 || (hx >> 31) > 0 {
         if ui << 1 == 0 {
-            return -1. / (x * x); /* log(+-0)=-inf */
+            return f64::NEG_INFINITY; /* log(+-0)=-inf */
         }
         if (hx >> 31) > 0 {
-            return (x - x) / 0.0; /* log(-#) = NaN */
+            return f64::NAN; /* log(-#) = NaN */
         }
         /* subnormal number, scale x up */
         k -= 54;

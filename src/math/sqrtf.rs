@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use core::f32;
 const TINY: f32 = 1.0e-30;
 
 #[inline]
@@ -52,7 +53,7 @@ pub fn sqrtf(x: f32) -> f32 {
             return x; /* sqrt(+-0) = +-0 */
         }
         if ix < 0 {
-            return (x - x) / (x - x); /* sqrt(-ve) = sNaN */
+            return f32::NAN; /* sqrt(-ve) = sNaN */
         }
     }
 

@@ -1,3 +1,5 @@
+use core::f64;
+
 pub fn remquo(mut x: f64, mut y: f64) -> (f64, isize)
 {
     let ux: u64 = x.to_bits();
@@ -11,7 +13,7 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, isize)
     let mut uxi: u64 = ux;
 
     if (uy<<1) == 0 || y.is_nan() || ex == 0x7ff {
-        return ((x*y)/(x*y), 0);
+        return (f64::NAN, 0);
     }
     if (ux<<1) == 0 {
         return (x, 0);

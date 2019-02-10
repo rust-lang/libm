@@ -1,3 +1,5 @@
+use core::f32;
+
 pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
 {
     let ux: u32 = x.to_bits();
@@ -11,7 +13,7 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
     let mut uxi: u32 = ux;
 
     if (uy<<1) == 0 || y.is_nan() || ex == 0xff {
-        return ((x*y)/(x*y), 0);
+        return (f32::NAN, 0);
     }
     if (ux<<1) == 0 {
         return (x, 0);

@@ -121,7 +121,7 @@ pub fn sqrt(x: f64) -> f64 {
             return x; /* sqrt(+-0) = +-0 */
         }
         if ix0 < 0 {
-            return (x - x) / (x - x); /* sqrt(-ve) = sNaN */
+            return f64::NAN; /* sqrt(-ve) = sNaN */
         }
     }
     /* normalize x */

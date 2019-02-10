@@ -60,6 +60,8 @@
  * to produce the hexadecimal values shown.
  */
 
+use core::f64;
+
 const LN2_HI: f64 = 6.931_471_803_691_238_164_9_e-01; /* 3fe62e42 fee00000 */
 const LN2_LO: f64 = 1.908_214_929_270_587_700_02_e-10; /* 3dea39ef 35793c76 */
 const LG1: f64 = 6.666_666_666_666_735_13_e-01; /* 3FE55555 55555593 */
@@ -81,10 +83,10 @@ pub fn log(mut x: f64) -> f64 {
     if (hx < 0x_0010_0000) || ((hx >> 31) != 0) {
         /* x < 2**-126  */
         if ui << 1 == 0 {
-            return -1. / (x * x); /* log(+-0)=-inf */
+            return f64::NEG_INFINITY; /* log(+-0)=-inf */
         }
         if hx >> 31 != 0 {
-            return (x - x) / 0.0; /* log(-#) = NaN */
+            return f64::NAN; /* log(-#) = NaN */
         }
         /* subnormal number, scale x up */
         k -= 54;

@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use core::f32;
 use super::{fabsf, scalbnf, sqrtf};
 
 const BP: [f32; 2] = [1., 1.5];
@@ -142,7 +143,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
 
         if hx < 0 {
             if ((ix - 0x_3f80_0000) | yisint) == 0 {
-                z = (z - z) / (z - z); /* (-1)**non-int is NaN */
+                z = f32::NAN; /* (-1)**non-int is NaN */
             } else if yisint == 1 {
                 z = -z; /* (x<0)**odd = -(|x|**odd) */
             }
@@ -154,7 +155,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
     if hx < 0 {
         if yisint == 0 {
             /* (x<0)**(non-int) is NaN */
-            return (x - x) / (x - x);
+            return f32::NAN;
         }
 
         if yisint == 1 {

@@ -33,6 +33,7 @@
  * Function needed: sqrt
  */
 
+use core::f64;
 use super::sqrt;
 
 const PIO2_HI: f64 = 1.570_796_326_794_896_558; /* 0x_3FF9_21FB, 0x_5444_2D18 */
@@ -79,7 +80,7 @@ pub fn acos(x: f64) -> f64 {
             }
             return 0.;
         }
-        return 0. / (x - x);
+        return f64::NAN;
     }
     /* |x| < 0.5 */
     if ix < 0x_3fe0_0000 {

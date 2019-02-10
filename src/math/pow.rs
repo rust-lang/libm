@@ -57,6 +57,8 @@
 // compiler will convert from decimal to binary accurately enough
 // to produce the hexadecimal values shown.
 //
+
+use core::f64;
 use super::{fabs, get_high_word, scalbn, sqrt, with_set_high_word, with_set_low_word};
 
 const BP: [f64; 2] = [1., 1.5];
@@ -208,7 +210,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
             if hx < 0 {
                 if ((ix - 0x_3ff0_0000) | yisint) == 0 {
-                    z = (z - z) / (z - z); /* (-1)**non-int is NaN */
+                    z = f64::NAN; /* (-1)**non-int is NaN */
                 } else if yisint == 1 {
                     z = -z; /* (x<0)**odd = -(|x|**odd) */
                 }
@@ -222,12 +224,12 @@ pub fn pow(x: f64, y: f64) -> f64 {
     if hx < 0 {
         if yisint == 0 {
             /* (x<0)**(non-int) is NaN */
-            return (x - x) / (x - x);
+            return f64::NAN;
         }
 
         if yisint == 1 {
             /* (x<0)**(odd int) */
-            s = -1.0;
+            s = -1.;
         }
     }
 

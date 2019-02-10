@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use core::f32;
 use math::consts::*;
 const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
 const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
@@ -32,10 +33,10 @@ pub fn logf(mut x: f32) -> f32 {
     if (ix < 0x_0080_0000) || ((ix >> 31) != 0) {
         /* x < 2**-126  */
         if ix << 1 == 0 {
-            return -1. / (x * x); /* log(+-0)=-inf */
+            return f32::NEG_INFINITY; /* log(+-0)=-inf */
         }
         if (ix >> 31) != 0 {
-            return (x - x) / 0.; /* log(-#) = NaN */
+            return f32::NAN; /* log(-#) = NaN */
         }
         /* subnormal number, scale up x */
         k -= 25;

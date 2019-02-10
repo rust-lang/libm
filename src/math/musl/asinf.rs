@@ -13,6 +13,8 @@
  * ====================================================
  */
 
+use core::f32;
+
 use math::consts::*;
 use math::fabsf;
 use math::sqrt;
@@ -47,7 +49,7 @@ pub fn asinf(mut x: f32) -> f32 {
             /* |x| == 1 */
             return ((x as f64) * PIO2 + x1p_120) as f32; /* asin(+-1) = +-pi/2 with inexact */
         }
-        return 0. / (x - x); /* asin(|x|>1) is NaN */
+        return f32::NAN; /* asin(|x|>1) is NaN */
     }
 
     if ix < UF_0_5 {

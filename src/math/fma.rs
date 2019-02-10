@@ -182,6 +182,7 @@ pub fn fma(x: f64, y: f64, z: f64) -> f64 {
 
                 /* raise underflow portably, such that it
                 cannot be optimized away */
+                #[allow(clippy::eq_op)]
                 {
                     let tiny: f64 = f64::MIN_POSITIVE / f32::MIN_POSITIVE as f64 * r;
                     r += (tiny * tiny) * (r - r);

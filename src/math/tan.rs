@@ -9,6 +9,7 @@
 // is preserved.
 // ====================================================
 
+use core::f64;
 use super::{k_tan, rem_pio2};
 
 // tan(x)
@@ -61,7 +62,7 @@ pub fn tan(x: f64) -> f64 {
 
     /* tan(Inf or NaN) is NaN */
     if ix >= 0x_7ff0_0000 {
-        return x - x;
+        return f64::NAN;
     }
 
     /* argument reduction */

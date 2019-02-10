@@ -51,7 +51,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f64) {
     }
     if ix >= UF_INF {
         /* x is inf or NaN */
-        return (0, x64 - x64);
+        return (0, f64::NAN);
     }
     /* scale x into [2^23, 2^24-1] */
     let e0 = ((ix >> 23) - (0x7f + 23)) as i32; /* e0 = ilogb(|x|)-23, positive */

@@ -78,6 +78,7 @@
  *
  */
 
+use core::f64;
 use super::{floor, k_cos, k_sin, log};
 
 const PI: f64  =  3.141_592_653_589_793_116; /* 0x_4009_21FB, 0x_5444_2D18 */
@@ -205,17 +206,17 @@ pub fn lgamma_r(mut x: f64) -> (f64, isize)
     if sign {
         x = -x;
         t = sin_pi(x);
-        if t == 0.0 { /* -integer */
-            return (1.0/(x-x), signgam);
+        if t == 0. { /* -integer */
+            return (f64::INFINITY, signgam);
         }
-        if t > 0.0 {
+        if t > 0. {
             signgam = -1;
         } else {
             t = -t;
         }
         nadj = log(PI/(t*x));
     } else {
-        nadj = 0.0;
+        nadj = 0.;
     }
 
     /* purge off 1 and 2 */

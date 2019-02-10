@@ -89,9 +89,9 @@ pub fn log1p(x: f64) -> f64 {
         if hx >= 0x_bff0_0000 {
             /* x <= -1.0 */
             if x == -1. {
-                return x / 0.0; /* log1p(-1) = -inf */
+                return f64::NEG_INFINITY; /* log1p(-1) = -inf */
             }
-            return (x - x) / 0.0; /* log1p(x<-1) = NaN */
+            return f64::NAN; /* log1p(x<-1) = NaN */
         }
         if hx << 1 < 0x_3ca0_0000 << 1 {
             /* |x| < 2**-53 */

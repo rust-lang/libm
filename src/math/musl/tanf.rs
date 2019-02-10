@@ -16,6 +16,7 @@
 
 use super::{k_tanf, rem_pio2f};
 
+use core::f32;
 use core::f64::consts::FRAC_PI_2;
 
 /* Small multiples of pi/2 rounded to double precision. */
@@ -76,7 +77,7 @@ pub fn tanf(x: f32) -> f32 {
 
     /* tan(Inf or NaN) is NaN */
     if ix >= UF_INF {
-        return x - x;
+        return f32::NAN;
     }
 
     /* argument reduction */

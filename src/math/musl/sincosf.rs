@@ -14,6 +14,7 @@
  * ====================================================
  */
 
+use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
 
 /* Small multiples of pi/2 rounded to double precision. */
@@ -97,8 +98,7 @@ pub fn sincosf(x: f32) -> (f32, f32)
 
     /* sin(Inf or NaN) is NaN */
     if ix >= 0x_7f80_0000 {
-        let rv = x - x;
-        return (rv, rv);
+        return (f32::NAN, f32::NAN);
     }
 
     /* general argument reduction needed */

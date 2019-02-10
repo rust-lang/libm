@@ -16,6 +16,7 @@
 
 use super::{k_cosf, k_sinf, rem_pio2f};
 
+use core::f32;
 use core::f64::consts::FRAC_PI_2;
 
 /* Small multiples of pi/2 rounded to double precision. */
@@ -73,7 +74,7 @@ pub fn cosf(x: f32) -> f32 {
         }
     } else if ix >= UF_INF {
         /* cos(Inf or NaN) is NaN */
-        x - x
+        f32::NAN
     } else {
         /* general argument reduction needed */
         let (n, y) = rem_pio2f(x);

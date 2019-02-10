@@ -13,6 +13,8 @@
  * ====================================================
  *
  */
+
+use core::f32;
 use super::k_rem_pio2f;
 use super::Precision;
 use math::fabsf;
@@ -177,7 +179,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
      * all other (large) arguments
      */
     if ix >= UF_INF {
-        y0 = x - x;
+        y0 = f32::NAN;
         return (0, y0, y0);
     }
     /* set z = scalbn(|x|,ilogb(x)-7) */

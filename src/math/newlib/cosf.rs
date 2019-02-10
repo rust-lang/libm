@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
 
 #[inline]
@@ -25,7 +26,7 @@ pub fn cosf(x: f32) -> f32 {
         k_cosf(x, 0.)
     } else if ix >= 0x_7f80_0000 {
         /* cos(Inf or NaN) is NaN */
-        x - x
+        f32::NAN
     } else {
         /* argument reduction needed */
         let (n, y0, y1) = rem_pio2f(x);

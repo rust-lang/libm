@@ -1,4 +1,5 @@
 use core::u64;
+use core::f64;
 
 #[inline]
 pub fn fmod(x: f64, y: f64) -> f64 {
@@ -10,7 +11,7 @@ pub fn fmod(x: f64, y: f64) -> f64 {
     let mut i;
 
     if uyi << 1 == 0 || y.is_nan() || ex == 0x7ff {
-        return (x * y) / (x * y);
+        return f64::NAN;
     }
     if uxi << 1 <= uyi << 1 {
         if uxi << 1 == uyi << 1 {

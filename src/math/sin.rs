@@ -9,6 +9,7 @@
 // is preserved.
 // ====================================================
 
+use core::f64;
 use super::{k_cos, k_sin, rem_pio2};
 
 // sin(x)
@@ -64,7 +65,7 @@ pub fn sin(x: f64) -> f64 {
 
     /* sin(Inf or NaN) is NaN */
     if ix >= 0x_7ff0_0000 {
-        return x - x;
+        return f64::NAN;
     }
 
     /* argument reduction needed */

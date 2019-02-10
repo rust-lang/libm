@@ -45,9 +45,9 @@ pub fn log1pf(x: f32) -> f32 {
         if ix >= 0x_bf80_0000 {
             /* x <= -1.0 */
             if x == -1. {
-                return x / 0.0; /* log1p(-1)=+inf */
+                return f32::INFINITY; /* log1p(-1)=+inf */
             }
-            return (x - x) / 0.0; /* log1p(x<-1)=NaN */
+            return f32::NAN; /* log1p(x<-1)=NaN */
         }
         if ix << 1 < 0x_3380_0000 << 1 {
             /* |x| < 2**-24 */

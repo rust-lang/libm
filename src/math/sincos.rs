@@ -10,6 +10,7 @@
  * ====================================================
  */
 
+use core::f64;
 use super::{get_high_word, k_cos, k_sin, rem_pio2};
 
 pub fn sincos(x: f64) -> (f64, f64)
@@ -39,8 +40,7 @@ pub fn sincos(x: f64) -> (f64, f64)
 
     /* sincos(Inf or NaN) is NaN */
     if ix >= 0x_7ff0_0000 {
-        let rv = x - x;
-        return (rv, rv);
+        return (f64::NAN, f64::NAN);
     }
 
     /* argument reduction needed */

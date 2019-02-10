@@ -57,7 +57,7 @@ pub fn log2(mut x: f64) -> f64 {
             return -1. / (x * x); /* log(+-0)=-inf */
         }
         if (hx >> 31) > 0 {
-            return (x - x) / 0.0; /* log(-#) = NaN */
+            return f64::NAN; /* log(-#) = NaN */
         }
         /* subnormal number, scale x up */
         k -= 54;

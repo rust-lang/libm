@@ -10,6 +10,8 @@
 // ====================================================
 //
 // Optimized by Bruce D. Evans. */
+
+use core::f64;
 use super::rem_pio2_large;
 
 // #if FLT_EVAL_METHOD==0 || FLT_EVAL_METHOD==1
@@ -157,7 +159,7 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
      */
     if ix >= 0x_7ff0_0000 {
         /* x is inf or NaN */
-        let y0 = x - x;
+        let y0 = f64::NAN;
         let y1 = y0;
         return (0, y0, y1);
     }

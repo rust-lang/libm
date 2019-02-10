@@ -16,6 +16,7 @@
 
 use super::{k_cosf, k_sinf, rem_pio2f};
 
+use core::f32;
 use core::f64::consts::FRAC_PI_2;
 
 /* Small multiples of pi/2 rounded to double precision. */
@@ -86,7 +87,7 @@ pub fn sinf(x: f32) -> f32 {
 
     /* sin(Inf or NaN) is NaN */
     if ix >= UF_INF {
-        return x - x;
+        return f32::NAN;
     }
 
     /* general argument reduction needed */

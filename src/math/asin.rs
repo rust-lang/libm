@@ -39,6 +39,7 @@
  *
  */
 
+use core::f64;
 use super::{fabs, get_high_word, get_low_word, sqrt, with_set_low_word};
 
 const PIO2_HI: f64 = 1.570_796_326_794_896_558; /* 0x_3FF9_21FB, 0x_5444_2D18 */
@@ -80,7 +81,7 @@ pub fn asin(mut x: f64) -> f64 {
             /* asin(1) = +-pi/2 with inexact */
             return x * PIO2_HI + f64::from_bits(0x_3870_0000_0000_0000);
         } else {
-            return 0. / (x - x);
+            return f64::NAN;
         }
     }
     /* |x| < 0.5 */

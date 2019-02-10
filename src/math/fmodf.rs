@@ -11,7 +11,7 @@ pub fn fmodf(x: f32, y: f32) -> f32 {
     let mut i;
 
     if uyi << 1 == 0 || y.is_nan() || ex == 0xff {
-        return (x * y) / (x * y);
+        return f32::NAN;
     }
 
     if uxi << 1 <= uyi << 1 {

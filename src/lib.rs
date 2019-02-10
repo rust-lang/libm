@@ -17,7 +17,6 @@
 )]
 #![allow(clippy::many_single_char_names)]
 #![allow(clippy::excessive_precision)]
-#![allow(clippy::eq_op)]
 
 #![allow(clippy::cast_lossless)]
 #![allow(clippy::approx_constant)]

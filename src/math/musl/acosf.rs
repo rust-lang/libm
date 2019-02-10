@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use core::f32;
 use math::consts::*;
 use math::sqrtf;
 
@@ -51,7 +52,7 @@ pub fn acosf(x: f32) -> f32 {
             }
             return 0.;
         }
-        return 0. / (x - x);
+        return f32::NAN;
     }
     /* |x| < 0.5 */
     if ix < UF_0_5 {

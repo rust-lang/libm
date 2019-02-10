@@ -9,6 +9,7 @@
 // is preserved.
 // ====================================================
 
+use core::f64;
 use super::{k_cos, k_sin, rem_pio2};
 
 // cos(x)
@@ -51,15 +52,15 @@ pub fn cos(x: f64) -> f64 {
             /* if x < 2**-27 * sqrt(2) */
             /* raise inexact if x != 0 */
             if x as i32 == 0 {
-                return 1.0;
+                return 1.;
             }
         }
-        return k_cos(x, 0.0);
+        return k_cos(x, 0.);
     }
 
     /* cos(Inf or NaN) is NaN */
     if ix >= 0x_7ff0_0000 {
-        return x - x;
+        return f64::NAN;
     }
 
     /* argument reduction needed */

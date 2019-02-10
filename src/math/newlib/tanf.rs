@@ -13,6 +13,7 @@
  * ====================================================
  */
 
+use core::f32;
 use super::{k_tanf, rem_pio2f};
 
 #[inline]
@@ -25,7 +26,7 @@ pub fn tanf(x: f32) -> f32 {
         k_tanf(x, 0., 1)
     } else if ix >= 0x_7f80_0000 {
         /* tan(Inf or NaN) is NaN */
-        x - x /* NaN */
+        f32::NAN /* NaN */
     /* argument reduction needed */
     } else {
         let (n, y0, y1) = rem_pio2f(x);

@@ -1,3 +1,4 @@
+use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
 
 #[inline]
@@ -10,7 +11,7 @@ pub fn sinf(x: f32) -> f32 {
         k_sinf(x, 0., false)
     } else if ix >= 0x_7f80_0000 {
         /* sin(Inf or NaN) is NaN */
-        x - x
+        f32::NAN
     } else {
         /* argument reduction needed */
         let (n, y0, y1) = rem_pio2f(x);
