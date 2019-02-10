@@ -37,11 +37,13 @@
  * to produce the hexadecimal values shown.
  */
 
+use core::f64;
+
 use super::atan;
 use super::fabs;
 use math::consts::*;
 
-const PI: f64 = 3.141_592_653_589_793_116; /* 0x_4009_21FB, 0x_5444_2D18 */
+const PI: f64 = f64::consts::PI; /* 0x_4009_21FB, 0x_5444_2D18 */
 const PI_LO: f64 = 1.224_646_799_147_353_177_2_e-16; /* 0x_3CA1_A626, 0x_3314_5C07 */
 
 #[inline]

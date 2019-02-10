@@ -16,7 +16,7 @@ use math::consts::*;
 const O_THRESHOLD: f64 = 7.097_827_128_933_839_730_96_e+02; /* 0x_4086_2E42, 0x_FEFA_39EF */
 const LN2_HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */
 const LN2_LO: f64 = 1.908_214_929_270_587_700_02_e-10; /* 0x_3dea_39ef, 0x_3579_3c76 */
-const INVLN2: f64 = 1.442_695_040_888_963_387; /* 0x_3ff7_1547, 0x_652b_82fe */
+const INVLN2: f64 = f64::consts::LOG2_E; /* 0x_3ff7_1547, 0x_652b_82fe */
 /* Scaled Q's: Qn_here = 2**n * Qn_above, for R(2*z) where z = hxs = x*x/2: */
 const Q1: f64 = -3.333_333_333_333_313_164_28_e-02; /* BFA11111 111110F4 */
 const Q2: f64 = 1.587_301_587_254_814_601_65_e-03; /* 3F5A01A0 19FE5585 */

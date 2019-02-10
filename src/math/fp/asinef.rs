@@ -15,8 +15,8 @@ use super::{numtestf, NumState};
 
 const P: [f32; 2] = [0.933_935_835, -0.504_400_557];
 const Q: [f32; 2] = [0.560_363_004_e+1, -0.554_846_723_e+1];
-const A: [f32; 2] = [0., 0.785_398_163];
-const B: [f32; 2] = [1.570_796_326, 0.785_398_163];
+const A: [f32; 2] = [0., f32::consts::FRAC_PI_4];
+const B: [f32; 2] = [f32::consts::FRAC_PI_2, f32::consts::FRAC_PI_4];
 
 /// Arcsine
 ///

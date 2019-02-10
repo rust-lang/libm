@@ -82,7 +82,7 @@ use core::f64;
 use super::{floor, k_cos, k_sin, log};
 use math::consts::*;
 
-const PI: f64  =  3.141_592_653_589_793_116; /* 0x_4009_21FB, 0x_5444_2D18 */
+const PI: f64  =  f64::consts::PI; /* 0x_4009_21FB, 0x_5444_2D18 */
 const A0: f64  =  7.721_566_490_153_286_554_94_e-02; /* 0x_3FB3_C467, 0x_E37D_B0C8 */
 const A1: f64  =  3.224_670_334_241_135_916_11_e-01; /* 0x_3FD4_A34C, 0x_C4A6_0FAD */
 const A2: f64  =  6.735_230_105_312_926_818_24_e-02; /* 0x_3FB1_3E00, 0x_1A55_62A7 */

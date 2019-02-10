@@ -43,7 +43,7 @@ use core::f64;
 use super::{fabs, get_high_word, get_low_word, sqrt, with_set_low_word};
 use math::consts::*;
 
-const PIO2_HI: f64 = 1.570_796_326_794_896_558; /* 0x_3FF9_21FB, 0x_5444_2D18 */
+const PIO2_HI: f64 = f64::consts::FRAC_PI_2; /* 0x_3FF9_21FB, 0x_5444_2D18 */
 const PIO2_LO: f64 = 6.123_233_995_736_766_035_87_e-17; /* 0x_3C91_A626, 0x_3314_5C07 */
 /* coefficients for R(x^2) */
 const P_S0: f64 = 1.666_666_666_666_666_574_15_e-01; /* 0x_3FC5_5555, 0x_5555_5555 */

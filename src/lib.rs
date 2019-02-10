@@ -19,7 +19,6 @@
 #![allow(clippy::excessive_precision)]
 
 #![allow(clippy::cast_lossless)]
-#![allow(clippy::approx_constant)]
 #![allow(clippy::float_cmp)]
 
 use core::{f32, f64};

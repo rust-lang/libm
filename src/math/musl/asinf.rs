@@ -14,12 +14,13 @@
  */
 
 use core::f32;
+use core::f64;
 
 use math::consts::*;
 use math::fabsf;
 use math::sqrt;
 
-const PIO2: f64 = 1.570_796_326_794_896_558;
+const PIO2: f64 = f64::consts::FRAC_PI_2;
 
 /* coefficients for R(x^2) */
 const P_S0: f32 = 1.666_658_669_7_e-01;

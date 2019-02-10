@@ -12,8 +12,8 @@ use math::fabsf;
 use super::consts::*;
 use super::{numtestf, NumState};
 
-const HALF_PI: f32 = 1.570_796_326;
-const ONE_OVER_PI: f32 = 0.318_309_886;
+const HALF_PI: f32 = f32::consts::FRAC_PI_2;
+const ONE_OVER_PI: f32 = f32::consts::FRAC_1_PI;
 const R: [f32; 4] = [
     -0.166_666_566_8,
     0.833_302_513_9_e-02,

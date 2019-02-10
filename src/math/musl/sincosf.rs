@@ -19,7 +19,7 @@ use super::{k_cosf, k_sinf, rem_pio2f};
 use math::consts::*;
 
 /* Small multiples of pi/2 rounded to double precision. */
-const PI_2: f32 = 0.5 * 3.141_592_653_589_793_116;
+const PI_2: f32 = f32::consts::FRAC_PI_2;
 const S1PIO2: f32 = 1.0*PI_2; /* 0x_3FF9_21FB, 0x_5444_2D18 */
 const S2PIO2: f32 = 2.0*PI_2; /* 0x_4009_21FB, 0x_5444_2D18 */
 const S3PIO2: f32 = 3.0*PI_2; /* 0x_4012_D97C, 0x_7F33_21D2 */
