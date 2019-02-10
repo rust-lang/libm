@@ -10,7 +10,7 @@ pub fn sinhf(x: f32) -> f32 {
         h = -h;
     }
     /* |x| */
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     let absx = f32::from_bits(ix);
     let w = ix;
 

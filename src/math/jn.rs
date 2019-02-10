@@ -36,6 +36,7 @@
 
 use core::f64;
 use super::{cos, fabs, get_high_word, get_low_word, log, j0, j1, sin, sqrt, y0, y1};
+use math::consts::*;
 
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */
 
@@ -53,7 +54,7 @@ pub fn jn(n: isize, mut x: f64) -> f64
     ix = get_high_word(x);
     lx = get_low_word(x);
     sign = (ix>>31) != 0;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     // -lx == !lx + 1
     if (ix | (lx|(!lx+1))>>31) > 0x_7ff0_0000 { /* nan */
@@ -262,7 +263,7 @@ pub fn yn(n: isize, x: f64) -> f64
     ix = get_high_word(x);
     lx = get_low_word(x);
     sign = (ix>>31) != 0;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     // -lx == !lx + 1
     if (ix | (lx|(!lx+1))>>31) > 0x_7ff0_0000 { /* nan */

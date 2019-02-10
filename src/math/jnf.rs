@@ -15,6 +15,7 @@
 
 use core::f32;
 use super::{fabsf, j0f, j1f, logf, y0f, y1f};
+use math::consts::*;
 
 pub fn jnf(n: isize, mut x: f32) -> f32
 {
@@ -28,8 +29,8 @@ pub fn jnf(n: isize, mut x: f32) -> f32
 
     ix = x.to_bits();
     sign = (ix>>31) != 0;
-    ix &= 0x_7fff_ffff;
-    if ix > 0x_7f80_0000 { /* nan */
+    ix &= UF_ABS;
+    if ix > UF_INF { /* nan */
         return x;
     }
 
@@ -50,8 +51,8 @@ pub fn jnf(n: isize, mut x: f32) -> f32
 
     sign &= (n&1) != 0;  /* even n: 0, odd n: signbit(x) */
     x = fabsf(x);
-    if ix == 0 || ix == 0x_7f80_0000 {  /* if x is 0 or inf */
-        b = 0.0;
+    if ix == 0 || ix == UF_INF {  /* if x is 0 or inf */
+        b = 0.;
     } else if (nm1 as f32) < x {
         /* Safe to use J(n+1,x)=2n/x *J(n,x)-J(n-1,x) */
         a = j0f(x);
@@ -204,14 +205,14 @@ pub fn ynf(n: isize, x: f32) -> f32
 
     ix = x.to_bits();
     sign = (ix>>31) != 0;
-    ix &= 0x_7fff_ffff;
-    if ix > 0x_7f80_0000 { /* nan */
+    ix &= UF_ABS;
+    if ix > UF_INF { /* nan */
         return x;
     }
     if sign && ix != 0 { /* x < 0 */
         return f32::NAN;
     }
-    if ix == 0x_7f80_0000 {
+    if ix == UF_INF {
         return 0.;
     }
 

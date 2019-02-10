@@ -1,15 +1,16 @@
 use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
+use math::consts::*;
 
 #[inline]
 pub fn sinf(x: f32) -> f32 {
     let mut ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     /* |x| ~< pi/4 */
     if ix <= 0x_3f49_0fd8 {
         k_sinf(x, 0., false)
-    } else if ix >= 0x_7f80_0000 {
+    } else if ix >= UF_INF {
         /* sin(Inf or NaN) is NaN */
         f32::NAN
     } else {

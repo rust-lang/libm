@@ -18,11 +18,10 @@
  */
 
 use core::f32;
+use math::consts::*;
 
 const B1: u32 = 709_958_130; /* B1 = (127-127.0/3-0.03306235651)*2**23 */
 const B2: u32 = 642_849_266; /* B2 = (127-127.0/3-24/3-0.03306235651)*2**23 */
-
-const UF_INF: u32 = 0x_7f80_0000;
 
 #[inline]
 pub fn cbrtf(x: f32) -> f32 {
@@ -31,7 +30,7 @@ pub fn cbrtf(x: f32) -> f32 {
     let mut r: f64;
     let mut t: f64;
     let mut ui: u32 = x.to_bits();
-    let mut hx: u32 = ui & 0x_7fff_ffff;
+    let mut hx: u32 = ui & UF_ABS;
 
     if hx >= UF_INF {
         /* cbrt(NaN,INF) is itself */
@@ -45,7 +44,7 @@ pub fn cbrtf(x: f32) -> f32 {
             return x; /* cbrt(+-0) is itself */
         }
         ui = (x * x1p24).to_bits();
-        hx = ui & 0x_7fff_ffff;
+        hx = ui & UF_ABS;
         hx = hx / 3 + B2;
     } else {
         hx = hx / 3 + B1;

@@ -16,6 +16,7 @@
  */
 
 use core::f64;
+use math::consts::*;
 
 const B1: u32 = 715_094_163; /* B1 = (1023-1023/3-0.033_062_35651)*2**20 */
 const B2: u32 = 696_219_795; /* B2 = (1023-1023/3-54/3-0.033_062_35651)*2**20 */
@@ -36,7 +37,7 @@ pub fn cbrt(x: f64) -> f64 {
     let s: f64;
     let mut t: f64;
     let w: f64;
-    let mut hx: u32 = (ui >> 32) as u32 & 0x_7fff_ffff;
+    let mut hx: u32 = (ui >> 32) as u32 & UF_ABS;
 
     if hx >= 0x_7ff0_0000 {
         /* cbrt(NaN,INF) is itself */
@@ -61,7 +62,7 @@ pub fn cbrt(x: f64) -> f64 {
     if hx < 0x_0010_0000 {
         /* zero or subnormal? */
         ui = (x * x1p54).to_bits();
-        hx = (ui >> 32) as u32 & 0x_7fff_ffff;
+        hx = (ui >> 32) as u32 & UF_ABS;
         if hx == 0 {
             return x; /* cbrt(0) is itself */
         }

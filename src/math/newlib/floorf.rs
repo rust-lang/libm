@@ -13,7 +13,8 @@
  * ====================================================
  */
 
-const HUGE: f32 = 1.0e30;
+const HUGE: f32 = 1_e30;
+use math::consts::*;
 
 /// Return x rounded toward -inf to integral value
 ///
@@ -25,7 +26,7 @@ const HUGE: f32 = 1.0e30;
 pub fn floorf(x: f32) -> f32 {
     let mut i0 = x.to_bits();
     let sign = (i0 >> 31) != 0;
-    let ix = i0 & 0x_7fff_ffff;
+    let ix = i0 & UF_ABS;
     let j0 = ((ix >> 23) - 0x7f) as i32;
     if j0 < 23 {
         if j0 < 0 {
@@ -53,7 +54,7 @@ pub fn floorf(x: f32) -> f32 {
             }
         }
     } else {
-        return if ix >= 0x_7f80_0000 {
+        return if ix >= UF_INF {
             /* inf or NaN */
             x + x
         } else {

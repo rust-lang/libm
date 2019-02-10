@@ -41,7 +41,7 @@ pub fn asinf(mut x: f32) -> f32 {
     let x1p_120 = f64::from_bits(0x_3870_0000_0000_0000); // 0x1p-120 === 2 ^ (-120)
 
     let hx = x.to_bits();
-    let ix = hx & 0x_7fff_ffff;
+    let ix = hx & UF_ABS;
 
     if ix >= UF_1 {
         /* |x| >= 1 */

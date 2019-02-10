@@ -13,6 +13,8 @@
  * ====================================================
  */
 
+use math::consts::*;
+
 use core::f32;
 use super::{cosf, fabsf, logf, sinf, sqrtf};
 
@@ -72,9 +74,9 @@ pub fn j0f(mut x: f32) -> f32
     let mut ix: u32;
 
     ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
-    if ix >= 0x_7f80_0000 {
-        return 1.0/(x*x);
+    ix &= UF_ABS;
+    if ix >= UF_INF {
+        return 1./(x*x);
     }
     x = fabsf(x);
 
@@ -86,8 +88,8 @@ pub fn j0f(mut x: f32) -> f32
         /* up to 4ulp error near 2 */
         z = x*x;
         r = z*(R02+z*(R03+z*(R04+z*R05)));
-        s = 1.0+z*(S01+z*(S02+z*(S03+z*S04)));
-        return (1.0+x/2.0)*(1.0-x/2.0) + z*(r/s);
+        s = 1.+z*(S01+z*(S02+z*(S03+z*S04)));
+        return (1.+x/2.)*(1.-x/2.) + z*(r/s);
     }
     if ix >= 0x_2180_0000 {  /* |x| >= 2**-60 */
         x = 0.25*x*x;
@@ -119,7 +121,7 @@ pub fn y0f(x: f32) -> f32
         f32::NEG_INFINITY
     } else if (ix>>31) !=0 {
         f32::NAN
-    } else if ix >= 0x_7f80_0000 {
+    } else if ix >= UF_INF {
         1./x
     } else if ix >= 0x_4000_0000 {  /* |x| >= 2.0 */
         /* large ulp error near zeros */
@@ -217,7 +219,7 @@ fn pzerof(x: f32) -> f32
     let mut ix: u32;
 
     ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if      ix >= 0x_4100_0000 {p = &PR8; q = &PS8;}
     else if ix >= 0x_4091_73eb {p = &PR5; q = &PS5;}
     else if ix >= 0x_4036_d917 {p = &PR3; q = &PS3;}
@@ -316,7 +318,7 @@ fn qzerof(x: f32) -> f32
     let mut ix: u32;
 
     ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if      ix >= 0x_4100_0000 {p = &QR8; q = &QS8;}
     else if ix >= 0x_4091_73eb {p = &QR5; q = &QS5;}
     else if ix >= 0x_4036_d917 {p = &QR3; q = &QS3;}

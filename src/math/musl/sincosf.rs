@@ -16,6 +16,7 @@
 
 use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
+use math::consts::*;
 
 /* Small multiples of pi/2 rounded to double precision. */
 const PI_2: f32 = 0.5 * 3.141_592_653_589_793_116;
@@ -33,7 +34,7 @@ pub fn sincosf(x: f32) -> (f32, f32)
 
     ix = x.to_bits();
     sign = (ix >> 31) != 0;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     /* |x| ~<= pi/4 */
     if ix <= 0x_3f49_0fda {
@@ -97,7 +98,7 @@ pub fn sincosf(x: f32) -> (f32, f32)
     }
 
     /* sin(Inf or NaN) is NaN */
-    if ix >= 0x_7f80_0000 {
+    if ix >= UF_INF {
         return (f32::NAN, f32::NAN);
     }
 

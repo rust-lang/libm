@@ -33,8 +33,8 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
         return atanf(y);
     }
     let m = ((iy >> 31) & 1) | ((ix >> 30) & 2); /* 2*sign(x)+sign(y) */
-    ix &= 0x_7fff_ffff;
-    iy &= 0x_7fff_ffff;
+    ix &= UF_ABS;
+    iy &= UF_ABS;
 
     /* when y = 0 */
     if iy == 0 {
@@ -49,8 +49,8 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
         return if m & 1 != 0 { -PI / 2. } else { PI / 2. };
     }
     /* when x is INF */
-    if ix == 0x_7f80_0000 {
-        return if iy == 0x_7f80_0000 {
+    if ix == UF_INF {
+        return if iy == UF_INF {
             match m {
                 0 => PI / 4.,           /* atan(+INF,+INF) */
                 1 => -PI / 4.,          /* atan(-INF,+INF) */
@@ -67,7 +67,7 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
         };
     }
     /* |y/x| > 0x1p26 */
-    if (ix + (26 << 23) < iy) || (iy == 0x_7f80_0000) {
+    if (ix + (26 << 23) < iy) || (iy == UF_INF) {
         return if m & 1 != 0 { -PI / 2. } else { PI / 2. };
     }
 

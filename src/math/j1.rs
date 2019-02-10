@@ -56,6 +56,7 @@
 
 use super::{cos, fabs, get_high_word, get_low_word, log, sin, sqrt};
 use core::f64;
+use math::consts::*;
 
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */
 const TPI: f64 = 6.366_197_723_675_813_824_33_e-01; /* 0x_3FE4_5F30, 0x_6DC9_C883 */
@@ -123,7 +124,7 @@ pub fn j1(x: f64) -> f64 {
 
     ix = get_high_word(x);
     sign = (ix >> 31) != 0;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if ix >= 0x_7ff0_0000 {
         return 1.0 / (x * x);
     }
@@ -280,7 +281,7 @@ fn pone(x: f64) -> f64 {
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if ix >= 0x_4020_0000 {
         p = &PR8;
         q = &PS8;
@@ -391,7 +392,7 @@ fn qone(x: f64) -> f64 {
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if ix >= 0x_4020_0000 {
         p = &QR8;
         q = &QS8;

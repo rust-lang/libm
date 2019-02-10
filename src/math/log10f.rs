@@ -60,7 +60,7 @@ pub fn log10f(mut x: f32) -> f32 {
         x *= x1p25f;
         ui = x.to_bits();
         ix = ui;
-    } else if ix >= 0x_7f80_0000 {
+    } else if ix >= UF_INF {
         return x;
     } else if ix == UF_1 {
         return 0.;

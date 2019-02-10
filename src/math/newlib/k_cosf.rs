@@ -13,6 +13,8 @@
  * ====================================================
  */
 
+use math::consts::*;
+
 const ONE: f32 = 1.; /* 0x_3f80_0000 */
 const C1: f32 = 4.166_666_790_8_e-02; /* 0x_3d2a_aaab */
 const C2: f32 = -1.388_888_922_5_e-03; /* 0x_bab6_0b61 */
@@ -24,7 +26,7 @@ const C6: f32 = -1.135_964_759_8_e-11; /* 0x_ad47_d74e */
 #[inline]
 pub fn k_cosf(x: f32, y: f32) -> f32 {
     let mut ix = x.to_bits();
-    ix &= 0x_7fff_ffff; /* ix = |x|'s high word*/
+    ix &= UF_ABS; /* ix = |x|'s high word*/
     if ix < 0x_3200_0000 {
         /* if x < 2**27 */
         if (x as i32) == 0 {

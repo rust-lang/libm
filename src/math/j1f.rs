@@ -15,6 +15,7 @@
 
 use core::f32;
 use super::{cosf, fabsf, logf, sinf, sqrtf};
+use math::consts::*;
 
 const INVSQRTPI: f32 = 5.641_896_128_7_e-01; /* 0x_3f10_6ebb */
 const TPI: f32       = 6.366_197_466_9_e-01; /* 0x_3f22_f983 */
@@ -75,8 +76,8 @@ pub fn j1f(x: f32) -> f32
 
     ix = x.to_bits();
     sign = (ix>>31) != 0;
-    ix &= 0x_7fff_ffff;
-    if ix >= 0x_7f80_0000 {
+    ix &= UF_ABS;
+    if ix >= UF_INF {
         return 1.0/(x*x);
     }
     if ix >= 0x_4000_0000 {  /* |x| >= 2 */
@@ -122,7 +123,7 @@ pub fn y1f(x: f32) -> f32
     if (ix>>31) != 0{
         return f32::NAN;
     }
-    if ix >= 0x_7f80_0000 {
+    if ix >= UF_INF {
         return 1./x;
     }
     if ix >= 0x_4000_0000 {  /* |x| >= 2. */
@@ -221,7 +222,7 @@ fn ponef(x: f32) -> f32
     let mut ix: u32;
 
     ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if      ix >= 0x_4100_0000 {p = &PR8; q = &PS8;}
     else if ix >= 0x_4091_73eb {p = &PR5; q = &PS5;}
     else if ix >= 0x_4036_d917 {p = &PR3; q = &PS3;}
@@ -320,13 +321,13 @@ fn qonef(x: f32) -> f32
     let mut ix: u32;
 
     ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if      ix >= 0x_4100_0000 {p = &QR8; q = &QS8;}
     else if ix >= 0x_4091_73eb {p = &QR5; q = &QS5;}
     else if ix >= 0x_4036_d917 {p = &QR3; q = &QS3;}
     else /*ix >= 0x_4000_0000*/{p = &QR2; q = &QS2;}
-    z = 1.0/(x*x);
+    z = 1./(x*x);
     r = p[0]+z*(p[1]+z*(p[2]+z*(p[3]+z*(p[4]+z*p[5]))));
-    s = 1.0+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*(q[4]+z*q[5])))));
+    s = 1.+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*(q[4]+z*q[5])))));
     (0.375 + r/s)/x
 } 

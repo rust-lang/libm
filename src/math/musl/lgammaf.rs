@@ -16,6 +16,7 @@
 use core::f32;
 use super::{floorf, k_cosf, k_sinf};
 use crate::math::logf;
+use math::consts::*;
 
 const PI: f32  =  3.141_592_741; /* 0x_4049_0fdb */
 const A0: f32  =  7.721_566_408_9_e-02; /* 0x_3d9e_233f */
@@ -128,8 +129,8 @@ pub fn lgammaf_r(mut x: f32) -> (f32, isize)
     /* purge off +-inf, NaN, +-0, tiny and negative arguments */
     signgam = 1;
     sign = (u>>31) != 0;
-    ix = u & 0x_7fff_ffff;
-    if ix >= 0x_7f80_0000 {
+    ix = u & UF_ABS;
+    if ix >= UF_INF {
         return (x*x, signgam);
     }
     if ix < 0x_3500_0000 {  /* |x| < 2**-21, return -log(|x|) */

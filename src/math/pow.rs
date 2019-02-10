@@ -60,6 +60,7 @@
 
 use core::f64;
 use super::{fabs, get_high_word, scalbn, sqrt, with_set_high_word, with_set_low_word};
+use math::consts::*;
 
 const BP: [f64; 2] = [1., 1.5];
 const DP_H: [f64; 2] = [0., 5.849_624_872_207_641_601_56_e-01]; /* 0x_3fe2_b803_4000_0000 */
@@ -100,8 +101,8 @@ pub fn pow(x: f64, y: f64) -> f64 {
     let (hx, lx): (i32, u32) = ((x.to_bits() >> 32) as i32, x.to_bits() as u32);
     let (hy, ly): (i32, u32) = ((y.to_bits() >> 32) as i32, y.to_bits() as u32);
 
-    let mut ix: i32 = (hx & 0x_7fff_ffff) as i32;
-    let iy: i32 = (hy & 0x_7fff_ffff) as i32;
+    let mut ix: i32 = (hx & IF_ABS) as i32;
+    let iy: i32 = (hy & IF_ABS) as i32;
 
     /* x**0 = 1, even if x is NaN */
     if ((iy as u32) | ly) == 0 {
@@ -358,7 +359,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
         if p_l + OVT > z - p_h {
             return s * HUGE * HUGE; /* overflow */
         }
-    } else if (j & 0x_7fff_ffff) >= 0x_4090_cc00 {
+    } else if (j & IF_ABS) >= 0x_4090_cc00 {
         /* z <= -1075 */
         // FIXME: instead of abs(j) use unsigned j
 
@@ -373,14 +374,14 @@ pub fn pow(x: f64, y: f64) -> f64 {
     }
 
     /* compute 2**(p_h+p_l) */
-    let i: i32 = j & (0x_7fff_ffff as i32);
+    let i: i32 = j & (UF_ABS as i32);
     k = (i >> 20) - 0x3ff;
     let mut n: i32 = 0;
 
     if i > 0x_3fe0_0000 {
         /* if |z| > 0.5, set n = [z+0.5] */
         n = j + (0x_0010_0000 >> (k + 1));
-        k = ((n & 0x_7fff_ffff) >> 20) - 0x3ff; /* new k for n */
+        k = ((n & IF_ABS) >> 20) - 0x3ff; /* new k for n */
         let t: f64 = with_set_high_word(0.0, (n & !(0x_000f_ffff >> k)) as u32);
         n = ((n & 0x_000f_ffff) | 0x_0010_0000) >> (20 - k);
         if j < 0 {

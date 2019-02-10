@@ -1,12 +1,13 @@
 use super::exp;
 use super::expm1;
 use super::k_expo2;
+use math::consts::*;
 
 #[inline]
 pub fn cosh(mut x: f64) -> f64 {
     /* |x| */
     let mut ix = x.to_bits();
-    ix &= 0x_7fff_ffff_ffff_ffff;
+    ix &= UD_ABS;
     x = f64::from_bits(ix);
     let w = ix >> 32;
 

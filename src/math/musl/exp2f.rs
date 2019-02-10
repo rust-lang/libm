@@ -24,6 +24,8 @@
 // OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
+use math::consts::*;
+
 const TBLSIZE: usize = 16;
 
 static EXP2FT: [u64; TBLSIZE] = [
@@ -70,8 +72,6 @@ static EXP2FT: [u64; TBLSIZE] = [
 //      Tang, P.  Table-driven Implementation of the Exponential Function
 //      in IEEE Floating-Point Arithmetic.  TOMS 15(2), 144-157 (1989).
 
-const UF_INF: u32 = 0x_7f80_0000;
-
 #[inline]
 pub fn exp2f(mut x: f32) -> f32 {
     let redux = f32::from_bits(0x_4b40_0000) / TBLSIZE as f32;
@@ -87,7 +87,7 @@ pub fn exp2f(mut x: f32) -> f32 {
 
     /* Filter out exceptional cases. */
     let ui = f32::to_bits(x);
-    let ix = ui & 0x_7fff_ffff;
+    let ix = ui & UF_ABS;
     if ix > 0x_42fc_0000 {
         /* |x| > 126 */
         if ix > UF_INF {

@@ -13,6 +13,7 @@
 
 use core::f64;
 use super::rem_pio2_large;
+use math::consts::*;
 
 // #if FLT_EVAL_METHOD==0 || FLT_EVAL_METHOD==1
 // #define EPS DBL_EPSILON
@@ -48,7 +49,7 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
     let x1p24 = f64::from_bits(0x_4170_0000_0000_0000);
 
     let sign = (f64::to_bits(x) >> 63) as i32;
-    let ix = (f64::to_bits(x) >> 32) as u32 & 0x_7fff_ffff;
+    let ix = (f64::to_bits(x) >> 32) as u32 & UF_ABS;
 
     #[inline]
     fn medium(x: f64, ix: u32) -> (i32, f64, f64) {

@@ -14,6 +14,7 @@
  */
 
 use super::fabsf;
+use math::consts::*;
 
 const ATAN_HI: [f32; 4] = [
     4.636_476_039_9_e-01, /* atan(0.5)hi 0x_3eed_6338 */
@@ -45,7 +46,7 @@ pub fn atanf(mut x: f32) -> f32 {
 
     let mut ix = x.to_bits();
     let sign = (ix >> 31) != 0;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     if ix >= 0x_4c80_0000 {
         /* if |x| >= 2**26 */

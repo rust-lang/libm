@@ -14,6 +14,8 @@
  *
  */
 
+use math::consts::*;
+
 const B1: u32 = 709_958_130; /* B1 = (84+2/3-0.03306235651)*2**23 */
 const B2: u32 = 642_849_266; /* B2 = (76+2/3-0.03306235651)*2**23 */
 
@@ -29,7 +31,7 @@ pub fn cbrtf(mut x: f32) -> f32 {
     let mut hx = x.to_bits() as i32;
     let sign = (hx as u32) & 0x_8000_0000; /* sign= sign(x) */
     hx ^= sign as i32;
-    if hx >= 0x_7f80_0000 {
+    if hx >= IF_INF {
         return x + x; /* cbrt(NaN,INF) is itself */
     }
     if hx == 0 {

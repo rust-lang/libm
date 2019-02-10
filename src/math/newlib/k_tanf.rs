@@ -14,6 +14,7 @@
  */
 
 use math::fabsf;
+use math::consts::*;
 
 const ONE: f32 = 1.; /* 0x_3f80_0000 */
 const PIO4: f32 = 7.853_981_256_5_e-01; /* 0x_3f49_0fda */
@@ -39,7 +40,7 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
     let mut z: f32;
     let mut w: f32;
     let hx = x.to_bits() as i32;
-    let ix = hx & 0x_7fff_ffff; /* high word of |x| */
+    let ix = hx & IF_ABS; /* high word of |x| */
     if ix < 0x_3180_0000 {
         /* x < 2**-28 */
 

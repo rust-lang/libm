@@ -15,6 +15,7 @@
 
 use core::f32;
 use super::{fabsf, scalbnf, sqrtf};
+use math::consts::*;
 
 const BP: [f32; 2] = [1., 1.5];
 const DP_H: [f32; 2] = [0., 5.849_609_38_e-01]; /* 0x_3f15_c000 */
@@ -56,8 +57,8 @@ pub fn powf(x: f32, y: f32) -> f32 {
     let hx = x.to_bits() as i32;
     let hy = y.to_bits() as i32;
 
-    let mut ix = hx & 0x_7fff_ffff;
-    let iy = hy & 0x_7fff_ffff;
+    let mut ix = hx & IF_ABS;
+    let iy = hy & IF_ABS;
 
     /* x**0 = 1, even if x is NaN */
     if iy == 0 {
@@ -70,7 +71,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
     }
 
     /* NaN if either arg is NaN */
-    if ix > 0x_7f80_0000 || iy > 0x_7f80_0000 {
+    if ix > IF_INF || iy > IF_INF {
         return x + y;
     }
 
@@ -93,7 +94,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
     }
 
     /* special value of y */
-    if iy == 0x_7f80_0000 {
+    if iy == IF_INF {
         /* y is +-inf */
         return if ix == 0x_3f80_0000 {
             /* (-1)**+-inf is 1 */
@@ -132,7 +133,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
 
     let ax = fabsf(x);
     /* special value of x */
-    if ix == 0x_7f80_0000 || ix == 0 || ix == 0x_3f80_0000 {
+    if ix == IF_INF || ix == 0 || ix == 0x_3f80_0000 {
         /* x is +-0,+-inf,+-1 */
         let mut z = if hy < 0 {
             /* z = (1/|x|) */
@@ -257,7 +258,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         if p_l + OVT > z - p_h {
             return sn * HUGE * HUGE; /* overflow */
         }
-    } else if (j & 0x_7fff_ffff) > 0x_4316_0000 {
+    } else if (j & IF_ABS) > 0x_4316_0000 {
         /* z < -150 */
         // FIXME: check should be  (uint32_t)j > 0x_c316_0000
         return sn * TINY * TINY; /* underflow */
@@ -271,13 +272,13 @@ pub fn powf(x: f32, y: f32) -> f32 {
     /*
      * compute 2**(p_h+p_l)
      */
-    let i = j & 0x_7fff_ffff;
+    let i = j & IF_ABS;
     let k = (i >> 23) - 0x7f;
     let mut n = 0;
     if i > 0x_3f00_0000 {
         /* if |z| > 0.5, set n = [z+0.5] */
         n = j + (0x_0080_0000 >> (k + 1));
-        let k = ((n & 0x_7fff_ffff) >> 23) - 0x7f; /* new k for n */
+        let k = ((n & IF_ABS) >> 23) - 0x7f; /* new k for n */
         let t = f32::from_bits(n as u32 & !(0x_007f_ffff >> k));
         n = ((n & 0x_007f_ffff) | 0x_0080_0000) >> (23 - k);
         if j < 0 {

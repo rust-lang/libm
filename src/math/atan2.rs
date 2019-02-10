@@ -39,6 +39,7 @@
 
 use super::atan;
 use super::fabs;
+use math::consts::*;
 
 const PI: f64 = 3.141_592_653_589_793_116; /* 0x_4009_21FB, 0x_5444_2D18 */
 const PI_LO: f64 = 1.224_646_799_147_353_177_2_e-16; /* 0x_3CA1_A626, 0x_3314_5C07 */
@@ -57,8 +58,8 @@ pub fn atan2(y: f64, x: f64) -> f64 {
         return atan(y);
     }
     let m = ((iy >> 31) & 1) | ((ix >> 30) & 2); /* 2*sign(x)+sign(y) */
-    ix &= 0x_7fff_ffff;
-    iy &= 0x_7fff_ffff;
+    ix &= UF_ABS;
+    iy &= UF_ABS;
 
     /* when y = 0 */
     if (iy | ly) == 0 {

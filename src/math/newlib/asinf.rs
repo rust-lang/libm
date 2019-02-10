@@ -42,7 +42,7 @@ pub fn asinf(x: f32) -> f32 {
     let mut p: f32;
     let mut q: f32;
     let hx = x.to_bits() as i32;
-    let ix = (hx as u32) & 0x_7fff_ffff;
+    let ix = (hx as u32) & UF_ABS;
 
     if ix == UF_1 {
         /* asin(1)=+-pi/2 with inexact */

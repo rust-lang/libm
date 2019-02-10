@@ -18,6 +18,7 @@ use core::f32;
 use super::k_rem_pio2f;
 use super::Precision;
 use math::fabsf;
+use math::consts::*;
 
 /* Table of constants for 2/pi, 396 Hex digits (476 decimal) of 2/pi */
 const TWO_OVER_PI: [u8; 198] = [
@@ -93,7 +94,6 @@ const PIO2_2T: f32 = 6.077_099_934_4_e-11; /* 0x_2e85_a308 */
 const PIO2_3: f32 = 6.077_094_383_3_e-11; /* 0x_2e85_a300 */
 const PIO2_3T: f32 = 6.123_234_262_9_e-17; /* 0x_248d_3132 */
 
-const UF_INF: u32 = 0x_7f80_0000;
 //const UF_1_PI_4: u32 = 0x_3f49_0fdb;
 const UF_3_PI_4: u32 = 0x_4016_cbe4;
 
@@ -104,7 +104,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
     let mut z: f32;
 
     let hx = x.to_bits();
-    let ix = hx & 0x_7fff_ffff;
+    let ix = hx & UF_ABS;
     let sign = (hx >> 31) != 0;
     if ix <= 0x_3f49_0fd8 {
         /* |x| ~<= pi/4 , no need for reduction */

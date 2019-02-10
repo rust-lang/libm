@@ -1,11 +1,12 @@
 use super::expm1f;
+use math::consts::*;
 
 #[inline]
 pub fn tanhf(mut x: f32) -> f32 {
     /* x = |x| */
     let mut ix = x.to_bits();
     let sign = (ix >> 31) != 0;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     x = f32::from_bits(ix);
     let w = ix;
 

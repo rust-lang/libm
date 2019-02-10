@@ -56,6 +56,8 @@
 
 use core::f64;
 use super::{cos, get_low_word, get_high_word, fabs, log, sin, sqrt};
+use math::consts::*;
+
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */
 const TPI: f64       = 6.366_197_723_675_813_824_33_e-01; /* 0x_3FE4_5F30, 0x_6DC9_C883 */
 
@@ -118,7 +120,7 @@ pub fn j0(mut x: f64) -> f64
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     /* j0(+-inf)=0, j0(nan)=nan */
     if ix >= 0x_7ff0_0000 {
@@ -276,7 +278,7 @@ fn pzero(x: f64) -> f64
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if      ix >= 0x_4020_0000 {p = &PR8; q = &PS8;}
     else if ix >= 0x_4012_2E8B {p = &PR5; q = &PS5;}
     else if ix >= 0x_4006_DB6D {p = &PR3; q = &PS3;}
@@ -375,7 +377,7 @@ fn qzero(x: f64) -> f64
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if      ix >= 0x_4020_0000 {p = &QR8; q = &QS8;}
     else if ix >= 0x_4012_2E8B {p = &QR5; q = &QS5;}
     else if ix >= 0x_4006_DB6D {p = &QR3; q = &QS3;}

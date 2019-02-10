@@ -15,6 +15,7 @@
 
 use core::f32;
 use math::consts::*;
+
 const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
 const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
 /* |(log(1+s)-log(1-s))/s - Lg(s)| < 2**-34.24 (~[-4.95_e-11, 4.97_e-11]). */
@@ -42,7 +43,7 @@ pub fn logf(mut x: f32) -> f32 {
         k -= 25;
         x *= x1p25;
         ix = x.to_bits();
-    } else if ix >= 0x_7f80_0000 {
+    } else if ix >= UF_INF {
         return x;
     } else if ix == UF_1 {
         return 0.;

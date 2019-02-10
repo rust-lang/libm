@@ -41,6 +41,7 @@
 
 use core::f64;
 use super::{fabs, get_high_word, get_low_word, sqrt, with_set_low_word};
+use math::consts::*;
 
 const PIO2_HI: f64 = 1.570_796_326_794_896_558; /* 0x_3FF9_21FB, 0x_5444_2D18 */
 const PIO2_LO: f64 = 6.123_233_995_736_766_035_87_e-17; /* 0x_3C91_A626, 0x_3314_5C07 */
@@ -72,7 +73,7 @@ pub fn asin(mut x: f64) -> f64 {
     let ix: u32;
 
     hx = get_high_word(x);
-    ix = hx & 0x_7fff_ffff;
+    ix = hx & UF_ABS;
     /* |x| >= 1 or nan */
     if ix >= 0x_3ff0_0000 {
         let lx: u32;

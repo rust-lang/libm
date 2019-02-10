@@ -80,6 +80,7 @@
 
 use core::f64;
 use super::{floor, k_cos, k_sin, log};
+use math::consts::*;
 
 const PI: f64  =  3.141_592_653_589_793_116; /* 0x_4009_21FB, 0x_5444_2D18 */
 const A0: f64  =  7.721_566_490_153_286_554_94_e-02; /* 0x_3FB3_C467, 0x_E37D_B0C8 */
@@ -192,7 +193,7 @@ pub fn lgamma_r(mut x: f64) -> (f64, isize)
     /* purge off +-inf, NaN, +-0, tiny and negative arguments */
     signgam = 1;
     sign = (u>>63) != 0;
-    ix = ((u>>32) as u32) & 0x_7fff_ffff;
+    ix = ((u>>32) as u32) & UF_ABS;
     if ix >= 0x_7ff0_0000 {
         return (x*x, signgam);
     }

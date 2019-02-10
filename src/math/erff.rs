@@ -14,6 +14,7 @@
  */
 
 use super::{expf, fabsf};
+use math::consts::*;
 
 const ERX: f32  =  8.450_629_115_1_e-01; /* 0x_3f58_560b */
 /*
@@ -134,8 +135,8 @@ pub fn erff(x: f32) -> f32
 
     ix = x.to_bits();
     sign = (ix>>31) as usize;
-    ix &= 0x_7fff_ffff;
-    if ix >= 0x_7f80_0000 {
+    ix &= UF_ABS;
+    if ix >= UF_INF {
         /* erf(nan)=nan, erf(+-inf)=+-1 */
         return 1.0-2.0*(sign as f32) + 1.0/x;
     }
@@ -174,22 +175,22 @@ pub fn erfcf(x: f32) -> f32 {
 
     ix = x.to_bits();
     sign = (ix>>31) as usize;
-    ix &= 0x_7fff_ffff;
-    if ix >= 0x_7f80_0000 {
+    ix &= UF_ABS;
+    if ix >= UF_INF {
         /* erfc(nan)=nan, erfc(+-inf)=0,2 */
-        return 2.0*(sign as f32) + 1.0/x;
+        return 2.*(sign as f32) + 1./x;
     }
 
     if ix < 0x_3f58_0000 {  /* |x| < 0.84375 */
         if ix < 0x_2380_0000 { /* |x| < 2**-56 */
-            return 1.0 - x;
+            return 1. - x;
         }
         z = x*x;
         r = PP0+z*(PP1+z*(PP2+z*(PP3+z*PP4)));
-        s = 1.0+z*(QQ1+z*(QQ2+z*(QQ3+z*(QQ4+z*QQ5))));
+        s = 1.+z*(QQ1+z*(QQ2+z*(QQ3+z*(QQ4+z*QQ5))));
         y = r/s;
         if sign != 0 || ix < 0x_3e80_0000 {  /* x < 1/4 */
-            return 1.0 - (x+x*y);
+            return 1. - (x+x*y);
         }
         return 0.5 - (x - 0.5 + x*y);
     }

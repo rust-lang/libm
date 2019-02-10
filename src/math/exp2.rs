@@ -25,6 +25,7 @@
 // SUCH DAMAGE.
 
 use super::scalbn;
+use math::consts::*;
 
 const TBLSIZE: usize = 256;
 
@@ -337,7 +338,7 @@ pub fn exp2(mut x: f64) -> f64 {
 
     /* Filter out exceptional cases. */
     let ui = f64::to_bits(x);
-    let ix = ui >> 32 & 0x_7fff_ffff;
+    let ix = ui >> 32 & (UF_ABS as u64);
     if ix >= 0x_408f_f000 {
         /* |x| >= 1022 or nan */
         if ix >= 0x_4090_0000 && ui >> 63 == 0 {

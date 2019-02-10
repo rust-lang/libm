@@ -66,6 +66,7 @@
  */
 
 use super::scalbn;
+use math::consts::*;
 
 const HALF: [f64; 2] = [0.5, -0.5];
 const LN2HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */
@@ -93,7 +94,7 @@ pub fn exp(mut x: f64) -> f64 {
 
     hx = (x.to_bits() >> 32) as u32;
     sign = (hx >> 31) as i32;
-    hx &= 0x_7fff_ffff; /* high word of |x| */
+    hx &= UF_ABS; /* high word of |x| */
 
     /* special cases */
     if hx >= 0x_4086_232b {

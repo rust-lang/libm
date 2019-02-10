@@ -14,6 +14,7 @@
  */
 
 use super::scalbnf;
+use math::consts::*;
 
 const HALF: [f32; 2] = [0.5, -0.5];
 const LN2_HI: f32 = 6.931_457_519_5_e-01; /* 0x_3f31_7200 */
@@ -33,12 +34,12 @@ pub fn expf(mut x: f32) -> f32 {
     let mut hx = x.to_bits();
     let sign = (hx >> 31) as i32; /* sign bit of x */
     let signb: bool = sign != 0;
-    hx &= 0x_7fff_ffff; /* high word of |x| */
+    hx &= UF_ABS; /* high word of |x| */
 
     /* special cases */
     if hx >= 0x_42ae_ac50 {
         /* if |x| >= -87.336_55 or NaN */
-        if hx > 0x_7f80_0000 {
+        if hx > UF_INF {
             /* NaN */
             return x;
         }

@@ -5,6 +5,8 @@
  * Hall, 1980.
  ******************************************************************/
 
+use core::f32;
+
 use math::fabsf;
 
 use super::consts::*;
@@ -41,7 +43,7 @@ pub fn sinef(x: f32, cosine: bool) -> f32 {
         }
         NumState::Inf => {
             //errno = EDOM;
-            return f32::from_bits(Z_INFINITY_F);
+            return f32::INFINITY;
         }
         _ => {}
     }

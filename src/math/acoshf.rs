@@ -1,11 +1,12 @@
 use super::{log1pf, logf, sqrtf};
+use math::consts::*;
 
 const LN2: f32 = 0.693_147_180_559_945_309_417_232_121_458_176_568;
 
 /* acosh(x) = log(x + sqrt(x*x-1)) */
 pub fn acoshf(x: f32) -> f32 {
     let u = x.to_bits();
-    let a = u & 0x_7fff_ffff;
+    let a = u & UF_ABS;
 
     if a < 0x_3f80_0000 + (1 << 23) {
         /* |x| < 2, invalid if x < 1 or nan */

@@ -18,8 +18,8 @@ use math::sqrtf;
 
 #[inline]
 pub fn hypotf(x: f32, y: f32) -> f32 {
-    let mut ha = (x.to_bits() as i32) & 0x_7fff_ffff;
-    let mut hb = (y.to_bits() as i32) & 0x_7fff_ffff;
+    let mut ha = (x.to_bits() as i32) & IF_ABS;
+    let mut hb = (y.to_bits() as i32) & IF_ABS;
     if hb > ha {
         core::mem::swap(&mut ha, &mut hb);
     }
@@ -32,11 +32,11 @@ pub fn hypotf(x: f32, y: f32) -> f32 {
     let mut k = 0i32;
     if ha > 0x_5880_0000 {
         /* a>2**50 */
-        if ha >= 0x_7f80_0000 {
+        if ha >= IF_INF {
             /* Inf or NaN */
-            return if ha == 0x_7f80_0000 {
+            return if ha == IF_INF {
                 a
-            } else if hb == 0x_7f80_0000 {
+            } else if hb == IF_INF {
                 b
             } else {
                 a + b /* for sNaN */

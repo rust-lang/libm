@@ -52,7 +52,7 @@ pub fn log1pf(x: f32) -> f32 {
         if ix << 1 < 0x_3380_0000 << 1 {
             /* |x| < 2**-24 */
             /* underflow if subnormal */
-            if (ix & 0x_7f80_0000) == 0 {
+            if (ix & UF_INF) == 0 {
                 force_eval!(x * x);
             }
             return x;
@@ -63,7 +63,7 @@ pub fn log1pf(x: f32) -> f32 {
             c = 0.;
             f = x;
         }
-    } else if ix >= 0x_7f80_0000 {
+    } else if ix >= UF_INF {
         return x;
     }
     if k > 0 {

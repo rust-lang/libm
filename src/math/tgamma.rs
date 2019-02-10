@@ -24,6 +24,7 @@ most ideas and constants are from boost and python
 */
 
 use core::f64;
+use math::consts::*;
 
 use super::{exp, floor, k_cos, k_sin, pow};
 
@@ -112,7 +113,7 @@ pub fn tgamma(mut x: f64) -> f64
     let mut dy: f64;
     let mut z: f64;
     let mut r: f64;
-    let ix: u32 = ((u >> 32) as u32) & 0x_7fff_ffff;
+    let ix: u32 = ((u >> 32) as u32) & UF_ABS;
     let sign: bool = (u>>63) != 0;
 
     /* special cases */

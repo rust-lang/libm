@@ -15,16 +15,17 @@
 
 use core::f32;
 use super::{k_tanf, rem_pio2f};
+use math::consts::*;
 
 #[inline]
 pub fn tanf(x: f32) -> f32 {
     let mut ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     /* |x| ~< pi/4 */
     if ix <= 0x_3f49_0fda {
         k_tanf(x, 0., 1)
-    } else if ix >= 0x_7f80_0000 {
+    } else if ix >= UF_INF {
         /* tan(Inf or NaN) is NaN */
         f32::NAN /* NaN */
     /* argument reduction needed */

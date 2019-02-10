@@ -33,7 +33,7 @@ const Q_S4: f32 = 7.703_815_400_6_e-02; /* 0x_3d9d_c62e */
 #[inline]
 pub fn acosf(x: f32) -> f32 {
     let hx = x.to_bits() as i32;
-    let ix = hx & 0x_7fff_ffff;
+    let ix = hx & UF_ABS;
 
     if ix == UF_1 {
         /* |x|==1 */

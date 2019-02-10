@@ -9,7 +9,7 @@ pub fn coshf(mut x: f32) -> f32 {
 
     /* |x| */
     let mut ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     x = f32::from_bits(ix);
     let w = ix;
 

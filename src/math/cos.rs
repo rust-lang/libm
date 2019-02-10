@@ -11,6 +11,7 @@
 
 use core::f64;
 use super::{k_cos, k_sin, rem_pio2};
+use math::consts::*;
 
 // cos(x)
 // Return cosine function of x.
@@ -44,7 +45,7 @@ use super::{k_cos, k_sin, rem_pio2};
 //
 #[inline]
 pub fn cos(x: f64) -> f64 {
-    let ix = (f64::to_bits(x) >> 32) as u32 & 0x_7fff_ffff;
+    let ix = (f64::to_bits(x) >> 32) as u32 & UF_ABS;
 
     /* |x| ~< pi/4 */
     if ix <= 0x_3fe9_21fb {

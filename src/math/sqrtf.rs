@@ -14,7 +14,8 @@
  */
 
 use core::f32;
-const TINY: f32 = 1.0e-30;
+const TINY: f32 = 1_e-30;
+use math::consts::*;
 
 #[inline]
 pub fn sqrtf(x: f32) -> f32 {
@@ -43,7 +44,7 @@ pub fn sqrtf(x: f32) -> f32 {
     ix = x.to_bits() as i32;
 
     /* take care of Inf and NaN */
-    if (ix as u32 & 0x_7f80_0000) == 0x_7f80_0000 {
+    if (ix as u32 & UF_INF) == UF_INF {
         return x * x + x; /* sqrt(NaN)=NaN, sqrt(+inf)=+inf, sqrt(-inf)=sNaN */
     }
 

@@ -104,6 +104,8 @@ use super::{exp, fabs, get_high_word, with_set_low_word};
  *              erfc/erf(NaN) is NaN
  */
 
+use math::consts::*;
+
 const ERX: f64 = 8.450_629_115_104_675_292_97_e-01; /* 0x_3FEB_0AC1, 0x_6000_0000 */
 /*
  * Coefficients for approximation to  erf on [0,0.84375]
@@ -224,7 +226,7 @@ pub fn erf(x: f64) -> f64 {
 
     ix = get_high_word(x);
     sign = (ix >> 31) as usize;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if ix >= 0x_7ff0_0000 {
         /* erf(nan)=nan, erf(+-inf)=+-1 */
         return 1.0 - 2.0 * (sign as f64) + 1.0 / x;
@@ -267,7 +269,7 @@ pub fn erfc(x: f64) -> f64 {
 
     ix = get_high_word(x);
     sign = (ix >> 31) as usize;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if ix >= 0x_7ff0_0000 {
         /* erfc(nan)=nan, erfc(+-inf)=0,2 */
         return 2.0 * (sign as f64) + 1.0 / x;

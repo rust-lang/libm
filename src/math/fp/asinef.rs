@@ -5,6 +5,8 @@
  * Hall, 1980.
  ******************************************************************/
 
+use core::f32;
+
 use math::fabsf;
 use math::sqrt;
 
@@ -39,7 +41,7 @@ pub fn asinef(x: f32, acosine: bool) -> f32 {
             return x;
         }
         NumState::Inf => {
-            return f32::from_bits(Z_INFINITY_F);
+            return f32::INFINITY;
         }
         _ => {}
     };

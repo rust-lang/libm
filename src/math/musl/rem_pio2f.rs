@@ -15,6 +15,7 @@
  */
 
 use math::rem_pio2_large;
+use math::consts::*;
 
 use core::f64;
 
@@ -26,8 +27,6 @@ const INV_PIO2: f64 = 6.366_197_723_675_813_824_33_e-01; /* 0x_3FE4_5F30, 0x_6DC
 const PIO2_1: f64 = 1.570_796_310_901_641_845_7; /* 0x_3FF9_21FB, 0x_5000_0000 */
 /// pi/2 - pio2_1
 const PIO2_1T: f64 = 1.589_325_477_352_819_669_16_e-08; /* 0x_3E51_10b4, 0x_611A_6263 */
-
-const UF_INF: u32 = 0x_7f80_0000;
 
 /// Return the remainder of x rem pi/2 in *y
 ///
@@ -41,7 +40,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f64) {
 
     let hx = x.to_bits();
     let sign = (hx >> 31) != 0;
-    let ix = hx & 0x_7fff_ffff;
+    let ix = hx & UF_ABS;
     /* 25+53 bit pi is good enough for medium size */
     if ix < 0x_4dc9_0fdb {
         /* |x| ~< 2^28*(pi/2), medium size */

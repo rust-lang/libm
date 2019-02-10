@@ -12,6 +12,7 @@
 
 use core::f64;
 use super::{get_high_word, k_cos, k_sin, rem_pio2};
+use math::consts::*;
 
 pub fn sincos(x: f64) -> (f64, f64)
 {
@@ -20,7 +21,7 @@ pub fn sincos(x: f64) -> (f64, f64)
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     /* |x| ~< pi/4 */
     if ix <= 0x_3fe9_21fb {

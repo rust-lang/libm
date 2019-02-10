@@ -11,6 +11,7 @@
  */
 
 use core::f64;
+use math::consts::*;
 
 const O_THRESHOLD: f64 = 7.097_827_128_933_839_730_96_e+02; /* 0x_4086_2E42, 0x_FEFA_39EF */
 const LN2_HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */
@@ -33,7 +34,7 @@ pub fn expm1(mut x: f64) -> f64 {
     let mut y: f64;
 
     let mut ui = x.to_bits();
-    let hx = ((ui >> 32) & 0x_7fff_ffff) as u32;
+    let hx = ((ui >> 32) & (UF_ABS as u64)) as u32;
     let sign = (ui >> 63) as i32;
 
     /* filter out huge and non-finite argument */

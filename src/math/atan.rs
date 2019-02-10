@@ -31,6 +31,7 @@
 
 use super::fabs;
 use core::f64;
+use math::consts::*;
 
 const ATANHI: [f64; 4] = [
     4.636_476_090_008_060_935_15_e-01, /* atan(0.5)hi 0x_3FDD_AC67, 0x_0561_BB4F */
@@ -65,7 +66,7 @@ pub fn atan(x: f64) -> f64 {
     let mut x = x;
     let mut ix = (x.to_bits() >> 32) as u32;
     let sign = ix >> 31;
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
     if ix >= 0x_4410_0000 {
         if x.is_nan() {
             return x;

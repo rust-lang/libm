@@ -11,6 +11,7 @@
 
 use core::f64;
 use super::{k_tan, rem_pio2};
+use math::consts::*;
 
 // tan(x)
 // Return tangent function of x.
@@ -44,7 +45,7 @@ use super::{k_tan, rem_pio2};
 pub fn tan(x: f64) -> f64 {
     let x1p120 = f32::from_bits(0x_7b80_0000); // 0x1p120f === 2 ^ 120
 
-    let ix = (f64::to_bits(x) >> 32) as u32 & 0x_7fff_ffff;
+    let ix = (f64::to_bits(x) >> 32) as u32 & UF_ABS;
     /* |x| ~< pi/4 */
     if ix <= 0x_3fe9_21fb {
         if ix < 0x_3e40_0000 {

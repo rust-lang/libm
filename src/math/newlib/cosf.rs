@@ -15,16 +15,17 @@
 
 use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
+use math::consts::*;
 
 #[inline]
 pub fn cosf(x: f32) -> f32 {
     let mut ix = x.to_bits();
-    ix &= 0x_7fff_ffff;
+    ix &= UF_ABS;
 
     /* |x| ~< pi/4 */
     if ix <= 0x_3f49_0fd8 {
         k_cosf(x, 0.)
-    } else if ix >= 0x_7f80_0000 {
+    } else if ix >= UF_INF {
         /* cos(Inf or NaN) is NaN */
         f32::NAN
     } else {

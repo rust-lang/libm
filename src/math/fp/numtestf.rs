@@ -18,11 +18,12 @@
  *
  *****************************************************************/
 use super::NumState;
+use math::consts::*;
 
 #[inline]
 pub fn numtestf(x: f32) -> NumState {
     let wx = x.to_bits() as i32;
-    let exp = (wx & 0x_7f80_0000) >> 23;
+    let exp = (wx & IF_INF) >> 23;
 
     /* Check for a zero input. */
     if x == 0. {

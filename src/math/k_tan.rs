@@ -40,6 +40,9 @@
 //      4. For x in [0.67434,pi/4],  let y = pi/4 - x, then
 //              tan(x) = tan(pi/4-y) = (1-tan(y))/(1+tan(y))
 //                     = 1 - 2*(tan(y) - (tan(y)^2)/(1+tan(y)))
+
+use math::consts::*;
+
 static T: [f64; 13] = [
     3.333_333_333_333_340_919_86_e-01,  /* 3FD55555, 55555563 */
     1.333_333_333_332_012_426_99_e-01,  /* 3FC11111, 1110FE7A */
@@ -61,7 +64,7 @@ const PIO4_LO: f64 = 3.061_616_997_868_383_017_93_e-17; /* 3C81A626, 33145C07 */
 #[inline]
 pub fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
     let hx = (f64::to_bits(x) >> 32) as u32;
-    let big = (hx & 0x_7fff_ffff) >= 0x_3FE5_9428; /* |x| >= 0.6744 */
+    let big = (hx & UF_ABS) >= 0x_3FE5_9428; /* |x| >= 0.6744 */
     if big {
         let sign = hx >> 31;
         if sign != 0 {
@@ -69,7 +72,7 @@ pub fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
             y = -y;
         }
         x = (PIO4 - x) + (PIO4_LO - y);
-        y = 0.0;
+        y = 0.;
     }
     let z = x * x;
     let w = z * z;

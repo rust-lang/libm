@@ -11,6 +11,7 @@
 
 use core::f64;
 use super::{k_cos, k_sin, rem_pio2};
+use math::consts::*;
 
 // sin(x)
 // Return sine function of x.
@@ -46,7 +47,7 @@ pub fn sin(x: f64) -> f64 {
     let x1p120 = f64::from_bits(0x_4770_0000_0000_0000); // 0x1p120f === 2 ^ 120
 
     /* High word of x. */
-    let ix = (f64::to_bits(x) >> 32) as u32 & 0x_7fff_ffff;
+    let ix = (f64::to_bits(x) >> 32) as u32 & UF_ABS;
 
     /* |x| ~< pi/4 */
     if ix <= 0x_3fe9_21fb {

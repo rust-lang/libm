@@ -1,4 +1,5 @@
 use core::f64;
+use math::consts::*;
 
 pub fn remquo(mut x: f64, mut y: f64) -> (f64, isize)
 {
@@ -90,7 +91,7 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, isize)
         x -= y;
         q += 1;
     }
-    q &= 0x_7fff_ffff;
+    q &= UF_ABS;
     let quo = if sx ^ sy { -(q as isize) } else { q as isize };
     if sx {
         (-x, quo)

@@ -13,6 +13,8 @@
  * ====================================================
  */
 
+use math::consts::*;
+
 const O_THRESHOLD: f32 = 8.872_167_968_8_e+01; /* 0x_42b1_7180 */
 const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
 const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
@@ -31,12 +33,12 @@ pub fn expm1f(mut x: f32) -> f32 {
 
     let mut hx = x.to_bits();
     let sign = (hx >> 31) != 0;
-    hx &= 0x_7fff_ffff;
+    hx &= UF_ABS;
 
     /* filter out huge and non-finite argument */
     if hx >= 0x_4195_b844 {
         /* if |x|>=27*ln2 */
-        if hx > 0x_7f80_0000 {
+        if hx > UF_INF {
             /* NaN */
             return x;
         }

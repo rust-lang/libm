@@ -1,4 +1,5 @@
 use super::log1pf;
+use math::consts::*;
 
 /* atanh(x) = log((1+x)/(1-x))/2 = log1p(2x/(1-x))/2 ~= x + x^3/3 + o(x^5) */
 pub fn atanhf(mut x: f32) -> f32 {
@@ -6,7 +7,7 @@ pub fn atanhf(mut x: f32) -> f32 {
     let sign = (u >> 31) != 0;
 
     /* |x| */
-    u &= 0x_7fff_ffff;
+    u &= UF_ABS;
     x = f32::from_bits(u);
 
     if u < 0x_3f80_0000 - (1 << 23) {

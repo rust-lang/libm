@@ -1,4 +1,5 @@
 use super::log1p;
+use math::consts::*;
 
 /* atanh(x) = log((1+x)/(1-x))/2 = log1p(2x/(1-x))/2 ~= x + x^3/3 + o(x^5) */
 pub fn atanh(mut x: f64) -> f64 {
@@ -7,7 +8,7 @@ pub fn atanh(mut x: f64) -> f64 {
     let sign = (u >> 63) != 0;
 
     /* |x| */
-    u &= 0x_7fff_ffff;
+    u &= UD_ABS;
     x = f64::from_bits(u);
 
     if e < 0x3ff - 1 {
