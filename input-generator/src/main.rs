@@ -1,5 +1,3 @@
-#![feature(int_to_from_bytes)]
-
 extern crate rand;
 
 use std::collections::BTreeSet;

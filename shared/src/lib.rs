@@ -1,5 +1,3 @@
-#![feature(exact_chunks, int_to_from_bytes)]
-
 #[macro_use]
 extern crate lazy_static;
 
@@ -8,7 +6,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f32");
 
         bytes
-            .exact_chunks(4)
+            .chunks_exact(4)
             .map(|chunk| {
                 let mut buf = [0; 4];
                 buf.copy_from_slice(chunk);
@@ -20,7 +18,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f32f32");
 
         bytes
-            .exact_chunks(8)
+            .chunks_exact(8)
             .map(|chunk| {
                 let mut x0 = [0; 4];
                 let mut x1 = [0; 4];
@@ -38,7 +36,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f32f32f32");
 
         bytes
-            .exact_chunks(12)
+            .chunks_exact(12)
             .map(|chunk| {
                 let mut x0 = [0; 4];
                 let mut x1 = [0; 4];
@@ -59,7 +57,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f32i16");
 
         bytes
-            .exact_chunks(6)
+            .chunks_exact(6)
             .map(|chunk| {
                 let mut x0 = [0; 4];
                 let mut x1 = [0; 2];
@@ -77,7 +75,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f64");
 
         bytes
-            .exact_chunks(8)
+            .chunks_exact(8)
             .map(|chunk| {
                 let mut buf = [0; 8];
                 buf.copy_from_slice(chunk);
@@ -89,7 +87,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f64f64");
 
         bytes
-            .exact_chunks(16)
+            .chunks_exact(16)
             .map(|chunk| {
                 let mut x0 = [0; 8];
                 let mut x1 = [0; 8];
@@ -107,7 +105,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f64f64f64");
 
         bytes
-            .exact_chunks(24)
+            .chunks_exact(24)
             .map(|chunk| {
                 let mut x0 = [0; 8];
                 let mut x1 = [0; 8];
@@ -128,7 +126,7 @@ lazy_static! {
         let bytes = include_bytes!("../../bin/input/f64i16");
 
         bytes
-            .exact_chunks(10)
+            .chunks_exact(10)
             .map(|chunk| {
                 let mut x0 = [0; 8];
                 let mut x1 = [0; 2];
@@ -151,7 +149,7 @@ macro_rules! f32 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(4)
+                    .chunks_exact(4)
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
@@ -190,7 +188,7 @@ macro_rules! f32f32 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(4)
+                    .chunks_exact(4)
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
@@ -231,7 +229,7 @@ macro_rules! f32f32f32 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(4)
+                    .chunks_exact(4)
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
@@ -273,7 +271,7 @@ macro_rules! f32i32 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(4)
+                    .chunks_exact(4)
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
@@ -314,7 +312,7 @@ macro_rules! f64 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(8)
+                    .chunks_exact(8)
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
@@ -353,7 +351,7 @@ macro_rules! f64f64 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(8)
+                    .chunks_exact(8)
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
@@ -394,7 +392,7 @@ macro_rules! f64f64f64 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(8)
+                    .chunks_exact(8)
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
@@ -436,7 +434,7 @@ macro_rules! f64i32 {
             #[test]
             fn $fun() {
                 let expected = include_bytes!(concat!("../bin/output/", $lib, ".", stringify!($fun)))
-                    .exact_chunks(8)
+                    .chunks_exact(8)
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
