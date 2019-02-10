@@ -37,14 +37,14 @@ use super::{exp, fabs, get_high_word, with_set_low_word};
  *         Remark. The formula is derived by noting
  *          erf(x) = (2/sqrt(pi))*(x - x^3/3 + x^5/10 - x^7/42 + ....)
  *         and that
- *          2/sqrt(pi) = 1.128379167095512573896158903121545171688
+ *          2/sqrt(pi) = 1.128_379_167_095_512_573896_158_903_121_545_171688
  *         is close to one. The interval is chosen because the fix
  *         point of erf(x) is near 0.6174 (i.e., erf(x)=x when x is
  *         near 0.6174), and by some experiment, 0.84375 is chosen to
  *         guarantee the error is less than one ulp for erf.
  *
  *      2. For |x| in [0.84375,1.25], let s = |x| - 1, and
- *         c = 0.84506291151 rounded to single (24 bits)
+ *         c = 0.845_062_91151 rounded to single (24 bits)
  *              erf(x)  = sign(x) * (c  + P1(s)/Q1(s))
  *              erfc(x) = (1-c)  - P1(s)/Q1(s) if x > 0
  *                        1+(c+P1(s)/Q1(s))    if x < 0
@@ -53,7 +53,7 @@ use super::{exp, fabs, get_high_word, with_set_low_word};
  *              erf(1+s) = erf(1) + s*Poly(s)
  *                       = 0.845.. + P1(s)/Q1(s)
  *         That is, we use rational approximation to approximate
- *                      erf(1+s) - (c = (single)0.84506291151)
+ *                      erf(1+s) - (c = (single)0.845_062_91151)
  *         Note that |P1/Q1|< 0.078 for x in [0.84375,1.25]
  *         where
  *              P1(s) = degree 6 poly in s
@@ -104,73 +104,73 @@ use super::{exp, fabs, get_high_word, with_set_low_word};
  *              erfc/erf(NaN) is NaN
  */
 
-const ERX: f64  = 8.45062911510467529297e-01; /* 0x3FEB0AC1, 0x60000000 */
+const ERX: f64 = 8.450_629_115_104_675_292_97_e-01; /* 0x_3FEB_0AC1, 0x_6000_0000 */
 /*
  * Coefficients for approximation to  erf on [0,0.84375]
  */
-const EFX8: f64 =  1.02703333676410069053e+00; /* 0x3FF06EBA, 0x8214DB69 */
-const PP0: f64  =  1.28379167095512558561e-01; /* 0x3FC06EBA, 0x8214DB68 */
-const PP1: f64  = -3.25042107247001499370e-01; /* 0xBFD4CD7D, 0x691CB913 */
-const PP2: f64  = -2.84817495755985104766e-02; /* 0xBF9D2A51, 0xDBD7194F */
-const PP3: f64  = -5.77027029648944159157e-03; /* 0xBF77A291, 0x236668E4 */
-const PP4: f64  = -2.37630166566501626084e-05; /* 0xBEF8EAD6, 0x120016AC */
-const QQ1: f64  =  3.97917223959155352819e-01; /* 0x3FD97779, 0xCDDADC09 */
-const QQ2: f64  =  6.50222499887672944485e-02; /* 0x3FB0A54C, 0x5536CEBA */
-const QQ3: f64  =  5.08130628187576562776e-03; /* 0x3F74D022, 0xC4D36B0F */
-const QQ4: f64  =  1.32494738004321644526e-04; /* 0x3F215DC9, 0x221C1A10 */
-const QQ5: f64  = -3.96022827877536812320e-06; /* 0xBED09C43, 0x42A26120 */
+const EFX8: f64 = 1.027_033_336_764_100_690_53; /* 0x_3FF0_6EBA, 0x_8214_DB69 */
+const PP0: f64 = 1.283_791_670_955_125_585_61_e-01; /* 0x_3FC0_6EBA, 0x_8214_DB68 */
+const PP1: f64 = -3.250_421_072_470_014_993_70_e-01; /* 0x_BFD4_CD7D, 0x_691C_B913 */
+const PP2: f64 = -2.848_174_957_559_851_047_66_e-02; /* 0x_BF9D_2A51, 0x_DBD7_194F */
+const PP3: f64 = -5.770_270_296_489_441_591_57_e-03; /* 0x_BF77_A291, 0x_2366_68E4 */
+const PP4: f64 = -2.376_301_665_665_016_260_84_e-05; /* 0x_BEF8_EAD6, 0x_1200_16AC */
+const QQ1: f64 = 3.979_172_239_591_553_528_19_e-01; /* 0x_3FD9_7779, 0x_CDDA_DC09 */
+const QQ2: f64 = 6.502_224_998_876_729_444_85_e-02; /* 0x_3FB0_A54C, 0x_5536_CEBA */
+const QQ3: f64 = 5.081_306_281_875_765_627_76_e-03; /* 0x_3F74_D022, 0x_C4D3_6B0F */
+const QQ4: f64 = 1.324_947_380_043_216_445_26_e-04; /* 0x_3F21_5DC9, 0x_221C_1A10 */
+const QQ5: f64 = -3.960_228_278_775_368_123_20_e-06; /* 0x_BED0_9C43, 0x_42A2_6120 */
 /*
  * Coefficients for approximation to  erf  in [0.84375,1.25]
  */
-const PA0: f64  = -2.36211856075265944077e-03; /* 0xBF6359B8, 0xBEF77538 */
-const PA1: f64  =  4.14856118683748331666e-01; /* 0x3FDA8D00, 0xAD92B34D */
-const PA2: f64  = -3.72207876035701323847e-01; /* 0xBFD7D240, 0xFBB8C3F1 */
-const PA3: f64  =  3.18346619901161753674e-01; /* 0x3FD45FCA, 0x805120E4 */
-const PA4: f64  = -1.10894694282396677476e-01; /* 0xBFBC6398, 0x3D3E28EC */
-const PA5: f64  =  3.54783043256182359371e-02; /* 0x3FA22A36, 0x599795EB */
-const PA6: f64  = -2.16637559486879084300e-03; /* 0xBF61BF38, 0x0A96073F */
-const QA1: f64  =  1.06420880400844228286e-01; /* 0x3FBB3E66, 0x18EEE323 */
-const QA2: f64  =  5.40397917702171048937e-01; /* 0x3FE14AF0, 0x92EB6F33 */
-const QA3: f64  =  7.18286544141962662868e-02; /* 0x3FB2635C, 0xD99FE9A7 */
-const QA4: f64  =  1.26171219808761642112e-01; /* 0x3FC02660, 0xE763351F */
-const QA5: f64  =  1.36370839120290507362e-02; /* 0x3F8BEDC2, 0x6B51DD1C */
-const QA6: f64  =  1.19844998467991074170e-02; /* 0x3F888B54, 0x5735151D */
+const PA0: f64 = -2.362_118_560_752_659_440_77_e-03; /* 0x_BF63_59B8, 0x_BEF7_7538 */
+const PA1: f64 = 4.148_561_186_837_483_316_66_e-01; /* 0x_3FDA_8D00, 0x_AD92_B34D */
+const PA2: f64 = -3.722_078_760_357_013_238_47_e-01; /* 0x_BFD7_D240, 0x_FBB8_C3F1 */
+const PA3: f64 = 3.183_466_199_011_617_536_74_e-01; /* 0x_3FD4_5FCA, 0x_8051_20E4 */
+const PA4: f64 = -1.108_946_942_823_966_774_76_e-01; /* 0x_BFBC_6398, 0x_3D3E_28EC */
+const PA5: f64 = 3.547_830_432_561_823_593_71_e-02; /* 0x_3FA2_2A36, 0x_5997_95EB */
+const PA6: f64 = -2.166_375_594_868_790_843_00_e-03; /* 0x_BF61_BF38, 0x_0A96_073F */
+const QA1: f64 = 1.064_208_804_008_442_282_86_e-01; /* 0x_3FBB_3E66, 0x_18EE_E323 */
+const QA2: f64 = 5.403_979_177_021_710_489_37_e-01; /* 0x_3FE1_4AF0, 0x_92EB_6F33 */
+const QA3: f64 = 7.182_865_441_419_626_628_68_e-02; /* 0x_3FB2_635C, 0x_D99F_E9A7 */
+const QA4: f64 = 1.261_712_198_087_616_421_12_e-01; /* 0x_3FC0_2660, 0x_E763_351F */
+const QA5: f64 = 1.363_708_391_202_905_073_62_e-02; /* 0x_3F8B_EDC2, 0x_6B51_DD1C */
+const QA6: f64 = 1.198_449_984_679_910_741_70_e-02; /* 0x_3F88_8B54, 0x_5735_151D */
 /*
  * Coefficients for approximation to  erfc in [1.25,1/0.35]
  */
-const RA0: f64  = -9.86494403484714822705e-03; /* 0xBF843412, 0x600D6435 */
-const RA1: f64  = -6.93858572707181764372e-01; /* 0xBFE63416, 0xE4BA7360 */
-const RA2: f64  = -1.05586262253232909814e+01; /* 0xC0251E04, 0x41B0E726 */
-const RA3: f64  = -6.23753324503260060396e+01; /* 0xC04F300A, 0xE4CBA38D */
-const RA4: f64  = -1.62396669462573470355e+02; /* 0xC0644CB1, 0x84282266 */
-const RA5: f64  = -1.84605092906711035994e+02; /* 0xC067135C, 0xEBCCABB2 */
-const RA6: f64  = -8.12874355063065934246e+01; /* 0xC0545265, 0x57E4D2F2 */
-const RA7: f64  = -9.81432934416914548592e+00; /* 0xC023A0EF, 0xC69AC25C */
-const SA1: f64  =  1.96512716674392571292e+01; /* 0x4033A6B9, 0xBD707687 */
-const SA2: f64  =  1.37657754143519042600e+02; /* 0x4061350C, 0x526AE721 */
-const SA3: f64  =  4.34565877475229228821e+02; /* 0x407B290D, 0xD58A1A71 */
-const SA4: f64  =  6.45387271733267880336e+02; /* 0x40842B19, 0x21EC2868 */
-const SA5: f64  =  4.29008140027567833386e+02; /* 0x407AD021, 0x57700314 */
-const SA6: f64  =  1.08635005541779435134e+02; /* 0x405B28A3, 0xEE48AE2C */
-const SA7: f64  =  6.57024977031928170135e+00; /* 0x401A47EF, 0x8E484A93 */
-const SA8: f64  = -6.04244152148580987438e-02; /* 0xBFAEEFF2, 0xEE749A62 */
+const RA0: f64 = -9.864_944_034_847_148_227_05_e-03; /* 0x_BF84_3412, 0x_600D_6435 */
+const RA1: f64 = -6.938_585_727_071_817_643_72_e-01; /* 0x_BFE6_3416, 0x_E4BA_7360 */
+const RA2: f64 = -1.055_862_622_532_329_098_14_e+01; /* 0x_C025_1E04, 0x_41B0_E726 */
+const RA3: f64 = -6.237_533_245_032_600_603_96_e+01; /* 0x_C04F_300A, 0x_E4CB_A38D */
+const RA4: f64 = -1.623_966_694_625_734_703_55_e+02; /* 0x_C064_4CB1, 0x_8428_2266 */
+const RA5: f64 = -1.846_050_929_067_110_359_94_e+02; /* 0x_C067_135C, 0x_EBCC_ABB2 */
+const RA6: f64 = -8.128_743_550_630_659_342_46_e+01; /* 0x_C054_5265, 0x_57E4_D2F2 */
+const RA7: f64 = -9.814_329_344_169_145_485_92; /* 0x_C023_A0EF, 0x_C69A_C25C */
+const SA1: f64 = 1.965_127_166_743_925_712_92_e+01; /* 0x_4033_A6B9, 0x_BD70_7687 */
+const SA2: f64 = 1.376_577_541_435_190_426_00_e+02; /* 0x_4061_350C, 0x_526A_E721 */
+const SA3: f64 = 4.345_658_774_752_292_288_21_e+02; /* 0x_407B_290D, 0x_D58A_1A71 */
+const SA4: f64 = 6.453_872_717_332_678_803_36_e+02; /* 0x_4084_2B19, 0x_21EC_2868 */
+const SA5: f64 = 4.290_081_400_275_678_333_86_e+02; /* 0x_407A_D021, 0x_5770_0314 */
+const SA6: f64 = 1.086_350_055_417_794_351_34_e+02; /* 0x_405B_28A3, 0x_EE48_AE2C */
+const SA7: f64 = 6.570_249_770_319_281_701_35; /* 0x_401A_47EF, 0x_8E48_4A93 */
+const SA8: f64 = -6.042_441_521_485_809_874_38_e-02; /* 0x_BFAE_EFF2, 0x_EE74_9A62 */
 /*
  * Coefficients for approximation to  erfc in [1/.35,28]
  */
-const RB0: f64  = -9.86494292470009928597e-03; /* 0xBF843412, 0x39E86F4A */
-const RB1: f64  = -7.99283237680523006574e-01; /* 0xBFE993BA, 0x70C285DE */
-const RB2: f64  = -1.77579549177547519889e+01; /* 0xC031C209, 0x555F995A */
-const RB3: f64  = -1.60636384855821916062e+02; /* 0xC064145D, 0x43C5ED98 */
-const RB4: f64  = -6.37566443368389627722e+02; /* 0xC083EC88, 0x1375F228 */
-const RB5: f64  = -1.02509513161107724954e+03; /* 0xC0900461, 0x6A2E5992 */
-const RB6: f64  = -4.83519191608651397019e+02; /* 0xC07E384E, 0x9BDC383F */
-const SB1: f64  =  3.03380607434824582924e+01; /* 0x403E568B, 0x261D5190 */
-const SB2: f64  =  3.25792512996573918826e+02; /* 0x40745CAE, 0x221B9F0A */
-const SB3: f64  =  1.53672958608443695994e+03; /* 0x409802EB, 0x189D5118 */
-const SB4: f64  =  3.19985821950859553908e+03; /* 0x40A8FFB7, 0x688C246A */
-const SB5: f64  =  2.55305040643316442583e+03; /* 0x40A3F219, 0xCEDF3BE6 */
-const SB6: f64  =  4.74528541206955367215e+02; /* 0x407DA874, 0xE79FE763 */
-const SB7: f64  = -2.24409524465858183362e+01; /* 0xC03670E2, 0x42712D62 */
+const RB0: f64 = -9.864_942_924_700_099_285_97_e-03; /* 0x_BF84_3412, 0x_39E8_6F4A */
+const RB1: f64 = -7.992_832_376_805_230_065_74_e-01; /* 0x_BFE9_93BA, 0x_70C2_85DE */
+const RB2: f64 = -1.775_795_491_775_475_198_89_e+01; /* 0x_C031_C209, 0x_555F_995A */
+const RB3: f64 = -1.606_363_848_558_219_160_62_e+02; /* 0x_C064_145D, 0x_43C5_ED98 */
+const RB4: f64 = -6.375_664_433_683_896_277_22_e+02; /* 0x_C083_EC88, 0x_1375_F228 */
+const RB5: f64 = -1.025_095_131_611_077_249_54_e+03; /* 0x_C090_0461, 0x_6A2E_5992 */
+const RB6: f64 = -4.835_191_916_086_513_970_19_e+02; /* 0x_C07E_384E, 0x_9BDC_383F */
+const SB1: f64 = 3.033_806_074_348_245_829_24_e+01; /* 0x_403E_568B, 0x_261D_5190 */
+const SB2: f64 = 3.257_925_129_965_739_188_26_e+02; /* 0x_4074_5CAE, 0x_221B_9F0A */
+const SB3: f64 = 1.536_729_586_084_436_959_94_e+03; /* 0x_4098_02EB, 0x_189D_5118 */
+const SB4: f64 = 3.199_858_219_508_595_539_08_e+03; /* 0x_40A8_FFB7, 0x_688C_246A */
+const SB5: f64 = 2.553_050_406_433_164_425_83_e+03; /* 0x_40A3_F219, 0x_CEDF_3BE6 */
+const SB6: f64 = 4.745_285_412_069_553_672_15_e+02; /* 0x_407D_A874, 0x_E79F_E763 */
+const SB7: f64 = -2.244_095_244_658_581_833_62_e+01; /* 0x_C036_70E2, 0x_4271_2D62 */
 
 fn erfc1(x: f64) -> f64 {
     let s: f64;
@@ -178,10 +178,10 @@ fn erfc1(x: f64) -> f64 {
     let q: f64;
 
     s = fabs(x) - 1.0;
-    p = PA0+s*(PA1+s*(PA2+s*(PA3+s*(PA4+s*(PA5+s*PA6)))));
-    q = 1.0+s*(QA1+s*(QA2+s*(QA3+s*(QA4+s*(QA5+s*QA6)))));
+    p = PA0 + s * (PA1 + s * (PA2 + s * (PA3 + s * (PA4 + s * (PA5 + s * PA6)))));
+    q = 1.0 + s * (QA1 + s * (QA2 + s * (QA3 + s * (QA4 + s * (QA5 + s * QA6)))));
 
-    1.0 - ERX - p/q
+    1.0 - ERX - p / q
 }
 
 fn erfc2(ix: u32, mut x: f64) -> f64 {
@@ -190,26 +190,28 @@ fn erfc2(ix: u32, mut x: f64) -> f64 {
     let big_s: f64;
     let z: f64;
 
-    if ix < 0x3ff40000 {  /* |x| < 1.25 */
+    if ix < 0x_3ff4_0000 {
+        /* |x| < 1.25 */
         return erfc1(x);
     }
 
     x = fabs(x);
-    s = 1.0/(x*x);
-    if ix < 0x4006db6d {  /* |x| < 1/.35 ~ 2.85714 */
-        r = RA0+s*(RA1+s*(RA2+s*(RA3+s*(RA4+s*(
-             RA5+s*(RA6+s*RA7))))));
-        big_s = 1.0+s*(SA1+s*(SA2+s*(SA3+s*(SA4+s*(
-             SA5+s*(SA6+s*(SA7+s*SA8)))))));
-    } else {                /* |x| > 1/.35 */
-        r = RB0+s*(RB1+s*(RB2+s*(RB3+s*(RB4+s*(
-             RB5+s*RB6)))));
-        big_s = 1.0+s*(SB1+s*(SB2+s*(SB3+s*(SB4+s*(
-             SB5+s*(SB6+s*SB7))))));
+    s = 1.0 / (x * x);
+    if ix < 0x_4006_db6d {
+        /* |x| < 1/.35 ~ 2.85714 */
+        r = RA0 + s * (RA1 + s * (RA2 + s * (RA3 + s * (RA4 + s * (RA5 + s * (RA6 + s * RA7))))));
+        big_s = 1.0
+            + s * (SA1
+                + s * (SA2 + s * (SA3 + s * (SA4 + s * (SA5 + s * (SA6 + s * (SA7 + s * SA8)))))));
+    } else {
+        /* |x| > 1/.35 */
+        r = RB0 + s * (RB1 + s * (RB2 + s * (RB3 + s * (RB4 + s * (RB5 + s * RB6)))));
+        big_s =
+            1.0 + s * (SB1 + s * (SB2 + s * (SB3 + s * (SB4 + s * (SB5 + s * (SB6 + s * SB7))))));
     }
     z = with_set_low_word(x, 0);
 
-    exp(-z*z-0.5625)*exp((z-x)*(z+x)+r/big_s)/x
+    exp(-z * z - 0.5625) * exp((z - x) * (z + x) + r / big_s) / x
 }
 
 pub fn erf(x: f64) -> f64 {
@@ -221,27 +223,30 @@ pub fn erf(x: f64) -> f64 {
     let sign: usize;
 
     ix = get_high_word(x);
-    sign = (ix>>31) as usize;
-    ix &= 0x7fffffff;
-    if ix >= 0x7ff00000 {
+    sign = (ix >> 31) as usize;
+    ix &= 0x_7fff_ffff;
+    if ix >= 0x_7ff0_0000 {
         /* erf(nan)=nan, erf(+-inf)=+-1 */
-        return 1.0-2.0*(sign as f64) + 1.0/x;
+        return 1.0 - 2.0 * (sign as f64) + 1.0 / x;
     }
-    if ix < 0x3feb0000 {  /* |x| < 0.84375 */
-        if ix < 0x3e300000 {  /* |x| < 2**-28 */
+    if ix < 0x_3feb_0000 {
+        /* |x| < 0.84375 */
+        if ix < 0x_3e30_0000 {
+            /* |x| < 2**-28 */
             /* avoid underflow */
-            return 0.125*(8.0*x + EFX8*x);
+            return 0.125 * (8.0 * x + EFX8 * x);
         }
-        z = x*x;
-        r = PP0+z*(PP1+z*(PP2+z*(PP3+z*PP4)));
-        s = 1.0+z*(QQ1+z*(QQ2+z*(QQ3+z*(QQ4+z*QQ5))));
-        y = r/s;
-        return x + x*y;
+        z = x * x;
+        r = PP0 + z * (PP1 + z * (PP2 + z * (PP3 + z * PP4)));
+        s = 1.0 + z * (QQ1 + z * (QQ2 + z * (QQ3 + z * (QQ4 + z * QQ5))));
+        y = r / s;
+        return x + x * y;
     }
-    if ix < 0x40180000 { /* 0.84375 <= |x| < 6 */
-        y = 1.0 - erfc2(ix,x);
+    if ix < 0x_4018_0000 {
+        /* 0.84375 <= |x| < 6 */
+        y = 1.0 - erfc2(ix, x);
     } else {
-        let x1p_1022 = f64::from_bits(0x0010000000000000);
+        let x1p_1022 = f64::from_bits(0x_0010_0000_0000_0000);
         y = 1.0 - x1p_1022;
     }
 
@@ -261,37 +266,41 @@ pub fn erfc(x: f64) -> f64 {
     let sign: usize;
 
     ix = get_high_word(x);
-    sign = (ix>>31) as usize;
-    ix &= 0x7fffffff;
-    if ix >= 0x7ff00000 {
+    sign = (ix >> 31) as usize;
+    ix &= 0x_7fff_ffff;
+    if ix >= 0x_7ff0_0000 {
         /* erfc(nan)=nan, erfc(+-inf)=0,2 */
-        return 2.0*(sign as f64) + 1.0/x;
+        return 2.0 * (sign as f64) + 1.0 / x;
     }
-    if ix < 0x3feb0000 {  /* |x| < 0.84375 */
-        if ix < 0x3c700000 { /* |x| < 2**-56 */
+    if ix < 0x_3feb_0000 {
+        /* |x| < 0.84375 */
+        if ix < 0x_3c70_0000 {
+            /* |x| < 2**-56 */
             return 1.0 - x;
         }
-        z = x*x;
-        r = PP0+z*(PP1+z*(PP2+z*(PP3+z*PP4)));
-        s = 1.0+z*(QQ1+z*(QQ2+z*(QQ3+z*(QQ4+z*QQ5))));
-        y = r/s;
-        if sign != 0 || ix < 0x3fd00000 {  /* x < 1/4 */
-            return 1.0 - (x+x*y);
+        z = x * x;
+        r = PP0 + z * (PP1 + z * (PP2 + z * (PP3 + z * PP4)));
+        s = 1.0 + z * (QQ1 + z * (QQ2 + z * (QQ3 + z * (QQ4 + z * QQ5))));
+        y = r / s;
+        if sign != 0 || ix < 0x_3fd0_0000 {
+            /* x < 1/4 */
+            return 1.0 - (x + x * y);
         }
-        return 0.5 - (x - 0.5 + x*y);
+        return 0.5 - (x - 0.5 + x * y);
     }
-    if ix < 0x403c0000 {  /* 0.84375 <= |x| < 28 */
+    if ix < 0x_403c_0000 {
+        /* 0.84375 <= |x| < 28 */
         if sign != 0 {
-            return 2.0 - erfc2(ix,x);
+            return 2.0 - erfc2(ix, x);
         } else {
-            return erfc2(ix,x);
+            return erfc2(ix, x);
         }
     }
 
-    let x1p_1022 = f64::from_bits(0x0010000000000000);
+    let x1p_1022 = f64::from_bits(0x_0010_0000_0000_0000);
     if sign != 0 {
         2.0 - x1p_1022
     } else {
-        x1p_1022*x1p_1022
+        x1p_1022 * x1p_1022
     }
 }

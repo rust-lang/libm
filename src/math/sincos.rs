@@ -19,15 +19,15 @@ pub fn sincos(x: f64) -> (f64, f64)
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x7fffffff;
+    ix &= 0x_7fff_ffff;
 
     /* |x| ~< pi/4 */
-    if ix <= 0x3fe921fb {
+    if ix <= 0x_3fe9_21fb {
         /* if |x| < 2**-27 * sqrt(2) */
-        if ix < 0x3e46a09e {
+        if ix < 0x_3e46_a09e {
             /* raise inexact if x!=0 and underflow if subnormal */
-            let x1p120 = f64::from_bits(0x4770000000000000); // 0x1p120 == 2^120
-            if ix < 0x00100000 {
+            let x1p120 = f64::from_bits(0x_4770_0000_0000_0000); // 0x1p120 == 2^120
+            if ix < 0x_0010_0000 {
                 force_eval!(x/x1p120);
             } else {
                 force_eval!(x+x1p120);
@@ -38,7 +38,7 @@ pub fn sincos(x: f64) -> (f64, f64)
     }
 
     /* sincos(Inf or NaN) is NaN */
-    if ix >= 0x7ff00000 {
+    if ix >= 0x_7ff0_0000 {
         let rv = x - x;
         return (rv, rv);
     }

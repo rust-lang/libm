@@ -4,7 +4,7 @@ pub fn frexp(x: f64) -> (f64, isize) {
 
     if ee == 0 {
         if x != 0.0 {
-            let x1p64 = f64::from_bits(0x43f0000000000000);
+            let x1p64 = f64::from_bits(0x_43f0_0000_0000_0000);
             let (x, e) = frexp(x*x1p64);
             return (x, e - 64);
         }
@@ -14,7 +14,7 @@ pub fn frexp(x: f64) -> (f64, isize) {
     }
 
     let e = ee - 0x3fe;
-    y &= 0x800fffffffffffff;
-    y |= 0x3fe0000000000000;
-    return (f64::from_bits(y), e);
+    y &= 0x_800f_ffff_ffff_ffff;
+    y |= 0x_3fe0_0000_0000_0000;
+    (f64::from_bits(y), e)
 }

@@ -6,8 +6,8 @@ documentation = "https://docs.rs/libm"
 keywords = ["libm", "math"]
 license = "MIT OR Apache-2.0"
 name = "libm"
-repository = "https://github.com/japaric/libm"
-version = "0.1.2"
+repository = "https://github.com/rust-lang-nursery/libm"
+version = "0.2.0"
 exclude = ["/ci/*"]
 
 [features]

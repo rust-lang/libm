@@ -16,7 +16,7 @@
 use core::f32;
 use math::consts::*;
 
-const IVLN2HI: f32 = 1.442_871_093_8_e+00; /* 0x_3fb8_b000 */
+const IVLN2HI: f32 = 1.442_871_093_8; /* 0x_3fb8_b000 */
 const IVLN2LO: f32 = -1.760_528_539_3_e-04; /* 0x_b938_9ad4 */
 /* |(log(1+s)-log(1-s))/s - Lg(s)| < 2**-34.24 (~[-4.95e-11, 4.97e-11]). */
 const LG1: f32 = 0.666_666_626_93; /* 0x_aa_aaaa.0p-24 */

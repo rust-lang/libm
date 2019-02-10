@@ -18,7 +18,7 @@ use super::scalbnf;
 const HALF: [f32; 2] = [0.5, -0.5];
 const LN2_HI: f32 = 6.931_457_519_5_e-01; /* 0x_3f31_7200 */
 const LN2_LO: f32 = 1.428_606_765_3_e-06; /* 0x_35bf_be8e */
-const INV_LN2: f32 = 1.442_695_021_6_e+00; /* 0x_3fb8_aa3b */
+const INV_LN2: f32 = 1.442_695_021_6; /* 0x_3fb8_aa3b */
 /*
  * Domain [-0.345_68, 0.345_68], range ~[-4.278_e-9, 4.447_e-9]:
  * |x*(exp(x)+1)/(exp(x)-1) - p(x)| < 2**-27.74

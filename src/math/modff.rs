@@ -10,23 +10,23 @@ pub fn modff(x: f32) -> (f32, f32) {
         if e == 0x80 && (u<<9) != 0 { /* nan */
             return (x, rv2);
         }
-        u &= 0x80000000;
+        u &= 0x_8000_0000;
         return (f32::from_bits(u), rv2);
     }
     /* no integral part */
     if e < 0 {
-        u &= 0x80000000;
+        u &= 0x_8000_0000;
         rv2 = f32::from_bits(u);
         return (x, rv2);
     }
 
-    mask = 0x007fffff>>e;
+    mask = 0x_007f_ffff>>e;
     if (u & mask) == 0 {
         rv2 = x;
-        u &= 0x80000000;
+        u &= 0x_8000_0000;
         return (f32::from_bits(u), rv2);
     }
     u &= !mask;
     rv2 = f32::from_bits(u);
-    return (x - rv2, rv2);
+    (x - rv2, rv2)
 }

@@ -88,7 +88,7 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, isize)
         x -= y;
         q += 1;
     }
-    q &= 0x7fffffff;
+    q &= 0x_7fff_ffff;
     let quo = if sx ^ sy { -(q as isize) } else { q as isize };
     if sx {
         (-x, quo)
