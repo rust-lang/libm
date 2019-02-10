@@ -6,6 +6,8 @@ macro_rules! f32 {
             fs::create_dir_all("math/src")?;
 
             let main = format!("
+#![feature(int_to_from_bytes)]
+
 #![no_main]
 #![no_std]
 
@@ -33,10 +35,10 @@ fn run() -> Result<(), usize> {{
 
     let mut buf = [0; 4];
     while let Ok(()) = io::Stdin.read_exact(&mut buf) {{
-        let x = f32::from_bits(u32::from_bytes(buf));
+        let x = f32::from_bits(u32::from_ne_bytes(buf));
         let y = unsafe {{ {0}(x) }};
 
-        io::Stdout.write_all(&y.to_bits().to_bytes())?;
+        io::Stdout.write_all(&y.to_bits().to_ne_bytes())?;
     }}
 
     Ok(())
@@ -63,7 +65,8 @@ pub fn __errno() -> *mut i32 {{
                 .arg("math/target/thumbv7em-none-eabi/release/math")
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
-                .spawn()?;
+                .spawn()
+                .map_err(|_| "missing qemu-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 
@@ -83,6 +86,8 @@ macro_rules! f32f32 {
             fs::create_dir_all("math/src")?;
 
             let main = format!("
+#![feature(int_to_from_bytes)]
+
 #![no_main]
 #![no_std]
 
@@ -112,14 +117,14 @@ fn run() -> Result<(), usize> {{
     while let Ok(()) = io::Stdin.read_exact(&mut chunk) {{
         let mut buf = [0; 4];
         buf.copy_from_slice(&chunk[..4]);
-        let x0 = f32::from_bits(u32::from_bytes(buf));
+        let x0 = f32::from_bits(u32::from_ne_bytes(buf));
 
         buf.copy_from_slice(&chunk[4..]);
-        let x1 = f32::from_bits(u32::from_bytes(buf));
+        let x1 = f32::from_bits(u32::from_ne_bytes(buf));
 
         let y = unsafe {{ {0}(x0, x1) }};
 
-        io::Stdout.write_all(&y.to_bits().to_bytes())?;
+        io::Stdout.write_all(&y.to_bits().to_ne_bytes())?;
     }}
 
     Ok(())
@@ -146,7 +151,8 @@ pub fn __errno() -> *mut i32 {{
                 .arg("math/target/thumbv7em-none-eabi/release/math")
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
-                .spawn()?;
+                .spawn()
+                .map_err(|_| "missing qemu-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 
@@ -166,6 +172,8 @@ macro_rules! f32f32f32 {
             fs::create_dir_all("math/src")?;
 
             let main = format!("
+#![feature(int_to_from_bytes)]
+
 #![no_main]
 #![no_std]
 
@@ -195,17 +203,17 @@ fn run() -> Result<(), usize> {{
     while let Ok(()) = io::Stdin.read_exact(&mut chunk) {{
         let mut buf = [0; 4];
         buf.copy_from_slice(&chunk[..4]);
-        let x0 = f32::from_bits(u32::from_bytes(buf));
+        let x0 = f32::from_bits(u32::from_ne_bytes(buf));
 
         buf.copy_from_slice(&chunk[4..8]);
-        let x1 = f32::from_bits(u32::from_bytes(buf));
+        let x1 = f32::from_bits(u32::from_ne_bytes(buf));
 
         buf.copy_from_slice(&chunk[8..]);
-        let x2 = f32::from_bits(u32::from_bytes(buf));
+        let x2 = f32::from_bits(u32::from_ne_bytes(buf));
 
         let y = unsafe {{ {0}(x0, x1, x2) }};
 
-        io::Stdout.write_all(&y.to_bits().to_bytes())?;
+        io::Stdout.write_all(&y.to_bits().to_ne_bytes())?;
     }}
 
     Ok(())
@@ -232,7 +240,8 @@ pub fn __errno() -> *mut i32 {{
                 .arg("math/target/thumbv7em-none-eabi/release/math")
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
-                .spawn()?;
+                .spawn()
+                .map_err(|_| "missing qemu-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 

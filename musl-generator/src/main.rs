@@ -1,3 +1,5 @@
+#![feature(int_to_from_bytes)]
+
 extern crate libm;
 extern crate shared;
 

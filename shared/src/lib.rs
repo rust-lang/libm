@@ -1,4 +1,4 @@
-#![feature(exact_chunks)]
+#![feature(exact_chunks, int_to_from_bytes)]
 
 #[macro_use]
 extern crate lazy_static;
@@ -12,7 +12,7 @@ lazy_static! {
             .map(|chunk| {
                 let mut buf = [0; 4];
                 buf.copy_from_slice(chunk);
-                f32::from_bits(u32::from_le(u32::from_bytes(buf)))
+                f32::from_bits(u32::from_le_bytes(buf))
             })
             .collect()
     };
@@ -28,8 +28,8 @@ lazy_static! {
                 x1.copy_from_slice(&chunk[4..]);
 
                 (
-                    f32::from_bits(u32::from_le(u32::from_bytes(x0))),
-                    f32::from_bits(u32::from_le(u32::from_bytes(x1))),
+                    f32::from_bits(u32::from_le_bytes(x0)),
+                    f32::from_bits(u32::from_le_bytes(x1)),
                 )
             })
             .collect()
@@ -48,9 +48,9 @@ lazy_static! {
                 x2.copy_from_slice(&chunk[8..]);
 
                 (
-                    f32::from_bits(u32::from_le(u32::from_bytes(x0))),
-                    f32::from_bits(u32::from_le(u32::from_bytes(x1))),
-                    f32::from_bits(u32::from_le(u32::from_bytes(x2))),
+                    f32::from_bits(u32::from_le_bytes(x0)),
+                    f32::from_bits(u32::from_le_bytes(x1)),
+                    f32::from_bits(u32::from_le_bytes(x2)),
                 )
             })
             .collect()
@@ -67,8 +67,8 @@ lazy_static! {
                 x1.copy_from_slice(&chunk[4..]);
 
                 (
-                    f32::from_bits(u32::from_le(u32::from_bytes(x0))),
-                    i16::from_le(i16::from_bytes(x1)) as i32,
+                    f32::from_bits(u32::from_le_bytes(x0)),
+                    i16::from_le(i16::from_ne_bytes(x1)) as i32,
                 )
             })
             .collect()
@@ -81,7 +81,7 @@ lazy_static! {
             .map(|chunk| {
                 let mut buf = [0; 8];
                 buf.copy_from_slice(chunk);
-                f64::from_bits(u64::from_le(u64::from_bytes(buf)))
+                f64::from_bits(u64::from_le(u64::from_ne_bytes(buf)))
             })
             .collect()
     };
@@ -97,8 +97,8 @@ lazy_static! {
                 x1.copy_from_slice(&chunk[8..]);
 
                 (
-                    f64::from_bits(u64::from_le(u64::from_bytes(x0))),
-                    f64::from_bits(u64::from_le(u64::from_bytes(x1))),
+                    f64::from_bits(u64::from_le(u64::from_ne_bytes(x0))),
+                    f64::from_bits(u64::from_le(u64::from_ne_bytes(x1))),
                 )
             })
             .collect()
@@ -117,9 +117,9 @@ lazy_static! {
                 x2.copy_from_slice(&chunk[16..]);
 
                 (
-                    f64::from_bits(u64::from_le(u64::from_bytes(x0))),
-                    f64::from_bits(u64::from_le(u64::from_bytes(x1))),
-                    f64::from_bits(u64::from_le(u64::from_bytes(x2))),
+                    f64::from_bits(u64::from_le(u64::from_ne_bytes(x0))),
+                    f64::from_bits(u64::from_le(u64::from_ne_bytes(x1))),
+                    f64::from_bits(u64::from_le(u64::from_ne_bytes(x2))),
                 )
             })
             .collect()
@@ -136,8 +136,8 @@ lazy_static! {
                 x1.copy_from_slice(&chunk[8..]);
 
                 (
-                    f64::from_bits(u64::from_le(u64::from_bytes(x0))),
-                    i16::from_le(i16::from_bytes(x1)) as i32,
+                    f64::from_bits(u64::from_le(u64::from_ne_bytes(x0))),
+                    i16::from_le(i16::from_ne_bytes(x1)) as i32,
                 )
             })
             .collect()
@@ -155,7 +155,7 @@ macro_rules! f32 {
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
-                        f32::from_bits(u32::from_le(u32::from_bytes(buf)))
+                        f32::from_bits(u32::from_le_bytes(buf))
                     })
                     .collect::<Vec<_>>();
 
@@ -194,7 +194,7 @@ macro_rules! f32f32 {
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
-                        f32::from_bits(u32::from_le(u32::from_bytes(buf)))
+                        f32::from_bits(u32::from_le_bytes(buf))
                     })
                     .collect::<Vec<_>>();
 
@@ -235,7 +235,7 @@ macro_rules! f32f32f32 {
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
-                        f32::from_bits(u32::from_le(u32::from_bytes(buf)))
+                        f32::from_bits(u32::from_le_bytes(buf))
                     })
                     .collect::<Vec<_>>();
 
@@ -277,7 +277,7 @@ macro_rules! f32i32 {
                     .map(|chunk| {
                         let mut buf = [0; 4];
                         buf.copy_from_slice(chunk);
-                        f32::from_bits(u32::from_le(u32::from_bytes(buf)))
+                        f32::from_bits(u32::from_le_bytes(buf))
                     })
                     .collect::<Vec<_>>();
 
@@ -318,7 +318,7 @@ macro_rules! f64 {
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
-                        f64::from_bits(u64::from_le(u64::from_bytes(buf)))
+                        f64::from_bits(u64::from_le(u64::from_ne_bytes(buf)))
                     })
                     .collect::<Vec<_>>();
 
@@ -357,7 +357,7 @@ macro_rules! f64f64 {
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
-                        f64::from_bits(u64::from_le(u64::from_bytes(buf)))
+                        f64::from_bits(u64::from_le(u64::from_ne_bytes(buf)))
                     })
                     .collect::<Vec<_>>();
 
@@ -398,7 +398,7 @@ macro_rules! f64f64f64 {
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
-                        f64::from_bits(u64::from_le(u64::from_bytes(buf)))
+                        f64::from_bits(u64::from_le(u64::from_ne_bytes(buf)))
                     })
                     .collect::<Vec<_>>();
 
@@ -440,7 +440,7 @@ macro_rules! f64i32 {
                     .map(|chunk| {
                         let mut buf = [0; 8];
                         buf.copy_from_slice(chunk);
-                        f64::from_bits(u64::from_le(u64::from_bytes(buf)))
+                        f64::from_bits(u64::from_le(u64::from_ne_bytes(buf)))
                     })
                     .collect::<Vec<_>>();
 
