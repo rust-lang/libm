@@ -79,7 +79,7 @@ pub fn expm1f(mut x: f32) -> f32 {
         c = (hi - x) - lo;
     } else if hx < 0x_3300_0000 {
         /* when |x|<2**-25, return x */
-        if hx < 0x_0080_0000 {
+        if hx < UF_MIN {
             force_eval!(x * x);
         }
         return x;

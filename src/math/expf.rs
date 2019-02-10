@@ -13,6 +13,8 @@
  * ====================================================
  */
 
+use core::f32;
+
 use super::scalbnf;
 use math::consts::*;
 
@@ -30,7 +32,7 @@ const P2: f32 = -2.766_733_290_6_e-3; /* -0x_b5_5215.0p-32 */
 #[inline]
 pub fn expf(mut x: f32) -> f32 {
     let x1p127 = f32::from_bits(0x_7f00_0000); // 0x1p127f === 2 ^ 127
-    let x1p_126 = f32::from_bits(0x_0080_0000); // 0x1p-126f === 2 ^ -126  /*original 0x1p-149f    ??????????? */
+    let x1p_126 = f32::MIN_POSITIVE; // 0x1p-126f === 2 ^ -126  /*original 0x1p-149f    ??????????? */
     let mut hx = x.to_bits();
     let sign = (hx >> 31) as i32; /* sign bit of x */
     let signb: bool = sign != 0;

@@ -194,7 +194,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         high_low(u + v)
     } else {
         /* take care subnormal number */
-        let mut n = if ix < 0x_0080_0000 {
+        let mut n = if ix < IF_MIN {
             ix = (ax * TWO24).to_bits() as i32;
             -24
         } else {
@@ -212,7 +212,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
             1
         } else {
             n += 1;
-            ix -= 0x_0080_0000;
+            ix -= IF_MIN;
             0
         };
         let ax = f32::from_bits(ix as u32);
@@ -277,10 +277,10 @@ pub fn powf(x: f32, y: f32) -> f32 {
     let mut n = 0;
     if i > 0x_3f00_0000 {
         /* if |z| > 0.5, set n = [z+0.5] */
-        n = j + (0x_0080_0000 >> (k + 1));
+        n = j + (IF_MIN >> (k + 1));
         let k = ((n & IF_ABS) >> 23) - 0x7f; /* new k for n */
         let t = f32::from_bits(n as u32 & !(0x_007f_ffff >> k));
-        n = ((n & 0x_007f_ffff) | 0x_0080_0000) >> (23 - k);
+        n = ((n & 0x_007f_ffff) | IF_MIN) >> (23 - k);
         if j < 0 {
             n = -n;
         }

@@ -31,7 +31,7 @@ pub fn logf(mut x: f32) -> f32 {
     let mut ix = x.to_bits();
     let mut k = 0_i32;
 
-    if (ix < 0x_0080_0000) || ((ix >> 31) != 0) {
+    if (ix < UF_MIN) || ((ix >> 31) != 0) {
         /* x < 2**-126  */
         if ix << 1 == 0 {
             return f32::NEG_INFINITY; /* log(+-0)=-inf */

@@ -23,7 +23,7 @@ pub fn tanhf(mut x: f32) -> f32 {
         /* |x| > log(5/3)/2 ~= 0.2554 */
         let t = expm1f(2. * x);
         t / (t + 2.)
-    } else if w >= 0x_0080_0000 {
+    } else if w >= UF_MIN {
         /* |x| >= 0x1p-126 */
         let t = expm1f(-2. * x);
         -t / (t + 2.)

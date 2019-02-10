@@ -77,6 +77,7 @@
  */
 
 use core::f64;
+use math::consts::*;
 
 const TINY: f64 = 1.0e-300;
 
@@ -95,7 +96,7 @@ pub fn sqrt(x: f64) -> f64 {
         }
     }
     let mut z: f64;
-    let sign: u32 = 0x_8000_0000;
+    let sign: u32 = UF_SIGN;
     let mut ix0: i32;
     let mut s0: i32;
     let mut q: i32;

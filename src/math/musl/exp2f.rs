@@ -72,10 +72,12 @@ static EXP2FT: [u64; TBLSIZE] = [
 //      Tang, P.  Table-driven Implementation of the Exponential Function
 //      in IEEE Floating-Point Arithmetic.  TOMS 15(2), 144-157 (1989).
 
+use core::f32;
+
 #[inline]
 pub fn exp2f(mut x: f32) -> f32 {
     let redux = f32::from_bits(0x_4b40_0000) / TBLSIZE as f32;
-    let p1 = f32::from_bits(0x_3f31_7218);
+    let p1 = f32::consts::LN_2;
     let p2 = f32::from_bits(0x_3e75_fdf0);
     let p3 = f32::from_bits(0x_3d63_59a4);
     let p4 = f32::from_bits(0x_3c1d_964e);
@@ -94,12 +96,12 @@ pub fn exp2f(mut x: f32) -> f32 {
             /* NaN */
             return x;
         }
-        if ui >= 0x_4300_0000 && ui < 0x_8000_0000 {
+        if ui >= 0x_4300_0000 && ui < UF_SIGN {
             /* x >= 128 */
             x *= x1p127;
             return x;
         }
-        if ui >= 0x_8000_0000 {
+        if ui >= UF_SIGN {
             /* x < -126 */
             if ui >= 0x_c316_0000 || (ui & 0x_0000_ffff != 0) {
                 force_eval!(f32::from_bits(0x_8000_0001) / x);

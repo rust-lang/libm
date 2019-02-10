@@ -47,7 +47,7 @@ pub fn sinf(x: f32) -> f32 {
         if ix < 0x_3980_0000 {
             /* |x| < 2**-12 */
             /* raise inexact if x!=0 and underflow if subnormal */
-            force_eval!(if ix < 0x_0080_0000 {
+            force_eval!(if ix < UF_MIN {
                 x / x1p120
             } else {
                 x + x1p120

@@ -60,7 +60,7 @@ pub fn atanf(mut x: f32) -> f32 {
         /* |x| < 0.4375 */
         if ix < 0x_3980_0000 {
             /* |x| < 2**-12 */
-            if ix < 0x_0080_0000 {
+            if ix < UF_MIN {
                 /* raise underflow for subnormal x */
                 force_eval!(x * x);
             }

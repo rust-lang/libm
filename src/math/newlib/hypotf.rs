@@ -53,7 +53,7 @@ pub fn hypotf(x: f32, y: f32) -> f32 {
         /* b < 2**-50 */
         if hb == 0 {
             return a;
-        } else if hb < 0x_0080_0000 {
+        } else if hb < IF_MIN {
             let t1 = f32::from_bits(0x_7e80_0000); /* t1=2^126 */
             b *= t1;
             a *= t1;
@@ -77,7 +77,7 @@ pub fn hypotf(x: f32, y: f32) -> f32 {
         a += a;
         let y1 = f32::from_bits((hb as u32) & 0x_ffff_f000);
         let y2 = b - y1;
-        let t1 = f32::from_bits((ha as u32) + 0x_0080_0000);
+        let t1 = f32::from_bits((ha as u32) + UF_MIN);
         let t2 = a - t1;
         sqrtf(t1 * y1 - (w * (-w) - (t1 * y2 + t2 * b)))
     };

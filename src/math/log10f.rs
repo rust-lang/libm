@@ -47,7 +47,7 @@ pub fn log10f(mut x: f32) -> f32 {
 
     ix = ui;
     k = 0;
-    if ix < 0x_0080_0000 || (ix >> 31) > 0 {
+    if ix < UF_MIN || (ix >> 31) > 0 {
         /* x < 2**-126  */
         if ix << 1 == 0 {
             return f32::NEG_INFINITY; /* log(+-0)=-inf */

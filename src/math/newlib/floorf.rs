@@ -48,7 +48,7 @@ pub fn floorf(x: f32) -> f32 {
             if HUGE + x > 0. {
                 /* raise inexact flag */
                 if sign {
-                    i0 += 0x_0080_0000 >> j0;
+                    i0 += UF_MIN >> j0;
                 }
                 i0 &= !i;
             }

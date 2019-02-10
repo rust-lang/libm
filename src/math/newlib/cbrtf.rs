@@ -29,7 +29,7 @@ const G: f32 = 3.571_428_656_6_e-01; /* 5/14      = 0x_3eb6_db6e */
 #[inline]
 pub fn cbrtf(mut x: f32) -> f32 {
     let mut hx = x.to_bits() as i32;
-    let sign = (hx as u32) & 0x_8000_0000; /* sign= sign(x) */
+    let sign = (hx as u32) & UF_SIGN; /* sign= sign(x) */
     hx ^= sign as i32;
     if hx >= IF_INF {
         return x + x; /* cbrt(NaN,INF) is itself */
@@ -39,7 +39,7 @@ pub fn cbrtf(mut x: f32) -> f32 {
     }
     x = f32::from_bits(hx as u32); /* x <- |x| */
     /* rough cbrt to 5 bits */
-    let mut t = if hx < 0x_0080_0000
+    let mut t = if hx < IF_MIN
     /* subnormal number */
     {
         /* set 2**24 */

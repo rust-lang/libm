@@ -32,7 +32,7 @@ pub fn sqrtf(x: f32) -> f32 {
         }
     }
     let mut z: f32;
-    let sign: i32 = 0x_8000_0000_u32 as i32;
+    let sign: i32 = UF_SIGN as i32;
     let mut ix: i32;
     let mut s: i32;
     let mut q: i32;
@@ -63,14 +63,14 @@ pub fn sqrtf(x: f32) -> f32 {
     if m == 0 {
         /* subnormal x */
         i = 0;
-        while ix & 0x_0080_0000 == 0 {
+        while ix & IF_MIN == 0 {
             ix <<= 1;
             i += 1;
         }
         m -= i - 1;
     }
     m -= 127; /* unbias exponent */
-    ix = (ix & 0x_007f_ffff) | 0x_0080_0000;
+    ix = (ix & 0x_007f_ffff) | IF_MIN;
     if m & 1 == 1 {
         /* odd m, double x to make it even */
         ix += ix;

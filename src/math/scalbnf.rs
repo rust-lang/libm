@@ -1,7 +1,9 @@
+use core::f32;
+
 #[inline]
 pub fn scalbnf(mut x: f32, mut n: i32) -> f32 {
     let x1p127 = f32::from_bits(0x_7f00_0000); // 0x1p127f === 2 ^ 127
-    let x1p_126 = f32::from_bits(0x_0080_0000); // 0x1p-126f === 2 ^ -126
+    let x1p_126 = f32::MIN_POSITIVE; // 0x1p-126f === 2 ^ -126
     let x1p24 = f32::from_bits(0x_4b80_0000); // 0x1p24f === 2 ^ 24
 
     if n > 127 {

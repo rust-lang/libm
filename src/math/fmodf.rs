@@ -1,5 +1,6 @@
 use core::f32;
 use core::u32;
+use math::consts::*;
 
 #[inline]
 pub fn fmodf(x: f32, y: f32) -> f32 {
@@ -7,7 +8,7 @@ pub fn fmodf(x: f32, y: f32) -> f32 {
     let mut uyi = y.to_bits();
     let mut ex = (uxi >> 23 & 0xff) as i32;
     let mut ey = (uyi >> 23 & 0xff) as i32;
-    let sx = uxi & 0x_8000_0000;
+    let sx = uxi & UF_SIGN;
     let mut i;
 
     if uyi << 1 == 0 || y.is_nan() || ex == 0xff {

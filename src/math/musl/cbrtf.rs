@@ -38,7 +38,7 @@ pub fn cbrtf(x: f32) -> f32 {
     }
 
     /* rough cbrt to 5 bits */
-    if hx < 0x_0080_0000 {
+    if hx < UF_MIN {
         /* zero or subnormal? */
         if hx == 0 {
             return x; /* cbrt(+-0) is itself */
@@ -49,7 +49,7 @@ pub fn cbrtf(x: f32) -> f32 {
     } else {
         hx = hx / 3 + B1;
     }
-    ui &= 0x_8000_0000;
+    ui &= UF_SIGN;
     ui |= hx;
 
     /*
