@@ -6,14 +6,14 @@ use super::k_expo2;
 pub fn cosh(mut x: f64) -> f64 {
     /* |x| */
     let mut ix = x.to_bits();
-    ix &= 0x7fffffffffffffff;
+    ix &= 0x_7fff_ffff_ffff_ffff;
     x = f64::from_bits(ix);
     let w = ix >> 32;
 
     /* |x| < log(2) */
-    if w < 0x3fe62e42 {
-        if w < 0x3ff00000 - (26 << 20) {
-            let x1p120 = f64::from_bits(0x4770000000000000);
+    if w < 0x_3fe6_2e42 {
+        if w < 0x_3ff0_0000 - (26 << 20) {
+            let x1p120 = f64::from_bits(0x_4770_0000_0000_0000);
             force_eval!(x + x1p120);
             return 1.;
         }
@@ -22,7 +22,7 @@ pub fn cosh(mut x: f64) -> f64 {
     }
 
     /* |x| < log(DBL_MAX) */
-    if w < 0x40862e42 {
+    if w < 0x_4086_2e42 {
         let t = exp(x);
         /* note: if x>log(0x1p26) then the 1/t is not needed */
         return 0.5 * (t + 1. / t);

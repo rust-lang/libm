@@ -41,15 +41,15 @@ use super::{k_tan, rem_pio2};
 //      TRIG(x) returns trig(x) nearly rounded
 #[inline]
 pub fn tan(x: f64) -> f64 {
-    let x1p120 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120
+    let x1p120 = f32::from_bits(0x_7b80_0000); // 0x1p120f === 2 ^ 120
 
-    let ix = (f64::to_bits(x) >> 32) as u32 & 0x7fffffff;
+    let ix = (f64::to_bits(x) >> 32) as u32 & 0x_7fff_ffff;
     /* |x| ~< pi/4 */
-    if ix <= 0x3fe921fb {
-        if ix < 0x3e400000 {
+    if ix <= 0x_3fe9_21fb {
+        if ix < 0x_3e40_0000 {
             /* |x| < 2**-27 */
             /* raise inexact if x!=0 and underflow if subnormal */
-            force_eval!(if ix < 0x00100000 {
+            force_eval!(if ix < 0x_0010_0000 {
                 x / x1p120 as f64
             } else {
                 x + x1p120 as f64
@@ -60,7 +60,7 @@ pub fn tan(x: f64) -> f64 {
     }
 
     /* tan(Inf or NaN) is NaN */
-    if ix >= 0x7ff00000 {
+    if ix >= 0x_7ff0_0000 {
         return x - x;
     }
 

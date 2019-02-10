@@ -112,9 +112,9 @@ pub fn expm1f(mut x: f32) -> f32 {
         /* suffice to return exp(x)-1 */
         let mut y = x - e + 1.;
         if k == 128 {
-            y = y * 2. * x1p127;
+            y *= 2. * x1p127;
         } else {
-            y = y * twopk;
+            y *= twopk;
         }
         return y - 1.;
     }

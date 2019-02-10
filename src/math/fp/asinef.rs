@@ -11,10 +11,10 @@ use math::sqrt;
 use super::consts::*;
 use super::{numtestf, NumState};
 
-const P: [f32; 2] = [0.933935835, -0.504400557];
-const Q: [f32; 2] = [0.560363004e+1, -0.554846723e+1];
-const A: [f32; 2] = [0.0, 0.785398163];
-const B: [f32; 2] = [1.570796326, 0.785398163];
+const P: [f32; 2] = [0.933_935_835, -0.504_400_557];
+const Q: [f32; 2] = [0.560_363_004_e+1, -0.554_846_723_e+1];
+const A: [f32; 2] = [0., 0.785_398_163];
+const B: [f32; 2] = [1.570_796_326, 0.785_398_163];
 
 /// Arcsine
 ///
@@ -83,12 +83,10 @@ pub fn asinef(x: f32, acosine: bool) -> f32 {
         if x < 0. {
             res = -res;
         }
+    } else if x < 0. {
+        res = (B[i] + res) + B[i];
     } else {
-        if x < 0. {
-            res = (B[i] + res) + B[i];
-        } else {
-            res = (A[i] - res) + A[i];
-        }
+        res = (A[i] - res) + A[i];
     }
 
     res

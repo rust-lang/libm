@@ -12,16 +12,16 @@
 
 use core::f64;
 
-const O_THRESHOLD: f64 = 7.09782712893383973096e+02; /* 0x40862E42, 0xFEFA39EF */
-const LN2_HI: f64 = 6.93147180369123816490e-01; /* 0x3fe62e42, 0xfee00000 */
-const LN2_LO: f64 = 1.90821492927058770002e-10; /* 0x3dea39ef, 0x35793c76 */
-const INVLN2: f64 = 1.44269504088896338700e+00; /* 0x3ff71547, 0x652b82fe */
+const O_THRESHOLD: f64 = 7.097_827_128_933_839_730_96_e+02; /* 0x_4086_2E42, 0x_FEFA_39EF */
+const LN2_HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */
+const LN2_LO: f64 = 1.908_214_929_270_587_700_02_e-10; /* 0x_3dea_39ef, 0x_3579_3c76 */
+const INVLN2: f64 = 1.442_695_040_888_963_387; /* 0x_3ff7_1547, 0x_652b_82fe */
 /* Scaled Q's: Qn_here = 2**n * Qn_above, for R(2*z) where z = hxs = x*x/2: */
-const Q1: f64 = -3.33333333333331316428e-02; /* BFA11111 111110F4 */
-const Q2: f64 = 1.58730158725481460165e-03; /* 3F5A01A0 19FE5585 */
-const Q3: f64 = -7.93650757867487942473e-05; /* BF14CE19 9EAADBB7 */
-const Q4: f64 = 4.00821782732936239552e-06; /* 3ED0CFCA 86E65239 */
-const Q5: f64 = -2.01099218183624371326e-07; /* BE8AFDB7 6E09C32D */
+const Q1: f64 = -3.333_333_333_333_313_164_28_e-02; /* BFA11111 111110F4 */
+const Q2: f64 = 1.587_301_587_254_814_601_65_e-03; /* 3F5A01A0 19FE5585 */
+const Q3: f64 = -7.936_507_578_674_879_424_73_e-05; /* BF14CE19 9EAADBB7 */
+const Q4: f64 = 4.008_217_827_329_362_395_52_e-06; /* 3ED0CFCA 86E65239 */
+const Q5: f64 = -2.010_992_181_836_243_713_26_e-07; /* BE8AFDB7 6E09C32D */
 
 #[inline]
 pub fn expm1(mut x: f64) -> f64 {
@@ -33,11 +33,11 @@ pub fn expm1(mut x: f64) -> f64 {
     let mut y: f64;
 
     let mut ui = x.to_bits();
-    let hx = ((ui >> 32) & 0x7fffffff) as u32;
+    let hx = ((ui >> 32) & 0x_7fff_ffff) as u32;
     let sign = (ui >> 63) as i32;
 
     /* filter out huge and non-finite argument */
-    if hx >= 0x4043687A {
+    if hx >= 0x_4043_687A {
         /* if |x|>=56*ln2 */
         if x.is_nan() {
             return x;
@@ -46,15 +46,15 @@ pub fn expm1(mut x: f64) -> f64 {
             return -1.0;
         }
         if x > O_THRESHOLD {
-            x *= f64::from_bits(0x7fe0000000000000);
+            x *= f64::from_bits(0x_7fe0_0000_0000_0000);
             return x;
         }
     }
 
     /* argument reduction */
-    if hx > 0x3fd62e42 {
+    if hx > 0x_3fd6_2e42 {
         /* if  |x| > 0.5 ln2 */
-        if hx < 0x3FF0A2B2 {
+        if hx < 0x_3FF0_A2B2 {
             /* and |x| < 1.5 ln2 */
             if sign == 0 {
                 hi = x - LN2_HI;
@@ -73,9 +73,9 @@ pub fn expm1(mut x: f64) -> f64 {
         }
         x = hi - lo;
         c = (hi - x) - lo;
-    } else if hx < 0x3c900000 {
+    } else if hx < 0x_3c90_0000 {
         /* |x| < 2**-54, return x */
-        if hx < 0x00100000 {
+        if hx < 0x_0010_0000 {
             force_eval!(x);
         }
         return x;
@@ -112,9 +112,9 @@ pub fn expm1(mut x: f64) -> f64 {
         /* suffice to return exp(x)-1 */
         y = x - e + 1.0;
         if k == 1024 {
-            y = y * 2.0 * f64::from_bits(0x7fe0000000000000);
+            y *= 2. * f64::from_bits(0x_7fe0_0000_0000_0000);
         } else {
-            y = y * twopk;
+            y *= twopk;
         }
         return y - 1.0;
     }
@@ -132,6 +132,6 @@ pub fn expm1(mut x: f64) -> f64 {
 mod tests {
     #[test]
     fn sanity_check() {
-        assert_eq!(super::expm1(1.1), 2.0041660239464334);
+        assert_eq!(super::expm1(1.1), 2.004_166_023_946_433_4);
     }
 }

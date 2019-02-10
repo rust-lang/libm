@@ -63,7 +63,7 @@ pub fn sqrtf(x: f32) -> f32 {
         i = 0;
         while ix & 0x_0080_0000 == 0 {
             ix <<= 1;
-            i = i + 1;
+            i += 1;
         }
         m -= i - 1;
     }

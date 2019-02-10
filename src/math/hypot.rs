@@ -2,7 +2,7 @@ use core::f64;
 
 use super::sqrt;
 
-const SPLIT: f64 = 134217728. + 1.; // 0x1p27 + 1 === (2 ^ 27) + 1
+const SPLIT: f64 = 134_217_728. + 1.; // 0x1p27 + 1 === (2 ^ 27) + 1
 
 #[inline]
 fn sq(x: f64) -> (f64, f64) {
@@ -20,8 +20,8 @@ fn sq(x: f64) -> (f64, f64) {
 
 #[inline]
 pub fn hypot(mut x: f64, mut y: f64) -> f64 {
-    let x1p700 = f64::from_bits(0x6bb0000000000000); // 0x1p700 === 2 ^ 700
-    let x1p_700 = f64::from_bits(0x1430000000000000); // 0x1p-700 === 2 ^ -700
+    let x1p700 = f64::from_bits(0x_6bb0_0000_0000_0000); // 0x1p700 === 2 ^ 700
+    let x1p_700 = f64::from_bits(0x_1430_0000_0000_0000); // 0x1p-700 === 2 ^ -700
 
     let mut uxi = x.to_bits();
     let mut uyi = y.to_bits();
@@ -71,5 +71,5 @@ pub fn hypot(mut x: f64, mut y: f64) -> f64 {
     }
     let (hx, lx) = sq(x);
     let (hy, ly) = sq(y);
-    return z * sqrt(ly + lx + hy + hx);
+    z * sqrt(ly + lx + hy + hx)
 }

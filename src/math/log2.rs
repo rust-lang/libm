@@ -19,19 +19,19 @@
 
 use core::f64;
 
-const IVLN2HI: f64 = 1.44269504072144627571e+00; /* 0x3ff71547, 0x65200000 */
-const IVLN2LO: f64 = 1.67517131648865118353e-10; /* 0x3de705fc, 0x2eefa200 */
-const LG1: f64 = 6.666666666666735130e-01; /* 3FE55555 55555593 */
-const LG2: f64 = 3.999999999940941908e-01; /* 3FD99999 9997FA04 */
-const LG3: f64 = 2.857142874366239149e-01; /* 3FD24924 94229359 */
-const LG4: f64 = 2.222219843214978396e-01; /* 3FCC71C5 1D8E78AF */
-const LG5: f64 = 1.818357216161805012e-01; /* 3FC74664 96CB03DE */
-const LG6: f64 = 1.531383769920937332e-01; /* 3FC39A09 D078C69F */
-const LG7: f64 = 1.479819860511658591e-01; /* 3FC2F112 DF3E5244 */
+const IVLN2HI: f64 = 1.442_695_040_721_446_275_71e+00; /* 0x_3ff7_1547, 0x_6520_0000 */
+const IVLN2LO: f64 = 1.675_171_316_488_651_183_53_e-10; /* 0x_3de7_05fc, 0x_2eef_a200 */
+const LG1: f64 = 6.666_666_666_666_735_13_e-01; /* 3FE55555 55555593 */
+const LG2: f64 = 3.999_999_999_940_941_908_e-01; /* 3FD99999 9997FA04 */
+const LG3: f64 = 2.857_142_874_366_239_149_e-01; /* 3FD24924 94229359 */
+const LG4: f64 = 2.222_219_843_214_978_396_e-01; /* 3FCC71C5 1D8E78AF */
+const LG5: f64 = 1.818_357_216_161_805_012_e-01; /* 3FC74664 96CB03DE */
+const LG6: f64 = 1.531_383_769_920_937_332_e-01; /* 3FC39A09 D078C69F */
+const LG7: f64 = 1.479_819_860_511_658_591_e-01; /* 3FC2F112 DF3E5244 */
 
 #[inline]
 pub fn log2(mut x: f64) -> f64 {
-    let x1p54 = f64::from_bits(0x4350000000000000); // 0x1p54 === 2 ^ 54
+    let x1p54 = f64::from_bits(0x_4350_0000_0000_0000); // 0x1p54 === 2 ^ 54
 
     let mut ui: u64 = x.to_bits();
     let hfsq: f64;
@@ -52,7 +52,7 @@ pub fn log2(mut x: f64) -> f64 {
 
     hx = (ui >> 32) as u32;
     k = 0;
-    if hx < 0x00100000 || (hx >> 31) > 0 {
+    if hx < 0x_0010_0000 || (hx >> 31) > 0 {
         if ui << 1 == 0 {
             return -1. / (x * x); /* log(+-0)=-inf */
         }
@@ -64,17 +64,17 @@ pub fn log2(mut x: f64) -> f64 {
         x *= x1p54;
         ui = x.to_bits();
         hx = (ui >> 32) as u32;
-    } else if hx >= 0x7ff00000 {
+    } else if hx >= 0x_7ff0_0000 {
         return x;
-    } else if hx == 0x3ff00000 && ui << 32 == 0 {
+    } else if hx == 0x_3ff0_0000 && ui << 32 == 0 {
         return 0.;
     }
 
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += 0x3ff00000 - 0x3fe6a09e;
+    hx += 0x_3ff0_0000 - 0x_3fe6_a09e;
     k += (hx >> 20) as i32 - 0x3ff;
-    hx = (hx & 0x000fffff) + 0x3fe6a09e;
-    ui = (hx as u64) << 32 | (ui & 0xffffffff);
+    hx = (hx & 0x_000f_ffff) + 0x_3fe6_a09e;
+    ui = (hx as u64) << 32 | (ui & 0x_ffff_ffff);
     x = f64::from_bits(ui);
 
     f = x - 1.0;
@@ -102,5 +102,5 @@ pub fn log2(mut x: f64) -> f64 {
     val_lo += (y - w) + val_hi;
     val_hi = w;
 
-    return val_lo + val_hi;
+    val_lo + val_hi
 }

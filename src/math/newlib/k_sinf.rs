@@ -13,19 +13,19 @@
  * ====================================================
  */
 
-const HALF: f32 = 5.0000000000e-01; /* 0x3f000000 */
-const S1: f32 = -1.6666667163e-01; /* 0xbe2aaaab */
-const S2: f32 = 8.3333337680e-03; /* 0x3c088889 */
-const S3: f32 = -1.9841270114e-04; /* 0xb9500d01 */
-const S4: f32 = 2.7557314297e-06; /* 0x3638ef1b */
-const S5: f32 = -2.5050759689e-08; /* 0xb2d72f34 */
-const S6: f32 = 1.5896910177e-10; /* 0x2f2ec9d3 */
+const HALF: f32 = 5.000_000_000_0_e-01; /* 0x_3f00_0000 */
+const S1: f32 = -1.666_666_716_3_e-01; /* 0x_be2a_aaab */
+const S2: f32 = 8.333_333_768_0_e-03; /* 0x_3c08_8889 */
+const S3: f32 = -1.984_127_011_4_e-04; /* 0x_b950_0d01 */
+const S4: f32 = 2.755_731_429_7_e-06; /* 0x_3638_ef1b */
+const S5: f32 = -2.505_075_968_9_e-08; /* 0x_b2d7_2f34 */
+const S6: f32 = 1.589_691_017_7_e-10; /* 0x_2f2e_c9d3 */
 
 #[inline]
 pub fn k_sinf(x: f32, y: f32, iy: bool) -> f32 {
     let mut ix = x.to_bits();
-    ix &= 0x7fffffff; /* high word of x */
-    if ix < 0x32000000 {
+    ix &= 0x_7fff_ffff; /* high word of x */
+    if ix < 0x_3200_0000 {
         /* |x| < 2**-27 */
         if (x as i32) == 0 {
             /* generate inexact */

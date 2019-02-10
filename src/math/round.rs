@@ -21,11 +21,11 @@ pub fn round(mut x: f64) -> f64 {
     }
     y = x + TOINT - TOINT - x;
     if y > 0.5 {
-        y = y + x - 1.0;
+        y += x - 1.;
     } else if y <= -0.5 {
-        y = y + x + 1.0;
+        y += x + 1.;
     } else {
-        y = y + x;
+        y += x;
     }
 
     if i >> 63 != 0 {

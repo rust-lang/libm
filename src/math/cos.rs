@@ -43,11 +43,11 @@ use super::{k_cos, k_sin, rem_pio2};
 //
 #[inline]
 pub fn cos(x: f64) -> f64 {
-    let ix = (f64::to_bits(x) >> 32) as u32 & 0x7fffffff;
+    let ix = (f64::to_bits(x) >> 32) as u32 & 0x_7fff_ffff;
 
     /* |x| ~< pi/4 */
-    if ix <= 0x3fe921fb {
-        if ix < 0x3e46a09e {
+    if ix <= 0x_3fe9_21fb {
+        if ix < 0x_3e46_a09e {
             /* if x < 2**-27 * sqrt(2) */
             /* raise inexact if x != 0 */
             if x as i32 == 0 {
@@ -58,7 +58,7 @@ pub fn cos(x: f64) -> f64 {
     }
 
     /* cos(Inf or NaN) is NaN */
-    if ix >= 0x7ff00000 {
+    if ix >= 0x_7ff0_0000 {
         return x - x;
     }
 

@@ -17,8 +17,8 @@ use super::atanf;
 use super::fabsf;
 use math::consts::*;
 
-const PI: f32 = 3.141_592_741_0_e+00; /* 0x40490fdb */
-const PI_LO: f32 = -8.742_277_657_3_e-08; /* 0xb3bbbd2e */
+const PI: f32 = 3.141_592_741_0_e+00; /* 0x_4049_0fdb */
+const PI_LO: f32 = -8.742_277_657_3_e-08; /* 0x_b3bb_bd2e */
 
 #[inline]
 pub fn atan2f(y: f32, x: f32) -> f32 {

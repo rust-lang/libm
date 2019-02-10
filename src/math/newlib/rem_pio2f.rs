@@ -37,10 +37,38 @@ const TWO_OVER_PI: [u8; 198] = [
 /* This array is like the one in e_rem_pio2.c, but the numbers are
 single precision and the last 8 bits are forced to 0.  */
 const NPIO2_HW: [u32; 32] = [
-    0x3fc90f00, 0x40490f00, 0x4096cb00, 0x40c90f00, 0x40fb5300, 0x4116cb00, 0x412fed00, 0x41490f00,
-    0x41623100, 0x417b5300, 0x418a3a00, 0x4196cb00, 0x41a35c00, 0x41afed00, 0x41bc7e00, 0x41c90f00,
-    0x41d5a000, 0x41e23100, 0x41eec200, 0x41fb5300, 0x4203f200, 0x420a3a00, 0x42108300, 0x4216cb00,
-    0x421d1400, 0x42235c00, 0x4229a500, 0x422fed00, 0x42363600, 0x423c7e00, 0x4242c700, 0x42490f00,
+    0x_3fc9_0f00,
+    0x_4049_0f00,
+    0x_4096_cb00,
+    0x_40c9_0f00,
+    0x_40fb_5300,
+    0x_4116_cb00,
+    0x_412f_ed00,
+    0x_4149_0f00,
+    0x_4162_3100,
+    0x_417b_5300,
+    0x_418a_3a00,
+    0x_4196_cb00,
+    0x_41a3_5c00,
+    0x_41af_ed00,
+    0x_41bc_7e00,
+    0x_41c9_0f00,
+    0x_41d5_a000,
+    0x_41e2_3100,
+    0x_41ee_c200,
+    0x_41fb_5300,
+    0x_4203_f200,
+    0x_420a_3a00,
+    0x_4210_8300,
+    0x_4216_cb00,
+    0x_421d_1400,
+    0x_4223_5c00,
+    0x_4229_a500,
+    0x_422f_ed00,
+    0x_4236_3600,
+    0x_423c_7e00,
+    0x_4242_c700,
+    0x_4249_0f00,
 ];
 
 /*
@@ -52,20 +80,20 @@ const NPIO2_HW: [u32; 32] = [
  * pio2_3:   third  17 bit of pi/2
  * pio2_3t:  pi/2 - (pio2_1+pio2_2+pio2_3)
  */
-const ZERO: f32 = 0.0000000000e+00; /* 0x00000000 */
-const HALF: f32 = 5.0000000000e-01; /* 0x3f000000 */
-const TWO8: f32 = 2.5600000000e+02; /* 0x43800000 */
-const INV_PIO2: f32 = 6.3661980629e-01; /* 0x3f22f984 */
-const PIO2_1: f32 = 1.5707855225e+00; /* 0x3fc90f80 */
-const PIO2_1T: f32 = 1.0804334124e-05; /* 0x37354443 */
-const PIO2_2: f32 = 1.0804273188e-05; /* 0x37354400 */
-const PIO2_2T: f32 = 6.0770999344e-11; /* 0x2e85a308 */
-const PIO2_3: f32 = 6.0770943833e-11; /* 0x2e85a300 */
-const PIO2_3T: f32 = 6.1232342629e-17; /* 0x248d3132 */
+const ZERO: f32 = 0.; /* 0x_0000_0000 */
+const HALF: f32 = 5_e-01; /* 0x_3f00_0000 */
+const TWO8: f32 = 2.560_000_000_0_e+02; /* 0x_4380_0000 */
+const INV_PIO2: f32 = 6.366_198_062_9_e-01; /* 0x_3f22_f984 */
+const PIO2_1: f32 = 1.570_785_522_5; /* 0x_3fc9_0f80 */
+const PIO2_1T: f32 = 1.080_433_412_4_e-05; /* 0x_3735_4443 */
+const PIO2_2: f32 = 1.080_427_318_8_e-05; /* 0x_3735_4400 */
+const PIO2_2T: f32 = 6.077_099_934_4_e-11; /* 0x_2e85_a308 */
+const PIO2_3: f32 = 6.077_094_383_3_e-11; /* 0x_2e85_a300 */
+const PIO2_3T: f32 = 6.123_234_262_9_e-17; /* 0x_248d_3132 */
 
-const UF_INF: u32 = 0x7f800000;
-//const UF_1_PI_4: u32 = 0x3f490fdb;
-const UF_3_PI_4: u32 = 0x4016cbe4;
+const UF_INF: u32 = 0x_7f80_0000;
+//const UF_1_PI_4: u32 = 0x_3f49_0fdb;
+const UF_3_PI_4: u32 = 0x_4016_cbe4;
 
 /// Return the remainder of x rem pi/2 in y[0]+y[1]
 #[inline]
@@ -74,9 +102,9 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
     let mut z: f32;
 
     let hx = x.to_bits();
-    let ix = hx & 0x7fffffff;
+    let ix = hx & 0x_7fff_ffff;
     let sign = (hx >> 31) != 0;
-    if ix <= 0x3f490fd8 {
+    if ix <= 0x_3f49_0fd8 {
         /* |x| ~<= pi/4 , no need for reduction */
         return (0, x, 0.);
     }
@@ -84,7 +112,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
         /* |x| < 3pi/4, special case with n=+-1 */
         return if !sign {
             z = x - PIO2_1;
-            if (ix & 0xfffffff0) != 0x3fc90fd0 {
+            if (ix & 0x_ffff_fff0) != 0x_3fc9_0fd0 {
                 /* 24+24 bit pi OK */
                 y0 = z - PIO2_1T;
                 (1, y0, (z - y0) - PIO2_1T)
@@ -97,7 +125,7 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
         } else {
             /* negative x */
             z = x + PIO2_1;
-            if (ix & 0xfffffff0) != 0x3fc90fd0 {
+            if (ix & 0x_ffff_fff0) != 0x_3fc9_0fd0 {
                 /* 24+24 bit pi OK */
                 y0 = z + PIO2_1T;
                 (-1, y0, (z - y0) + PIO2_1T)
@@ -109,14 +137,14 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
             }
         };
     }
-    if ix <= 0x43490f80 {
+    if ix <= 0x_4349_0f80 {
         /* |x| ~<= 2^7*(pi/2), medium size */
         let t = fabsf(x);
         let n = (t * INV_PIO2 + HALF) as i32;
         let nf = n as f32;
         let mut r = t - nf * PIO2_1;
         let mut w = nf * PIO2_1T; /* 1st round good to 40 bit */
-        if (n < 32) && (ix & 0xffffff00 != NPIO2_HW[(n - 1) as usize]) {
+        if (n < 32) && (ix & 0x_ffff_ff00 != NPIO2_HW[(n - 1) as usize]) {
             y0 = r - w; /* quick check no cancellation */
         } else {
             let j = (ix as i32) >> 23;
@@ -157,9 +185,10 @@ pub fn rem_pio2f(x: f32) -> (i32, f32, f32) {
     let e0 = (ix >> 23) - 134; /* e0 = ilogb(z)-7; */
     z = f32::from_bits((ix - (e0 << 23)) as u32);
     let mut tx = [0f32; 3];
-    for i in 0..2 {
-        tx[i] = z as i32 as f32;
-        z = (z - tx[i]) * TWO8;
+
+    for txi in tx.iter_mut().take(2) {
+        *txi = z as i32 as f32;
+        z = (z - *txi) * TWO8;
     }
     tx[2] = z;
     let mut nx = 3;

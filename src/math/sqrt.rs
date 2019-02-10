@@ -95,7 +95,7 @@ pub fn sqrt(x: f64) -> f64 {
         }
     }
     let mut z: f64;
-    let sign: u32 = 0x80000000;
+    let sign: u32 = 0x_8000_0000;
     let mut ix0: i32;
     let mut s0: i32;
     let mut q: i32;
@@ -112,7 +112,7 @@ pub fn sqrt(x: f64) -> f64 {
     ix1 = x.to_bits() as u32;
 
     /* take care of Inf and NaN */
-    if (ix0 & 0x7ff00000) == 0x7ff00000 {
+    if (ix0 & 0x_7ff0_0000) == 0x_7ff0_0000 {
         return x * x + x; /* sqrt(NaN)=NaN, sqrt(+inf)=+inf, sqrt(-inf)=sNaN */
     }
     /* take care of zero */
@@ -134,7 +134,7 @@ pub fn sqrt(x: f64) -> f64 {
             ix1 <<= 21;
         }
         i = 0;
-        while (ix0 & 0x00100000) == 0 {
+        while (ix0 & 0x_0010_0000) == 0 {
             i += 1;
             ix0 <<= 1;
         }
@@ -143,22 +143,22 @@ pub fn sqrt(x: f64) -> f64 {
         ix1 <<= i;
     }
     m -= 1023; /* unbias exponent */
-    ix0 = (ix0 & 0x000fffff) | 0x00100000;
+    ix0 = (ix0 & 0x_000f_ffff) | 0x_0010_0000;
     if (m & 1) == 1 {
         /* odd m, double x to make it even */
-        ix0 += ix0 + ((ix1 & sign) >> 31) as i32;
+        ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
         ix1 += ix1;
     }
     m >>= 1; /* m = [m/2] */
 
     /* generate sqrt(x) bit by bit */
-    ix0 += ix0 + ((ix1 & sign) >> 31) as i32;
+    ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
     ix1 += ix1;
     q = 0; /* [q,q1] = sqrt(x) */
     q1 = 0;
     s0 = 0;
     s1 = 0;
-    r = 0x00200000; /* r = moving bit from right to left */
+    r = 0x_0020_0000; /* r = moving bit from right to left */
 
     while r != 0 {
         t = s0 + r as i32;
@@ -167,7 +167,7 @@ pub fn sqrt(x: f64) -> f64 {
             ix0 -= t;
             q += r as i32;
         }
-        ix0 += ix0 + ((ix1 & sign) >> 31) as i32;
+        ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
         ix1 += ix1;
         r >>= 1;
     }
@@ -188,7 +188,7 @@ pub fn sqrt(x: f64) -> f64 {
             ix1 -= t1;
             q1 += r;
         }
-        ix0 += ix0 + ((ix1 & sign) >> 31) as i32;
+        ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
         ix1 += ix1;
         r >>= 1;
     }
@@ -198,11 +198,11 @@ pub fn sqrt(x: f64) -> f64 {
         z = 1.0 - TINY; /* raise inexact flag */
         if z >= 1.0 {
             z = 1.0 + TINY;
-            if q1 == 0xffffffff {
+            if q1 == 0x_ffff_ffff {
                 q1 = 0;
                 q += 1;
             } else if z > 1.0 {
-                if q1 == 0xfffffffe {
+                if q1 == 0x_ffff_fffe {
                     q += 1;
                 }
                 q1 += 2;
@@ -211,7 +211,7 @@ pub fn sqrt(x: f64) -> f64 {
             }
         }
     }
-    ix0 = (q >> 1) + 0x3fe00000;
+    ix0 = (q >> 1) + 0x_3fe0_0000;
     ix1 = q1 >> 1;
     if (q & 1) == 1 {
         ix1 |= sign;

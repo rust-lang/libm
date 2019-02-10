@@ -14,26 +14,26 @@
  */
 
 use math::consts::*;
-const ONE: f32 = 1.0000000000e+00; /* 0x3F800000 */
-const PI: f32 = 3.1415925026e+00; /* 0x40490fda */
-const PIO2_HI: f32 = 1.5707962513e+00; /* 0x3fc90fda */
-const PIO2_LO: f32 = 7.5497894159e-08; /* 0x33a22168 */
+const ONE: f32 = 1.; /* 0x_3F80_0000 */
+const PI: f32 = 3.141_592_502_6; /* 0x_4049_0fda */
+const PIO2_HI: f32 = 1.570_796_251_3; /* 0x_3fc9_0fda */
+const PIO2_LO: f32 = 7.549_789_415_9_e-08; /* 0x_33a2_2168 */
 
-const P_S0: f32 = 1.6666667163e-01; /* 0x3e2aaaab */
-const P_S1: f32 = -3.2556581497e-01; /* 0xbea6b090 */
-const P_S2: f32 = 2.0121252537e-01; /* 0x3e4e0aa8 */
-const P_S3: f32 = -4.0055535734e-02; /* 0xbd241146 */
-const P_S4: f32 = 7.9153501429e-04; /* 0x3a4f7f04 */
-const P_S5: f32 = 3.4793309169e-05; /* 0x3811ef08 */
-const Q_S1: f32 = -2.4033949375e+00; /* 0xc019d139 */
-const Q_S2: f32 = 2.0209457874e+00; /* 0x4001572d */
-const Q_S3: f32 = -6.8828397989e-01; /* 0xbf303361 */
-const Q_S4: f32 = 7.7038154006e-02; /* 0x3d9dc62e */
+const P_S0: f32 = 1.666_666_716_3_e-01; /* 0x_3e2a_aaab */
+const P_S1: f32 = -3.255_658_149_7_e-01; /* 0x_bea6_b090 */
+const P_S2: f32 = 2.012_125_253_7_e-01; /* 0x_3e4e_0aa8 */
+const P_S3: f32 = -4.005_553_573_4_e-02; /* 0x_bd24_1146 */
+const P_S4: f32 = 7.915_350_142_9_e-04; /* 0x_3a4f_7f04 */
+const P_S5: f32 = 3.479_330_916_9_e-05; /* 0x_3811_ef08 */
+const Q_S1: f32 = -2.403_394_937_5; /* 0x_c019_d139 */
+const Q_S2: f32 = 2.020_945_787_4; /* 0x_4001_572d */
+const Q_S3: f32 = -6.882_839_798_9_e-01; /* 0x_bf30_3361 */
+const Q_S4: f32 = 7.703_815_400_6_e-02; /* 0x_3d9d_c62e */
 
 #[inline]
 pub fn acosf(x: f32) -> f32 {
     let hx = x.to_bits() as i32;
-    let ix = hx & 0x7fffffff;
+    let ix = hx & 0x_7fff_ffff;
 
     if ix == UF_1 {
         /* |x|==1 */
@@ -52,9 +52,9 @@ pub fn acosf(x: f32) -> f32 {
     let p: f32;
     let q: f32;
     let s: f32;
-    if ix < 0x3f000000 {
+    if ix < 0x_3f00_0000 {
         /* |x| < 0.5 */
-        if (ix <= 0x23000000) {
+        if (ix <= 0x_2300_0000) {
             return PIO2_HI + PIO2_LO; /*if|x|<2**-57*/
         }
         z = x * x;
@@ -76,7 +76,7 @@ pub fn acosf(x: f32) -> f32 {
         z = (ONE - x) * 0.5;
         s = sqrtf(z);
         let idf = s.to_bits() as i32;
-        let df = f32::from_bits((idf & 0xfffff000) as u32);
+        let df = f32::from_bits((idf & 0x_ffff_f000) as u32);
         c = (z - df * df) / (s + df);
         p = z * (P_S0 + z * (P_S1 + z * (P_S2 + z * (P_S3 + z * (P_S4 + z * P_S5)))));
         q = ONE + z * (Q_S1 + z * (Q_S2 + z * (Q_S3 + z * Q_S4)));

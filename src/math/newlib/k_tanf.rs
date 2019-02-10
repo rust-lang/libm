@@ -15,23 +15,23 @@
 
 use math::fabsf;
 
-const ONE: f32 = 1.0000000000e+00; /* 0x3f800000 */
-const PIO4: f32 = 7.8539812565e-01; /* 0x3f490fda */
-const PIO4_LO: f32 = 3.7748947079e-08; /* 0x33222168 */
+const ONE: f32 = 1.; /* 0x_3f80_0000 */
+const PIO4: f32 = 7.853_981_256_5_e-01; /* 0x_3f49_0fda */
+const PIO4_LO: f32 = 3.774_894_707_9_e-08; /* 0x_3322_2168 */
 const T: [f32; 13] = [
-    3.3333334327e-01,  /* 0x3eaaaaab */
-    1.3333334029e-01,  /* 0x3e088889 */
-    5.3968254477e-02,  /* 0x3d5d0dd1 */
-    2.1869488060e-02,  /* 0x3cb327a4 */
-    8.8632395491e-03,  /* 0x3c11371f */
-    3.5920790397e-03,  /* 0x3b6b6916 */
-    1.4562094584e-03,  /* 0x3abede48 */
-    5.8804126456e-04,  /* 0x3a1a26c8 */
-    2.4646313977e-04,  /* 0x398137b9 */
-    7.8179444245e-05,  /* 0x38a3f445 */
-    7.1407252108e-05,  /* 0x3895c07a */
-    -1.8558637748e-05, /* 0xb79bae5f */
-    2.5907305826e-05,  /* 0x37d95384 */
+    3.333_333_432_7_e-01,  /* 0x_3eaa_aaab */
+    1.333_333_402_9_e-01,  /* 0x_3e08_8889 */
+    5.396_825_447_7_e-02,  /* 0x_3d5d_0dd1 */
+    2.186_948_806_0_e-02,  /* 0x_3cb3_27a4 */
+    8.863_239_549_1_e-03,  /* 0x_3c11_371f */
+    3.592_079_039_7_e-03,  /* 0x_3b6b_6916 */
+    1.456_209_458_4_e-03,  /* 0x_3abe_de48 */
+    5.880_412_645_6_e-04,  /* 0x_3a1a_26c8 */
+    2.464_631_397_7_e-04,  /* 0x_3981_37b9 */
+    7.817_944_424_5_e-05,  /* 0x_38a3_f445 */
+    7.140_725_210_8_e-05,  /* 0x_3895_c07a */
+    -1.855_863_774_8_e-05, /* 0x_b79b_ae5f */
+    2.590_730_582_6_e-05,  /* 0x_37d9_5384 */
 ];
 
 #[inline]
@@ -39,24 +39,22 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
     let mut z: f32;
     let mut w: f32;
     let hx = x.to_bits() as i32;
-    let ix = hx & 0x7fffffff; /* high word of |x| */
-    if ix < 0x31800000 {
+    let ix = hx & 0x_7fff_ffff; /* high word of |x| */
+    if ix < 0x_3180_0000 {
         /* x < 2**-28 */
 
         if (x as i32) == 0 {
             /* generate inexact */
             return if (ix | (iy + 1)) == 0 {
                 ONE / fabsf(x)
+            } else if iy == 1 {
+                x
             } else {
-                if iy == 1 {
-                    x
-                } else {
-                    -ONE / x
-                }
+                -ONE / x
             };
         }
     }
-    if ix >= 0x3f2ca140 {
+    if ix >= 0x_3f2c_a140 {
         /* |x|>=0.6744 */
         if hx < 0 {
             x = -x;
@@ -79,7 +77,7 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
     r = y + z * (s * (r + v) + y);
     r += T[0] * s;
     w = x + r;
-    if ix >= 0x3f2ca140 {
+    if ix >= 0x_3f2c_a140 {
         v = iy as f32;
         return ((1 - ((hx >> 30) & 2)) as f32) * (v - 2. * (x - (w * w / (w + v) - r)));
     }
@@ -90,11 +88,11 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
         simply return -1.0/(x+r) here */
         /*  compute -1.0/(x+r) accurately */
         let mut i = w.to_bits() as i32;
-        z = f32::from_bits(i as u32 & 0xfffff000);
+        z = f32::from_bits(i as u32 & 0x_ffff_f000);
         v = r - (z - x); /* z+v = r+x */
         let a = -1. / w; /* a = -1.0/w */
         i = a.to_bits() as i32;
-        let t = f32::from_bits(i as u32 & 0xfffff000);
+        let t = f32::from_bits(i as u32 & 0x_ffff_f000);
         s = 1. + t * z;
         t + a * (s + t * v)
     }

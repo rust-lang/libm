@@ -25,7 +25,7 @@ const HUGE: f32 = 1.0e30;
 pub fn floorf(x: f32) -> f32 {
     let mut i0 = x.to_bits();
     let sign = (i0 >> 31) != 0;
-    let ix = i0 & 0x7fffffff;
+    let ix = i0 & 0x_7fff_ffff;
     let j0 = ((ix >> 23) - 0x7f) as i32;
     if j0 < 23 {
         if j0 < 0 {
@@ -35,11 +35,11 @@ pub fn floorf(x: f32) -> f32 {
                 if !sign {
                     i0 = 0;
                 } else if ix != 0 {
-                    i0 = 0xbf800000;
+                    i0 = 0x_bf80_0000;
                 }
             }
         } else {
-            let i = ((0x007fffff) >> j0) as u32;
+            let i = (0x_007f_ffff >> j0) as u32;
             if (i0 & i) == 0 {
                 /* x is integral */
                 return x;
@@ -47,13 +47,13 @@ pub fn floorf(x: f32) -> f32 {
             if HUGE + x > 0. {
                 /* raise inexact flag */
                 if sign {
-                    i0 += 0x00800000 >> j0;
+                    i0 += 0x_0080_0000 >> j0;
                 }
                 i0 &= !i;
             }
         }
     } else {
-        return if ix >= 0x7f800000 {
+        return if ix >= 0x_7f80_0000 {
             /* inf or NaN */
             x + x
         } else {

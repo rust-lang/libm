@@ -40,8 +40,8 @@
 use super::atan;
 use super::fabs;
 
-const PI: f64 = 3.1415926535897931160E+00; /* 0x400921FB, 0x54442D18 */
-const PI_LO: f64 = 1.2246467991473531772E-16; /* 0x3CA1A626, 0x33145C07 */
+const PI: f64 = 3.141_592_653_589_793_116; /* 0x_4009_21FB, 0x_5444_2D18 */
+const PI_LO: f64 = 1.224_646_799_147_353_177_2_e-16; /* 0x_3CA1_A626, 0x_3314_5C07 */
 
 #[inline]
 pub fn atan2(y: f64, x: f64) -> f64 {
@@ -52,13 +52,13 @@ pub fn atan2(y: f64, x: f64) -> f64 {
     let lx = x.to_bits() as u32;
     let mut iy = (y.to_bits() >> 32) as u32;
     let ly = y.to_bits() as u32;
-    if (ix - 0x3ff00000 | lx) == 0 {
+    if ((ix - 0x_3ff0_0000) | lx) == 0 {
         /* x = 1.0 */
         return atan(y);
     }
     let m = ((iy >> 31) & 1) | ((ix >> 30) & 2); /* 2*sign(x)+sign(y) */
-    ix &= 0x7fffffff;
-    iy &= 0x7fffffff;
+    ix &= 0x_7fff_ffff;
+    iy &= 0x_7fff_ffff;
 
     /* when y = 0 */
     if (iy | ly) == 0 {
@@ -73,8 +73,8 @@ pub fn atan2(y: f64, x: f64) -> f64 {
         return if m & 1 != 0 { -PI / 2.0 } else { PI / 2.0 };
     }
     /* when x is INF */
-    if ix == 0x7ff00000 {
-        if iy == 0x7ff00000 {
+    if ix == 0x_7ff0_0000 {
+        if iy == 0x_7ff0_0000 {
             return match m {
                 0 => PI / 4.0,        /* atan(+INF,+INF) */
                 1 => -PI / 4.0,       /* atan(-INF,+INF) */
@@ -91,7 +91,7 @@ pub fn atan2(y: f64, x: f64) -> f64 {
         }
     }
     /* |y/x| > 0x1p64 */
-    if ix + (64 << 20) < iy || iy == 0x7ff00000 {
+    if ix + (64 << 20) < iy || iy == 0x_7ff0_0000 {
         return if m & 1 != 0 { -PI / 2.0 } else { PI / 2.0 };
     }
 

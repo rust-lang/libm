@@ -21,13 +21,13 @@ use core::f64;
 const TOINT: f64 = 1.5 / f64::EPSILON;
 
 /// 53 bits of 2/pi
-const INV_PIO2: f64 = 6.36619772367581382433e-01; /* 0x3FE45F30, 0x6DC9C883 */
+const INV_PIO2: f64 = 6.366_197_723_675_813_824_33_e-01; /* 0x_3FE4_5F30, 0x_6DC9_C883 */
 /// first 25 bits of pi/2
-const PIO2_1: f64 = 1.57079631090164184570e+00; /* 0x3FF921FB, 0x50000000 */
+const PIO2_1: f64 = 1.570_796_310_901_641_845_7; /* 0x_3FF9_21FB, 0x_5000_0000 */
 /// pi/2 - pio2_1
-const PIO2_1T: f64 = 1.58932547735281966916e-08; /* 0x3E5110b4, 0x611A6263 */
+const PIO2_1T: f64 = 1.589_325_477_352_819_669_16_e-08; /* 0x_3E51_10b4, 0x_611A_6263 */
 
-const UF_INF: u32 = 0x7f800000;
+const UF_INF: u32 = 0x_7f80_0000;
 
 /// Return the remainder of x rem pi/2 in *y
 ///
@@ -41,9 +41,9 @@ pub fn rem_pio2f(x: f32) -> (i32, f64) {
 
     let hx = x.to_bits();
     let sign = (hx >> 31) != 0;
-    let ix = hx & 0x7fffffff;
+    let ix = hx & 0x_7fff_ffff;
     /* 25+53 bit pi is good enough for medium size */
-    if ix < 0x4dc90fdb {
+    if ix < 0x_4dc9_0fdb {
         /* |x| ~< 2^28*(pi/2), medium size */
         /* Use a specialized rint() to get fn.  Assume round-to-nearest. */
         let f_n = x64 * INV_PIO2 + TOINT - TOINT;

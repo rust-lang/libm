@@ -17,22 +17,22 @@ use math::consts::*;
 use math::fabsf;
 use math::sqrtf;
 
-const ONE: f32 = 1.0000000000e+00; /* 0x3F800000 */
-const HUGE: f32 = 1.000e+30;
-const PIO2_HI: f32 = 1.57079637050628662109375;
-const PIO2_LO: f32 = -4.37113900018624283e-8;
-const PIO4_HI: f32 = 0.785398185253143310546875;
+const ONE: f32 = 1.; /* 0x_3F80_0000 */
+const HUGE: f32 = 1_e+30;
+const PIO2_HI: f32 = 1.570_796_370_506_286_621_093_75;
+const PIO2_LO: f32 = -4.371_139_000_186_242_83_e-8;
+const PIO4_HI: f32 = 0.785_398_185_253_143_310_546_875;
 /* coefficient for R(x^2) */
-const P_S0: f32 = 1.6666667163e-01; /* 0x3e2aaaab */
-const P_S1: f32 = -3.2556581497e-01; /* 0xbea6b090 */
-const P_S2: f32 = 2.0121252537e-01; /* 0x3e4e0aa8 */
-const P_S3: f32 = -4.0055535734e-02; /* 0xbd241146 */
-const P_S4: f32 = 7.9153501429e-04; /* 0x3a4f7f04 */
-const P_S5: f32 = 3.4793309169e-05; /* 0x3811ef08 */
-const Q_S1: f32 = -2.4033949375e+00; /* 0xc019d139 */
-const Q_S2: f32 = 2.0209457874e+00; /* 0x4001572d */
-const Q_S3: f32 = -6.8828397989e-01; /* 0xbf303361 */
-const Q_S4: f32 = 7.7038154006e-02; /* 0x3d9dc62e */
+const P_S0: f32 = 1.666_666_716_3_e-01; /* 0x_3e2a_aaab */
+const P_S1: f32 = -3.255_658_149_7_e-01; /* 0x_bea6_b090 */
+const P_S2: f32 = 2.012_125_253_7_e-01; /* 0x_3e4e_0aa8 */
+const P_S3: f32 = -4.005_553_573_4_e-02; /* 0x_bd24_1146 */
+const P_S4: f32 = 7.915_350_142_9_e-04; /* 0x_3a4f_7f04 */
+const P_S5: f32 = 3.479_330_916_9_e-05; /* 0x_3811_ef08 */
+const Q_S1: f32 = -2.403_394_937_5; /* 0x_c019_d139 */
+const Q_S2: f32 = 2.020_945_787_4; /* 0x_4001_572d */
+const Q_S3: f32 = -6.882_839_798_9_e-01; /* 0x_bf30_3361 */
+const Q_S4: f32 = 7.703_815_400_6_e-02; /* 0x_3d9d_c62e */
 
 #[inline]
 pub fn asinf(x: f32) -> f32 {
@@ -41,7 +41,7 @@ pub fn asinf(x: f32) -> f32 {
     let mut p: f32;
     let mut q: f32;
     let hx = x.to_bits() as i32;
-    let ix = (hx as u32) & 0x7fffffff;
+    let ix = (hx as u32) & 0x_7fff_ffff;
 
     if ix == UF_1 {
         /* asin(1)=+-pi/2 with inexact */
@@ -49,9 +49,9 @@ pub fn asinf(x: f32) -> f32 {
     } else if ix > UF_1 {
         /* |x|>= 1 */
         return (x - x) / (x - x); /* asin(|x|>1) is NaN */
-    } else if ix < 0x3f000000 {
+    } else if ix < 0x_3f00_0000 {
         /* |x|<0.5 */
-        if ix < 0x32000000 {
+        if ix < 0x_3200_0000 {
             /* if |x| < 2**-27 */
             if HUGE + x > ONE {
                 return x;
@@ -70,14 +70,14 @@ pub fn asinf(x: f32) -> f32 {
     p = t * (P_S0 + t * (P_S1 + t * (P_S2 + t * (P_S3 + t * (P_S4 + t * P_S5)))));
     q = ONE + t * (Q_S1 + t * (Q_S2 + t * (Q_S3 + t * Q_S4)));
     let s = sqrtf(t);
-    t = if ix >= 0x3F79999A {
+    t = if ix >= 0x_3f79_999a {
         /* if |x| > 0.975 */
         w = p / q;
         PIO2_HI - (2. * (s + s * w) - PIO2_LO)
     } else {
         w = s;
         let iw = w.to_bits() as i32;
-        w = f32::from_bits((iw as u32) & 0xfffff000);
+        w = f32::from_bits((iw as u32) & 0x_ffff_f000);
         let c = (t - w * w) / (s + w);
         let r = p / q;
         p = 2. * s * r - (PIO2_LO - 2. * c);

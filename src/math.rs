@@ -70,7 +70,7 @@ macro_rules! llvm_intrinsically_optimized {
 }
 
 mod consts {
-    pub const UF_1 : u32 = 0x_3f80_0000;
+    pub const UF_1: u32 = 0x_3f80_0000;
 }
 
 // Public modules for f32

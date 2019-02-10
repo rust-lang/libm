@@ -49,6 +49,7 @@ fn high_low(x: f32) -> (f32, f32) {
     (high, x - high)
 }
 
+#[allow(clippy::cyclomatic_complexity)]
 #[inline]
 pub fn powf(x: f32, y: f32) -> f32 {
     let hx = x.to_bits() as i32;
@@ -190,12 +191,13 @@ pub fn powf(x: f32, y: f32) -> f32 {
         let v = t * IVLN2_L - w * IVLN2;
         high_low(u + v)
     } else {
-        let mut n = 0;
         /* take care subnormal number */
-        if ix < 0x_0080_0000 {
+        let mut n = if ix < 0x_0080_0000 {
             ix = (ax * TWO24).to_bits() as i32;
-            n = -24;
-        }
+            -24
+        } else {
+            0
+        };
         n += ((ix) >> 23) - 0x7f;
         let j = ix & 0x_007f_ffff;
         /* determine interval */
@@ -219,7 +221,8 @@ pub fn powf(x: f32, y: f32) -> f32 {
         let s = u * v;
         let s_h = f32::from_bits(s.to_bits() & 0x_ffff_f000);
         /* t_h=ax+bp[k] High */
-        let t_h = f32::from_bits(((ix as u32 >> 1) | 0x_2000_0000) + 0x_0040_0000 + ((k as u32) << 21));
+        let t_h =
+            f32::from_bits(((ix as u32 >> 1) | 0x_2000_0000) + 0x_0040_0000 + ((k as u32) << 21));
         let t_l = ax - (t_h - BP[k]);
         let s_l = v * ((u - s_h * t_h) - s_h * t_l);
         /* compute log(ax) */

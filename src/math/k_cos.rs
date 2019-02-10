@@ -9,20 +9,20 @@
 // is preserved.
 // ====================================================
 
-const C1: f64 = 4.16666666666666019037e-02; /* 0x3FA55555, 0x5555554C */
-const C2: f64 = -1.38888888888741095749e-03; /* 0xBF56C16C, 0x16C15177 */
-const C3: f64 = 2.48015872894767294178e-05; /* 0x3EFA01A0, 0x19CB1590 */
-const C4: f64 = -2.75573143513906633035e-07; /* 0xBE927E4F, 0x809C52AD */
-const C5: f64 = 2.08757232129817482790e-09; /* 0x3E21EE9E, 0xBDB4B1C4 */
-const C6: f64 = -1.13596475577881948265e-11; /* 0xBDA8FAE9, 0xBE8838D4 */
+const C1: f64 = 4.166_666_666_666_660_190_37_e-02; /* 0x_3FA5_5555, 0x_5555_554C */
+const C2: f64 = -1.388_888_888_887_410_957_49_e-03; /* 0x_BF56_C16C, 0x_16C1_5177 */
+const C3: f64 = 2.480_158_728_947_672_941_78_e-05; /* 0x_3EFA_01A0, 0x_19CB_1590 */
+const C4: f64 = -2.755_731_435_139_066_330_35_e-07; /* 0x_BE92_7E4F, 0x_809C_52AD */
+const C5: f64 = 2.087_572_321_298_174_827_90_e-09; /* 0x_3E21_EE9E, 0x_BDB4_B1C4 */
+const C6: f64 = -1.135_964_755_778_819_482_65_e-11; /* 0x_BDA8_FAE9, 0x_BE88_38D4 */
 
-// kernel cos function on [-pi/4, pi/4], pi/4 ~ 0.785398164
+// kernel cos function on [-pi/4, pi/4], pi/4 ~ 0.785_398_164
 // Input x is assumed to be bounded by ~pi/4 in magnitude.
 // Input y is the tail of x.
 //
 // Algorithm
 //      1. Since cos(-x) = cos(x), we need only to consider positive x.
-//      2. if x < 2^-27 (hx<0x3e400000 0), return 1 with inexact if x!=0.
+//      2. if x < 2^-27 (hx<0x_3e40_0000 0), return 1 with inexact if x!=0.
 //      3. cos(x) is approximated by a polynomial of degree 14 on
 //         [0,pi/4]
 //                                       4            14
@@ -57,6 +57,6 @@ pub fn k_cos(x: f64, y: f64) -> f64 {
     let w = z * z;
     let r = z * (C1 + z * (C2 + z * C3)) + w * w * (C4 + z * (C5 + z * C6));
     let hz = 0.5 * z;
-    let w = 1.0 - hz;
-    w + (((1.0 - w) - hz) + (z * r - x * y))
+    let w = 1. - hz;
+    w + (((1. - w) - hz) + (z * r - x * y))
 }

@@ -13,19 +13,19 @@
  * ====================================================
  */
 
-const ONE: f32 = 1.0000000000e+00; /* 0x3f800000 */
-const C1: f32 = 4.1666667908e-02; /* 0x3d2aaaab */
-const C2: f32 = -1.3888889225e-03; /* 0xbab60b61 */
-const C3: f32 = 2.4801587642e-05; /* 0x37d00d01 */
-const C4: f32 = -2.7557314297e-07; /* 0xb493f27c */
-const C5: f32 = 2.0875723372e-09; /* 0x310f74f6 */
-const C6: f32 = -1.1359647598e-11; /* 0xad47d74e */
+const ONE: f32 = 1.; /* 0x_3f80_0000 */
+const C1: f32 = 4.166_666_790_8_e-02; /* 0x_3d2a_aaab */
+const C2: f32 = -1.388_888_922_5_e-03; /* 0x_bab6_0b61 */
+const C3: f32 = 2.480_158_764_2_e-05; /* 0x_37d0_0d01 */
+const C4: f32 = -2.755_731_429_7_e-07; /* 0x_b493_f27c */
+const C5: f32 = 2.087_572_337_2_e-09; /* 0x_310f_74f6 */
+const C6: f32 = -1.135_964_759_8_e-11; /* 0x_ad47_d74e */
 
 #[inline]
 pub fn k_cosf(x: f32, y: f32) -> f32 {
     let mut ix = x.to_bits();
-    ix &= 0x7fffffff; /* ix = |x|'s high word*/
-    if ix < 0x32000000 {
+    ix &= 0x_7fff_ffff; /* ix = |x|'s high word*/
+    if ix < 0x_3200_0000 {
         /* if x < 2**27 */
         if (x as i32) == 0 {
             /* generate inexact */
@@ -34,15 +34,15 @@ pub fn k_cosf(x: f32, y: f32) -> f32 {
     }
     let z = x * x;
     let r = z * (C1 + z * (C2 + z * (C3 + z * (C4 + z * (C5 + z * C6)))));
-    if ix < 0x3e99999a {
+    if ix < 0x_3e99_999a {
         /* if |x| < 0.3 */
         ONE - (0.5 * z - (z * r - x * y))
     } else {
-        let qx = if ix > 0x3f480000 {
+        let qx = if ix > 0x_3f48_0000 {
             /* x > 0.78125 */
             0.28125
         } else {
-            f32::from_bits((ix - 0x01000000) as u32) /* x/4 */
+            f32::from_bits((ix - 0x_0100_0000) as u32) /* x/4 */
         };
         let hz = 0.5 * z - qx;
         let a = ONE - qx;

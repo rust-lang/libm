@@ -1,13 +1,13 @@
 mod consts {
-    pub const Z_ROOTEPS_F: f32 = 1.7263349182589107e-4;
+    pub const Z_ROOTEPS_F: f32 = 1.726_334_918_258_910_7_e-4;
 
-    //pub const Z_HUGEVAL_F: u32 = 0x7f800000;
-    pub const Z_INFINITY_F: u32 = 0x7f800000;
-    pub const Z_NOTANUM_F: u32 = 0xffd00000;
+    //pub const Z_HUGEVAL_F: u32 = 0x_7f80_0000;
+    pub const Z_INFINITY_F: u32 = 0x_7f80_0000;
+    pub const Z_NOTANUM_F: u32 = 0x_ffd0_0000;
 
-    pub const PI: f32 = 3.14159265358979323846;
-    //pub const SQRT_HALF: f32 = 0.70710678118654752440;
-    //pub const PI_OVER_TWO: f32 = 1.57079632679489661923132;
+    pub const PI: f32 = 3.141_592_653_589_793_238_46;
+    //pub const SQRT_HALF: f32 = 0.707_106_781_186_547_524_40;
+    //pub const PI_OVER_TWO: f32 = 1.570_796_326_794_896_619_231_32;
 }
 #[derive(Clone, Copy, PartialEq)]
 pub enum NumState {

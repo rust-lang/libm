@@ -18,12 +18,12 @@ use super::{k_tanf, rem_pio2f};
 #[inline]
 pub fn tanf(x: f32) -> f32 {
     let mut ix = x.to_bits();
-    ix &= 0x7fffffff;
+    ix &= 0x_7fff_ffff;
 
     /* |x| ~< pi/4 */
-    if ix <= 0x3f490fda {
+    if ix <= 0x_3f49_0fda {
         k_tanf(x, 0., 1)
-    } else if ix >= 0x7f800000 {
+    } else if ix >= 0x_7f80_0000 {
         /* tan(Inf or NaN) is NaN */
         x - x /* NaN */
     /* argument reduction needed */

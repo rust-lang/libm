@@ -27,22 +27,22 @@
 const TBLSIZE: usize = 16;
 
 static EXP2FT: [u64; TBLSIZE] = [
-    0x3fe6a09e667f3bcd,
-    0x3fe7a11473eb0187,
-    0x3fe8ace5422aa0db,
-    0x3fe9c49182a3f090,
-    0x3feae89f995ad3ad,
-    0x3fec199bdd85529c,
-    0x3fed5818dcfba487,
-    0x3feea4afa2a490da,
-    0x3ff0000000000000,
-    0x3ff0b5586cf9890f,
-    0x3ff172b83c7d517b,
-    0x3ff2387a6e756238,
-    0x3ff306fe0a31b715,
-    0x3ff3dea64c123422,
-    0x3ff4bfdad5362a27,
-    0x3ff5ab07dd485429,
+    0x_3fe6_a09e_667f_3bcd,
+    0x_3fe7_a114_73eb_0187,
+    0x_3fe8_ace5_422a_a0db,
+    0x_3fe9_c491_82a3_f090,
+    0x_3fea_e89f_995a_d3ad,
+    0x_3fec_199b_dd85_529c,
+    0x_3fed_5818_dcfb_a487,
+    0x_3fee_a4af_a2a4_90da,
+    0x_3ff0_0000_0000_0000,
+    0x_3ff0_b558_6cf9_890f,
+    0x_3ff1_72b8_3c7d_517b,
+    0x_3ff2_387a_6e75_6238,
+    0x_3ff3_06fe_0a31_b715,
+    0x_3ff3_dea6_4c12_3422,
+    0x_3ff4_bfda_d536_2a27,
+    0x_3ff5_ab07_dd48_5429,
 ];
 
 // exp2f(x): compute the base 2 exponential of x
@@ -70,46 +70,46 @@ static EXP2FT: [u64; TBLSIZE] = [
 //      Tang, P.  Table-driven Implementation of the Exponential Function
 //      in IEEE Floating-Point Arithmetic.  TOMS 15(2), 144-157 (1989).
 
-const UF_INF: u32 = 0x7f800000;
+const UF_INF: u32 = 0x_7f80_0000;
 
 #[inline]
 pub fn exp2f(mut x: f32) -> f32 {
-    let redux = f32::from_bits(0x4b400000) / TBLSIZE as f32;
-    let p1 = f32::from_bits(0x3f317218);
-    let p2 = f32::from_bits(0x3e75fdf0);
-    let p3 = f32::from_bits(0x3d6359a4);
-    let p4 = f32::from_bits(0x3c1d964e);
+    let redux = f32::from_bits(0x_4b40_0000) / TBLSIZE as f32;
+    let p1 = f32::from_bits(0x_3f31_7218);
+    let p2 = f32::from_bits(0x_3e75_fdf0);
+    let p3 = f32::from_bits(0x_3d63_59a4);
+    let p4 = f32::from_bits(0x_3c1d_964e);
 
     // double_t t, r, z;
     // uint32_t ix, i0, k;
 
-    let x1p127 = f32::from_bits(0x7f000000);
+    let x1p127 = f32::from_bits(0x_7f00_0000);
 
     /* Filter out exceptional cases. */
     let ui = f32::to_bits(x);
-    let ix = ui & 0x7fffffff;
-    if ix > 0x42fc0000 {
+    let ix = ui & 0x_7fff_ffff;
+    if ix > 0x_42fc_0000 {
         /* |x| > 126 */
         if ix > UF_INF {
             /* NaN */
             return x;
         }
-        if ui >= 0x43000000 && ui < 0x80000000 {
+        if ui >= 0x_4300_0000 && ui < 0x_8000_0000 {
             /* x >= 128 */
             x *= x1p127;
             return x;
         }
-        if ui >= 0x80000000 {
+        if ui >= 0x_8000_0000 {
             /* x < -126 */
-            if ui >= 0xc3160000 || (ui & 0x0000ffff != 0) {
-                force_eval!(f32::from_bits(0x80000001) / x);
+            if ui >= 0x_c316_0000 || (ui & 0x_0000_ffff != 0) {
+                force_eval!(f32::from_bits(0x_8000_0001) / x);
             }
-            if ui >= 0xc3160000 {
+            if ui >= 0x_c316_0000 {
                 /* x <= -150 */
                 return 0.0;
             }
         }
-    } else if ix <= 0x33000000 {
+    } else if ix <= 0x_3300_0000 {
         /* |x| <= 0x1p-25 */
         return 1.0 + x;
     }

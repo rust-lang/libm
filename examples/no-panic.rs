@@ -1,5 +1,4 @@
 #![feature(lang_items)]
-#![feature(panic_implementation)]
 #![no_main]
 #![no_std]
 
@@ -91,7 +90,7 @@ where
     }
 }
 
-#[panic_implementation]
+#[panic_handler]
 #[no_mangle]
 pub fn panic(_info: &PanicInfo) -> ! {
     // loop {}

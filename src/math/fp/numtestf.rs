@@ -22,7 +22,7 @@ use super::NumState;
 #[inline]
 pub fn numtestf(x: f32) -> NumState {
     let wx = x.to_bits() as i32;
-    let exp = (wx & 0x7f800000) >> 23;
+    let exp = (wx & 0x_7f80_0000) >> 23;
 
     /* Check for a zero input. */
     if x == 0. {
@@ -30,7 +30,7 @@ pub fn numtestf(x: f32) -> NumState {
     }
     /* Check for not a number or infinity. */
     else if exp == 0xff {
-        if (wx & 0x7fffff) != 0 {
+        if (wx & 0x_007f_ffff) != 0 {
             NumState::Nan
         } else {
             NumState::Inf

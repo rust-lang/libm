@@ -15,7 +15,7 @@ pub fn floor(x: f64) -> f64 {
     let ui = x.to_bits();
     let e = ((ui >> 52) & 0x7ff) as i32;
 
-    if (e >= 0x3ff + 52) || (x == 0.) {
+    if (e >= (0x3ff + 52)) || (x == 0.) {
         return x;
     }
     /* y = int(x) - x, where int(x) is an integer neighbor of x */
@@ -25,7 +25,7 @@ pub fn floor(x: f64) -> f64 {
         x + TOINT - TOINT - x
     };
     /* special case because of non-nearest rounding modes */
-    if e <= 0x3ff - 1 {
+    if e <= (0x3ff - 1) {
         force_eval!(y);
         return if (ui >> 63) != 0 { -1. } else { 0. };
     }
