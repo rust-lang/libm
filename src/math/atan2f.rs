@@ -17,8 +17,8 @@ use super::atanf;
 use super::fabsf;
 use math::consts::*;
 
-const PI: f32 = 3.1415927410e+00; /* 0x40490fdb */
-const PI_LO: f32 = -8.7422776573e-08; /* 0xb3bbbd2e */
+const PI: f32 = 3.141_592_741_0_e+00; /* 0x40490fdb */
+const PI_LO: f32 = -8.742_277_657_3_e-08; /* 0xb3bbbd2e */
 
 #[inline]
 pub fn atan2f(y: f32, x: f32) -> f32 {
@@ -33,8 +33,8 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
         return atanf(y);
     }
     let m = ((iy >> 31) & 1) | ((ix >> 30) & 2); /* 2*sign(x)+sign(y) */
-    ix &= 0x7fffffff;
-    iy &= 0x7fffffff;
+    ix &= 0x_7fff_ffff;
+    iy &= 0x_7fff_ffff;
 
     /* when y = 0 */
     if iy == 0 {
@@ -49,8 +49,8 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
         return if m & 1 != 0 { -PI / 2. } else { PI / 2. };
     }
     /* when x is INF */
-    if ix == 0x7f800000 {
-        return if iy == 0x7f800000 {
+    if ix == 0x_7f80_0000 {
+        return if iy == 0x_7f80_0000 {
             match m {
                 0 => PI / 4.,           /* atan(+INF,+INF) */
                 1 => -PI / 4.,          /* atan(-INF,+INF) */
@@ -67,7 +67,7 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
         };
     }
     /* |y/x| > 0x1p26 */
-    if (ix + (26 << 23) < iy) || (iy == 0x7f800000) {
+    if (ix + (26 << 23) < iy) || (iy == 0x_7f80_0000) {
         return if m & 1 != 0 { -PI / 2. } else { PI / 2. };
     }
 

@@ -9,12 +9,14 @@
 //! - By importing the `F32Ext` and / or `F64Ext` extension traits to add methods like `powf` to the
 //! `f32` and `f64` types. Then you'll be able to invoke math functions as methods, e.g. `x.sqrt()`.
 
-//#![deny(warnings)]
+#![deny(warnings)]
 #![no_std]
 #![cfg_attr(
     all(target_arch = "wasm32", not(feature = "stable")),
     feature(core_intrinsics)
 )]
+
+#![allow(clippy::many_single_char_names)]
 
 use core::{f32, f64};
 

@@ -14,22 +14,22 @@
  */
 
 use math::consts::*;
-const LN2_HI: f32 = 6.9313812256e-01; /* 0x3f317180 */
-const LN2_LO: f32 = 9.0580006145e-06; /* 0x3717f7d1 */
-/* |(log(1+s)-log(1-s))/s - Lg(s)| < 2**-34.24 (~[-4.95e-11, 4.97e-11]). */
-const LG1: f32 = 0.66666662693; /*  0xaaaaaa.0p-24*/
-const LG2: f32 = 0.40000972152; /*  0xccce13.0p-25 */
-const LG3: f32 = 0.28498786688; /*  0x91e9ee.0p-25 */
-const LG4: f32 = 0.24279078841; /*  0xf89e26.0p-26 */
+const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
+const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
+/* |(log(1+s)-log(1-s))/s - Lg(s)| < 2**-34.24 (~[-4.95_e-11, 4.97_e-11]). */
+const LG1: f32 = 0.666_666_626_93; /*  0x_aa_aaaa.0p-24*/
+const LG2: f32 = 0.400_009_721_52; /*  0x_cc_ce13.0p-25 */
+const LG3: f32 = 0.284_987_866_88; /*  0x_91_e9ee.0p-25 */
+const LG4: f32 = 0.242_790_788_41; /*  0x_f8_9e26.0p-26 */
 
 #[inline]
 pub fn logf(mut x: f32) -> f32 {
-    let x1p25 = f32::from_bits(0x4c000000); // 0x1p25f === 2 ^ 25
+    let x1p25 = f32::from_bits(0x_4c00_0000); // 0x1p25f === 2 ^ 25
 
     let mut ix = x.to_bits();
-    let mut k = 0i32;
+    let mut k = 0_i32;
 
-    if (ix < 0x00800000) || ((ix >> 31) != 0) {
+    if (ix < 0x_0080_0000) || ((ix >> 31) != 0) {
         /* x < 2**-126  */
         if ix << 1 == 0 {
             return -1. / (x * x); /* log(+-0)=-inf */
@@ -41,16 +41,16 @@ pub fn logf(mut x: f32) -> f32 {
         k -= 25;
         x *= x1p25;
         ix = x.to_bits();
-    } else if ix >= 0x7f800000 {
+    } else if ix >= 0x_7f80_0000 {
         return x;
     } else if ix == UF_1 {
         return 0.;
     }
 
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    ix += UF_1 - 0x3f3504f3;
+    ix += UF_1 - 0x_3f35_04f3;
     k += ((ix >> 23) as i32) - 0x7f;
-    ix = (ix & 0x007fffff) + 0x3f3504f3;
+    ix = (ix & 0x_007f_ffff) + 0x_3f35_04f3;
     x = f32::from_bits(ix);
 
     let f = x - 1.;

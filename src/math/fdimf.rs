@@ -6,11 +6,9 @@ pub fn fdimf(x: f32, y: f32) -> f32 {
         x
     } else if y.is_nan() {
         y
+    } else if x > y {
+        x - y
     } else {
-        if x > y {
-            x - y
-        } else {
-            0.0
-        }
+        0.
     }
 }

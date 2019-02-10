@@ -30,7 +30,7 @@ pub fn sqrtf(x: f32) -> f32 {
         }
     }
     let mut z: f32;
-    let sign: i32 = 0x80000000u32 as i32;
+    let sign: i32 = 0x_8000_0000_u32 as i32;
     let mut ix: i32;
     let mut s: i32;
     let mut q: i32;
@@ -42,7 +42,7 @@ pub fn sqrtf(x: f32) -> f32 {
     ix = x.to_bits() as i32;
 
     /* take care of Inf and NaN */
-    if (ix as u32 & 0x7f800000) == 0x7f800000 {
+    if (ix as u32 & 0x_7f80_0000) == 0x_7f80_0000 {
         return x * x + x; /* sqrt(NaN)=NaN, sqrt(+inf)=+inf, sqrt(-inf)=sNaN */
     }
 
@@ -61,14 +61,14 @@ pub fn sqrtf(x: f32) -> f32 {
     if m == 0 {
         /* subnormal x */
         i = 0;
-        while ix & 0x00800000 == 0 {
+        while ix & 0x_0080_0000 == 0 {
             ix <<= 1;
             i = i + 1;
         }
         m -= i - 1;
     }
     m -= 127; /* unbias exponent */
-    ix = (ix & 0x007fffff) | 0x00800000;
+    ix = (ix & 0x_007f_ffff) | 0x_0080_0000;
     if m & 1 == 1 {
         /* odd m, double x to make it even */
         ix += ix;
@@ -79,7 +79,7 @@ pub fn sqrtf(x: f32) -> f32 {
     ix += ix;
     q = 0;
     s = 0;
-    r = 0x01000000; /* r = moving bit from right to left */
+    r = 0x_0100_0000; /* r = moving bit from right to left */
 
     while r != 0 {
         t = s + r as i32;
@@ -94,10 +94,10 @@ pub fn sqrtf(x: f32) -> f32 {
 
     /* use floating add to find out rounding direction */
     if ix != 0 {
-        z = 1.0 - TINY; /* raise inexact flag */
-        if z >= 1.0 {
-            z = 1.0 + TINY;
-            if z > 1.0 {
+        z = 1. - TINY; /* raise inexact flag */
+        if z >= 1. {
+            z = 1. + TINY;
+            if z > 1. {
                 q += 2;
             } else {
                 q += q & 1;
@@ -105,7 +105,7 @@ pub fn sqrtf(x: f32) -> f32 {
         }
     }
 
-    ix = (q >> 1) + 0x3f000000;
+    ix = (q >> 1) + 0x_3f00_0000;
     ix += m << 23;
     f32::from_bits(ix as u32)
 }

@@ -15,37 +15,37 @@
 
 use super::{fabsf, scalbnf, sqrtf};
 
-const BP: [f32; 2] = [1.0, 1.5];
-const DP_H: [f32; 2] = [0.0, 5.84960938e-01]; /* 0x3f15c000 */
-const DP_L: [f32; 2] = [0.0, 1.56322085e-06]; /* 0x35d1cfdc */
-const TWO24: f32 = 16777216.0; /* 0x4b800000 */
-const HUGE: f32 = 1.0e30;
-const TINY: f32 = 1.0e-30;
-const L1: f32 = 6.0000002384e-01; /* 0x3f19999a */
-const L2: f32 = 4.2857143283e-01; /* 0x3edb6db7 */
-const L3: f32 = 3.3333334327e-01; /* 0x3eaaaaab */
-const L4: f32 = 2.7272811532e-01; /* 0x3e8ba305 */
-const L5: f32 = 2.3066075146e-01; /* 0x3e6c3255 */
-const L6: f32 = 2.0697501302e-01; /* 0x3e53f142 */
-const P1: f32 = 1.6666667163e-01; /* 0x3e2aaaab */
-const P2: f32 = -2.7777778450e-03; /* 0xbb360b61 */
-const P3: f32 = 6.6137559770e-05; /* 0x388ab355 */
-const P4: f32 = -1.6533901999e-06; /* 0xb5ddea0e */
-const P5: f32 = 4.1381369442e-08; /* 0x3331bb4c */
-const LG2: f32 = 6.9314718246e-01; /* 0x3f317218 */
-const LG2_H: f32 = 6.93145752e-01; /* 0x3f317200 */
-const LG2_L: f32 = 1.42860654e-06; /* 0x35bfbe8c */
-const OVT: f32 = 4.2995665694e-08; /* -(128-log2(ovfl+.5ulp)) */
-const CP: f32 = 9.6179670095e-01; /* 0x3f76384f =2/(3ln2) */
-const CP_H: f32 = 9.6191406250e-01; /* 0x3f764000 =12b cp */
-const CP_L: f32 = -1.1736857402e-04; /* 0xb8f623c6 =tail of cp_h */
-const IVLN2: f32 = 1.4426950216e+00;
-const IVLN2_H: f32 = 1.4426879883e+00;
-const IVLN2_L: f32 = 7.0526075433e-06;
+const BP: [f32; 2] = [1., 1.5];
+const DP_H: [f32; 2] = [0., 5.849_609_38_e-01]; /* 0x_3f15_c000 */
+const DP_L: [f32; 2] = [0., 1.563_220_85_e-06]; /* 0x_35d1_cfdc */
+const TWO24: f32 = 16_777_216.; /* 0x_4b80_0000 */
+const HUGE: f32 = 1_e30;
+const TINY: f32 = 1_e-30;
+const L1: f32 = 6.000_000_238_4_e-01; /* 0x_3f19_999a */
+const L2: f32 = 4.285_714_328_3_e-01; /* 0x_3edb_6db7 */
+const L3: f32 = 3.333_333_432_7_e-01; /* 0x_3eaa_aaab */
+const L4: f32 = 2.727_281_153_2_e-01; /* 0x_3e8b_a305 */
+const L5: f32 = 2.306_607_514_6_e-01; /* 0x_3e6c_3255 */
+const L6: f32 = 2.069_750_130_2_e-01; /* 0x_3e53_f142 */
+const P1: f32 = 1.666_666_716_3_e-01; /* 0x_3e2a_aaab */
+const P2: f32 = -2.777_777_845_0_e-03; /* 0x_bb36_0b61 */
+const P3: f32 = 6.613_755_977_e-05; /* 0x_388a_b355 */
+const P4: f32 = -1.653_390_199_9_e-06; /* 0x_b5dd_ea0e */
+const P5: f32 = 4.138_136_944_2_e-08; /* 0x_3331_bb4c */
+const LG2: f32 = 6.931_471_824_6_e-01; /* 0x_3f31_7218 */
+const LG2_H: f32 = 6.931_457_52_e-01; /* 0x_3f31_7200 */
+const LG2_L: f32 = 1.428_606_54_e-06; /* 0x_35bf_be8c */
+const OVT: f32 = 4.299_566_569_4e-08; /* -(128-log2(ovfl+.5ulp)) */
+const CP: f32 = 9.617_967_009_5_e-01; /* 0x_3f76_384f =2/(3ln2) */
+const CP_H: f32 = 9.619_140_625_e-01; /* 0x_3f76_4000 =12b cp */
+const CP_L: f32 = -1.173_685_740_2_e-04; /* 0x_b8f6_23c6 =tail of cp_h */
+const IVLN2: f32 = 1.442_695_021_6;
+const IVLN2_H: f32 = 1.442_687_988_3;
+const IVLN2_L: f32 = 7.052_607_543_3_e-06;
 
 #[inline]
 fn high_low(x: f32) -> (f32, f32) {
-    let high = f32::from_bits(x.to_bits() & 0xfffff000);
+    let high = f32::from_bits(x.to_bits() & 0x_ffff_f000);
     (high, x - high)
 }
 
@@ -54,8 +54,8 @@ pub fn powf(x: f32, y: f32) -> f32 {
     let hx = x.to_bits() as i32;
     let hy = y.to_bits() as i32;
 
-    let mut ix = hx & 0x7fffffff;
-    let iy = hy & 0x7fffffff;
+    let mut ix = hx & 0x_7fff_ffff;
+    let iy = hy & 0x_7fff_ffff;
 
     /* x**0 = 1, even if x is NaN */
     if iy == 0 {
@@ -63,12 +63,12 @@ pub fn powf(x: f32, y: f32) -> f32 {
     }
 
     /* 1**y = 1, even if y is NaN */
-    if hx == 0x3f800000 {
+    if hx == 0x_3f80_0000 {
         return 1.;
     }
 
     /* NaN if either arg is NaN */
-    if ix > 0x7f800000 || iy > 0x7f800000 {
+    if ix > 0x_7f80_0000 || iy > 0x_7f80_0000 {
         return x + y;
     }
 
@@ -79,9 +79,9 @@ pub fn powf(x: f32, y: f32) -> f32 {
      */
     let mut yisint = 0;
     if hx < 0 {
-        if iy >= 0x4b800000 {
+        if iy >= 0x_4b80_0000 {
             yisint = 2; /* even integer y */
-        } else if iy >= 0x3f800000 {
+        } else if iy >= 0x_3f80_0000 {
             let k = (iy >> 23) - 0x7f; /* exponent */
             let j = iy >> (23 - k);
             if (j << (23 - k)) == iy {
@@ -91,12 +91,12 @@ pub fn powf(x: f32, y: f32) -> f32 {
     }
 
     /* special value of y */
-    if iy == 0x7f800000 {
+    if iy == 0x_7f80_0000 {
         /* y is +-inf */
-        return if ix == 0x3f800000 {
+        return if ix == 0x_3f80_0000 {
             /* (-1)**+-inf is 1 */
             1.
-        } else if ix > 0x3f800000 {
+        } else if ix > 0x_3f80_0000 {
             /* (|x|>1)**+-inf = inf,0 */
             if hy >= 0 {
                 y
@@ -112,17 +112,17 @@ pub fn powf(x: f32, y: f32) -> f32 {
             }
         };
     }
-    if iy == 0x3f800000 {
+    if iy == 0x_3f80_0000 {
         /* y is +-1 */
         return if hy >= 0 { x } else { 1. / x };
     }
 
-    if hy == 0x40000000 {
+    if hy == 0x_4000_0000 {
         /* y is 2 */
         return x * x;
     }
 
-    if (hy == 0x3f000000) && (hx >= 0) {
+    if (hy == 0x_3f00_0000) && (hx >= 0) {
         /* y is  0.5 */
         /* x >= +0 */
         return sqrtf(x);
@@ -130,7 +130,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
 
     let ax = fabsf(x);
     /* special value of x */
-    if ix == 0x7f800000 || ix == 0 || ix == 0x3f800000 {
+    if ix == 0x_7f80_0000 || ix == 0 || ix == 0x_3f80_0000 {
         /* x is +-0,+-inf,+-1 */
         let mut z = if hy < 0 {
             /* z = (1/|x|) */
@@ -140,7 +140,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         };
 
         if hx < 0 {
-            if ((ix - 0x3f800000) | yisint) == 0 {
+            if ((ix - 0x_3f80_0000) | yisint) == 0 {
                 z = (z - z) / (z - z); /* (-1)**non-int is NaN */
             } else if yisint == 1 {
                 z = -z; /* (x<0)**odd = -(|x|**odd) */
@@ -163,10 +163,10 @@ pub fn powf(x: f32, y: f32) -> f32 {
     }
 
     /* |y| is HUGE */
-    let (t1, t2) = if iy > 0x4d000000 {
+    let (t1, t2) = if iy > 0x_4d00_0000 {
         /* if |y| > 2**27 */
         /* over/underflow if x is not close to one */
-        if ix < 0x3f7ffff8 {
+        if ix < 0x_3f7f_fff8 {
             return if hy < 0 {
                 sn * HUGE * HUGE
             } else {
@@ -174,7 +174,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
             };
         }
 
-        if ix > 0x3f800007 {
+        if ix > 0x_3f80_0007 {
             return if hy > 0 {
                 sn * HUGE * HUGE
             } else {
@@ -185,30 +185,30 @@ pub fn powf(x: f32, y: f32) -> f32 {
         /* now |1-x| is TINY <= 2**-20, suffice to compute
         log(x) by x-x^2/2+x^3/3-x^4/4 */
         let t = ax - 1.; /* t has 20 trailing zeros */
-        let w = (t * t) * (0.5 - t * (0.333333333333 - t * 0.25));
+        let w = (t * t) * (0.5 - t * (0.333_333_333_333 - t * 0.25));
         let u = IVLN2_H * t; /* IVLN2_H has 16 sig. bits */
         let v = t * IVLN2_L - w * IVLN2;
         high_low(u + v)
     } else {
         let mut n = 0;
         /* take care subnormal number */
-        if ix < 0x00800000 {
+        if ix < 0x_0080_0000 {
             ix = (ax * TWO24).to_bits() as i32;
             n = -24;
         }
         n += ((ix) >> 23) - 0x7f;
-        let j = ix & 0x007fffff;
+        let j = ix & 0x_007f_ffff;
         /* determine interval */
-        ix = j | 0x3f800000; /* normalize ix */
-        let k = if j <= 0x1cc471 {
+        ix = j | 0x_3f80_0000; /* normalize ix */
+        let k = if j <= 0x_001c_c471 {
             /* |x|<sqrt(3/2) */
             0usize
-        } else if j < 0x5db3d7 {
+        } else if j < 0x_005d_b3d7 {
             /* |x|<sqrt(3)   */
             1
         } else {
             n += 1;
-            ix -= 0x00800000;
+            ix -= 0x_0080_0000;
             0
         };
         let ax = f32::from_bits(ix as u32);
@@ -217,9 +217,9 @@ pub fn powf(x: f32, y: f32) -> f32 {
         let u = ax - BP[k]; /* bp[0]=1.0, bp[1]=1.5 */
         let v = 1. / (ax + BP[k]);
         let s = u * v;
-        let s_h = f32::from_bits(s.to_bits() & 0xfffff000);
+        let s_h = f32::from_bits(s.to_bits() & 0x_ffff_f000);
         /* t_h=ax+bp[k] High */
-        let t_h = f32::from_bits(((ix as u32 >> 1) | 0x20000000) + 0x00400000 + ((k as u32) << 21));
+        let t_h = f32::from_bits(((ix as u32 >> 1) | 0x_2000_0000) + 0x_0040_0000 + ((k as u32) << 21));
         let t_l = ax - (t_h - BP[k]);
         let s_l = v * ((u - s_h * t_h) - s_h * t_l);
         /* compute log(ax) */
@@ -245,19 +245,19 @@ pub fn powf(x: f32, y: f32) -> f32 {
     let mut p_h = y1 * t1;
     let mut z = p_l + p_h;
     let j = z.to_bits() as i32;
-    if j > 0x43000000 {
+    if j > 0x_4300_0000 {
         /* if z > 128 */
         return sn * HUGE * HUGE; /* overflow */
-    } else if j == 0x43000000 {
+    } else if j == 0x_4300_0000 {
         /* if z == 128 */
         if p_l + OVT > z - p_h {
             return sn * HUGE * HUGE; /* overflow */
         }
-    } else if (j & 0x7fffffff) > 0x43160000 {
+    } else if (j & 0x_7fff_ffff) > 0x_4316_0000 {
         /* z < -150 */
-        // FIXME: check should be  (uint32_t)j > 0xc3160000
+        // FIXME: check should be  (uint32_t)j > 0x_c316_0000
         return sn * TINY * TINY; /* underflow */
-    } else if j as u32 == 0xc3160000 {
+    } else if j as u32 == 0x_c316_0000 {
         /* z == -150 */
         if p_l <= z - p_h {
             return sn * TINY * TINY; /* underflow */
@@ -267,21 +267,21 @@ pub fn powf(x: f32, y: f32) -> f32 {
     /*
      * compute 2**(p_h+p_l)
      */
-    let i = j & 0x7fffffff;
+    let i = j & 0x_7fff_ffff;
     let k = (i >> 23) - 0x7f;
     let mut n = 0;
-    if i > 0x3f000000 {
+    if i > 0x_3f00_0000 {
         /* if |z| > 0.5, set n = [z+0.5] */
-        n = j + (0x00800000 >> (k + 1));
-        let k = ((n & 0x7fffffff) >> 23) - 0x7f; /* new k for n */
-        let t = f32::from_bits(n as u32 & !(0x007fffff >> k));
-        n = ((n & 0x007fffff) | 0x00800000) >> (23 - k);
+        n = j + (0x_0080_0000 >> (k + 1));
+        let k = ((n & 0x_7fff_ffff) >> 23) - 0x7f; /* new k for n */
+        let t = f32::from_bits(n as u32 & !(0x_007f_ffff >> k));
+        n = ((n & 0x_007f_ffff) | 0x_0080_0000) >> (23 - k);
         if j < 0 {
             n = -n;
         }
         p_h -= t;
     }
-    let t = f32::from_bits((p_l + p_h).to_bits() & 0xffff8000);
+    let t = f32::from_bits((p_l + p_h).to_bits() & 0x_ffff_8000);
     let u = t * LG2_H;
     let v = (p_l - (t - p_h)) * LG2 + t * LG2_L;
     z = u + v;

@@ -13,30 +13,30 @@
  * ====================================================
  */
 
-const O_THRESHOLD: f32 = 8.8721679688e+01; /* 0x42b17180 */
-const LN2_HI: f32 = 6.9313812256e-01; /* 0x3f317180 */
-const LN2_LO: f32 = 9.0580006145e-06; /* 0x3717f7d1 */
-const INV_LN2: f32 = 1.4426950216e+00; /* 0x3fb8aa3b */
+const O_THRESHOLD: f32 = 8.872_167_968_8_e+01; /* 0x_42b1_7180 */
+const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
+const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
+const INV_LN2: f32 = 1.442_695_021_6_e+00; /* 0x_3fb8_aa3b */
 /*
- * Domain [-0.34568, 0.34568], range ~[-6.694e-10, 6.696e-10]:
+ * Domain [-0.345_68, 0.345_68], range ~[-6.694_e-10, 6.696_e-10]:
  * |6 / x * (1 + 2 * (1 / (exp(x) - 1) - 1 / x)) - q(x)| < 2**-30.04
  * Scaled coefficients: Qn_here = 2**n * Qn_for_q (see s_expm1.c):
  */
-const Q1: f32 = -3.3333212137e-2; /* -0x888868.0p-28 */
-const Q2: f32 = 1.5807170421e-3; /*  0xcf3010.0p-33 */
+const Q1: f32 = -3.333_321_213_7_e-2; /* -0x_88_8868.0p-28 */
+const Q2: f32 = 1.580_717_042_1_e-3; /*  0x_cf_3010.0p-33 */
 
 #[inline]
 pub fn expm1f(mut x: f32) -> f32 {
-    let x1p127 = f32::from_bits(0x7f000000); // 0x1p127f === 2 ^ 127
+    let x1p127 = f32::from_bits(0x_7f00_0000); // 0x1p127f === 2 ^ 127
 
     let mut hx = x.to_bits();
     let sign = (hx >> 31) != 0;
-    hx &= 0x7fffffff;
+    hx &= 0x_7fff_ffff;
 
     /* filter out huge and non-finite argument */
-    if hx >= 0x4195b844 {
+    if hx >= 0x_4195_b844 {
         /* if |x|>=27*ln2 */
-        if hx > 0x7f800000 {
+        if hx > 0x_7f80_0000 {
             /* NaN */
             return x;
         }
@@ -52,11 +52,11 @@ pub fn expm1f(mut x: f32) -> f32 {
     let k: i32;
     let hi: f32;
     let lo: f32;
-    let mut c = 0f32;
+    let mut c = 0_f32;
     /* argument reduction */
-    if hx > 0x3eb17218 {
+    if hx > 0x_3eb1_7218 {
         /* if  |x| > 0.5 ln2 */
-        if hx < 0x3F851592 {
+        if hx < 0x_3f85_1592 {
             /* and |x| < 1.5 ln2 */
             if !sign {
                 hi = x - LN2_HI;
@@ -75,9 +75,9 @@ pub fn expm1f(mut x: f32) -> f32 {
         }
         x = hi - lo;
         c = (hi - x) - lo;
-    } else if hx < 0x33000000 {
+    } else if hx < 0x_3300_0000 {
         /* when |x|<2**-25, return x */
-        if hx < 0x00800000 {
+        if hx < 0x_0080_0000 {
             force_eval!(x * x);
         }
         return x;

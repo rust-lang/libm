@@ -54,7 +54,7 @@ pub fn fmaf(x: f32, y: f32, mut z: f32) -> f32 {
     /* Common case: The double precision result is fine. */
     if (
         /* not a halfway case */
-        ui & 0x1fffffff) != 0x10000000 ||
+        ui & 0x_1fff_ffff) != 0x_1000_0000 ||
         /* NaN */
         e == 0x7ff ||
         /* exact */
