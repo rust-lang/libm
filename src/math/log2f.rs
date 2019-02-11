@@ -16,6 +16,9 @@
 use core::f32;
 use crate::math::consts::*;
 
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
+
 const IVLN2HI: f32 = 1.442_871_093_8; /* 0x_3fb8_b000 */
 const IVLN2LO: f32 = -1.760_528_539_3_e-04; /* 0x_b938_9ad4 */
 /* |(log(1+s)-log(1-s))/s - Lg(s)| < 2**-34.24 (~[-4.95e-11, 4.97e-11]). */
@@ -26,6 +29,11 @@ const LG4: f32 = 0.242_790_788_41; /* 0xf8_9e26.0p-26 */
 
 #[inline]
 pub fn log2f(mut x: f32) -> f32 {
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::lg2f_approx(x) }
+        }
+    }
     let x1p25f = f32::from_bits(0x_4c00_0000); // 0x1p25f === 2 ^ 25
 
     let mut ui: u32 = x.to_bits();

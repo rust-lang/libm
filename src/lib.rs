@@ -21,6 +21,11 @@
 #![allow(clippy::cast_lossless)]
 #![allow(clippy::float_cmp)]
 
+#![cfg_attr(
+    all(target_os = "cuda", not(feature = "stable")),
+    feature(core_intrinsics, link_llvm_intrinsics)
+)]
+
 use core::{f32, f64};
 
 mod math;

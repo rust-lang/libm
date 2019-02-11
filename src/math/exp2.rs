@@ -27,6 +27,9 @@
 use super::scalbn;
 use crate::math::consts::*;
 
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
+
 const TBLSIZE: usize = 256;
 
 #[rustfmt::skip]
@@ -321,6 +324,11 @@ static TBL: [u64; TBLSIZE * 2] = [
 //      for the IEEE Floating Point Standard.  TOMS 17(1), 26-46 (1991).
 #[inline]
 pub fn exp2(mut x: f64) -> f64 {
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::exp2_approx(x) }
+        }
+    }
     let redux = f64::from_bits(0x_4338_0000_0000_0000) / TBLSIZE as f64;
     let p1 = f64::from_bits(0x_3fe6_2e42_fefa_39ef);
     let p2 = f64::from_bits(0x_3fce_bfbd_ff82_c575);

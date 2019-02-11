@@ -18,6 +18,8 @@
  */
 
 use core::f64;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+use super::cuda_intrinsics;
 
 const IVLN2HI: f64 = 1.442_695_040_721_446_275_71; /* 0x_3ff7_1547, 0x_6520_0000 */
 const IVLN2LO: f64 = 1.675_171_316_488_651_183_53_e-10; /* 0x_3de7_05fc, 0x_2eef_a200 */
@@ -31,6 +33,12 @@ const LG7: f64 = 1.479_819_860_511_658_591_e-01; /* 3FC2F112 DF3E5244 */
 
 #[inline]
 pub fn log2(mut x: f64) -> f64 {
+    llvm_intrinsically_optimized! {
+        #[cfg(target_os = "cuda")] {
+            return unsafe { cuda_intrinsics::lg2_approx(x) }
+        }
+    }
+
     let x1p54 = f64::from_bits(0x_4350_0000_0000_0000); // 0x1p54 === 2 ^ 54
 
     let mut ui: u64 = x.to_bits();

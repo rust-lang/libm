@@ -272,6 +272,8 @@ mod k_sin;
 mod k_tan;
 mod rem_pio2;
 mod rem_pio2_large;
+#[cfg(all(target_os = "cuda", not(feature = "stable")))]
+mod cuda_intrinsics;
 
 // Private re-imports
 #[rustfmt::skip]
