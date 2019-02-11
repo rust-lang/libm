@@ -56,7 +56,7 @@
 
 use core::f64;
 use super::{cos, get_low_word, get_high_word, fabs, log, sin, sqrt};
-use math::consts::*;
+use crate::math::consts::*;
 
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */
 const TPI: f64       = 6.366_197_723_675_813_824_33_e-01; /* 0x_3FE4_5F30, 0x_6DC9_C883 */
@@ -86,8 +86,8 @@ fn common(ix: u32, x: f64, y0: bool) -> f64 {
     /* avoid overflow in 2*x, big ulp error when x>=0x1p1023 */
     if ix < 0x_7fe0_0000 {
         ss = s-c;
-        z = -cos(2.0*x);
-        if s*c < 0.0 {
+        z = -cos(2.*x);
+        if s*c < 0. {
             cc = z/ss;
         } else {
             ss = z/cc;
@@ -124,7 +124,7 @@ pub fn j0(mut x: f64) -> f64
 
     /* j0(+-inf)=0, j0(nan)=nan */
     if ix >= 0x_7ff0_0000 {
-        return 1.0/(x*x);
+        return 1./(x*x);
     }
     x = fabs(x);
 
@@ -138,8 +138,8 @@ pub fn j0(mut x: f64) -> f64
         /* up to 4ulp error close to 2 */
         z = x*x;
         r = z*(R02+z*(R03+z*(R04+z*R05)));
-        s = 1.0+z*(S01+z*(S02+z*(S03+z*S04)));
-        return (1.0+x/2.0)*(1.0-x/2.0) + z*(r/s);
+        s = 1.+z*(S01+z*(S02+z*(S03+z*S04)));
+        return (1.+x/2.)*(1.-x/2.) + z*(r/s);
     }
 
     /* 1 - x*x/4 */
@@ -188,7 +188,7 @@ pub fn y0(x: f64) -> f64
         /* large ulp error near the first zero, x ~= 0.89 */
         z = x*x;
         u = U00+z*(U01+z*(U02+z*(U03+z*(U04+z*(U05+z*U06)))));
-        v = 1.0+z*(V01+z*(V02+z*(V03+z*V04)));
+        v = 1.+z*(V01+z*(V02+z*(V03+z*V04)));
         u/v + TPI*(j0(x)*log(x))
     } else {
         U00 + TPI*log(x)
@@ -283,9 +283,9 @@ fn pzero(x: f64) -> f64
     else if ix >= 0x_4012_2E8B {p = &PR5; q = &PS5;}
     else if ix >= 0x_4006_DB6D {p = &PR3; q = &PS3;}
     else /*ix >= 0x_4000_0000*/{p = &PR2; q = &PS2;}
-    z = 1.0/(x*x);
+    z = 1./(x*x);
     r = p[0]+z*(p[1]+z*(p[2]+z*(p[3]+z*(p[4]+z*p[5]))));
-    s = 1.0+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*q[4]))));
+    s = 1.+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*q[4]))));
     1. + r/s
 }
 

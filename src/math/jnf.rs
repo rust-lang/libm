@@ -15,7 +15,7 @@
 
 use core::f32;
 use super::{fabsf, j0f, j1f, logf, y0f, y1f};
-use math::consts::*;
+use crate::math::consts::*;
 
 pub fn jnf(n: isize, mut x: f32) -> f32
 {
@@ -61,7 +61,7 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         while i < nm1 {
             i += 1;
             temp = b;
-            b = b*(2.0*(i as f32)/x) - a;
+            b = b*(2.*(i as f32)/x) - a;
             a = temp;
         }
     } else if ix < 0x_3580_0000 { /* x < 2**-20 */
@@ -73,7 +73,7 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         }
         temp = 0.5 * x;
         b = temp;
-        a = 1.0;
+        a = 1.;
         i = 2;
         while i <= nm1 + 1 {
             a *= i as f32;    /* a = n! */
@@ -121,28 +121,28 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         let nf: f32;
         let mut k: isize;
 
-        nf = (nm1 as f32)+1.0;
-        w = 2.0*(nf as f32)/x;
-        h = 2.0/x;
+        nf = (nm1 as f32)+1.;
+        w = 2.*(nf as f32)/x;
+        h = 2./x;
         z = w+h;
         q0 = w;
-        q1 = w*z - 1.0;
+        q1 = w*z - 1.;
         k = 1;
-        while q1 < 1.0e4 {
+        while q1 < 1e4 {
             k += 1;
             z += h;
             tmp = z*q1 - q0;
             q0 = q1;
             q1 = tmp;
         }
-        t = 0.0;
+        t = 0.;
         i = k;
         while i >= 0 {
-            t = 1.0/(2.0*((i as f32)+nf)/x-t);
+            t = 1./(2.*((i as f32)+nf)/x-t);
             i -= 1;
         }
         a = t;
-        b = 1.0;
+        b = 1.;
         /*  estimate log((2/x)^n*n!) = n*log(2/x)+n*ln(n)
          *  Hence, if n*(log(2n/x)) > ...
          *  single 8.872_283_935_5_e+01
@@ -156,7 +156,7 @@ pub fn jnf(n: isize, mut x: f32) -> f32
             i = nm1;
             while i > 0 {
                 temp = b;
-                b = 2.0*(i as f32)*b/x - a;
+                b = 2.*(i as f32)*b/x - a;
                 a = temp;
                 i -= 1;
             }
@@ -164,14 +164,14 @@ pub fn jnf(n: isize, mut x: f32) -> f32
             i = nm1;
             while i > 0 {
                 temp = b;
-                b = 2.0*(i as f32)*b/x - a;
+                b = 2.*(i as f32)*b/x - a;
                 a = temp;
                 /* scale b to avoid spurious overflow */
                 let x1p60 = f32::from_bits(0x_5d80_0000); // 0x1p60 == 2^60
                 if b > x1p60 {
                     a /= b;
                     t /= b;
-                    b = 1.0;
+                    b = 1.;
                 }
                 i -= 1;
             }

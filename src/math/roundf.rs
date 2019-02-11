@@ -1,6 +1,6 @@
 use core::f32;
 
-const TOINT: f32 = 1.0 / f32::EPSILON;
+const TOINT: f32 = 1. / f32::EPSILON;
 
 #[inline]
 pub fn roundf(mut x: f32) -> f32 {
@@ -16,7 +16,7 @@ pub fn roundf(mut x: f32) -> f32 {
     }
     if e < 0x7f - 1 {
         force_eval!(x + TOINT);
-        return 0.0 * x;
+        return 0. * x;
     }
     y = x + TOINT - TOINT - x;
     if y > 0.5 {

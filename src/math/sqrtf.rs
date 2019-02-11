@@ -15,7 +15,7 @@
 
 use core::f32;
 const TINY: f32 = 1_e-30;
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn sqrtf(x: f32) -> f32 {
@@ -24,7 +24,7 @@ pub fn sqrtf(x: f32) -> f32 {
     // and speed.
     llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
-            return if x < 0.0 {
+            return if x < 0. {
                 ::core::f32::NAN
             } else {
                 unsafe { ::core::intrinsics::sqrtf32(x) }

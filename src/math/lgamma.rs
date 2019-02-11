@@ -80,7 +80,7 @@
 
 use core::f64;
 use super::{floor, k_cos, k_sin, log};
-use math::consts::*;
+use crate::math::consts::*;
 
 const PI: f64  =  f64::consts::PI; /* 0x_4009_21FB, 0x_5444_2D18 */
 const A0: f64  =  7.721_566_490_153_286_554_94_e-02; /* 0x_3FB3_C467, 0x_E37D_B0C8 */
@@ -152,7 +152,7 @@ fn sin_pi(mut x: f64) -> f64
     let mut n: isize;
 
     /* spurious inexact if odd int */
-    x = 2.0*(x*0.5 - floor(x*0.5));  /* x mod 2.0 */
+    x = 2.*(x*0.5 - floor(x*0.5));  /* x mod 2. */
 
     n = (x*4.0) as isize;
     n = (n+1)/2;
@@ -160,10 +160,10 @@ fn sin_pi(mut x: f64) -> f64
     x *= PI;
 
     match n {
-        1   => k_cos(x, 0.0),
-        2   => k_sin(-x, 0.0, 0),
-        3   => -k_cos(x, 0.0),
-        0|_ => k_sin(x, 0.0, 0),
+        1   => k_cos(x, 0.),
+        2   => k_sin(-x, 0., 0),
+        3   => -k_cos(x, 0.),
+        0|_ => k_sin(x, 0., 0),
     }
 }
 
@@ -222,32 +222,32 @@ pub fn lgamma_r(mut x: f64) -> (f64, isize)
 
     /* purge off 1 and 2 */
     if (ix == 0x_3ff0_0000 || ix == 0x_4000_0000) && (u as u32) == 0 {
-        r = 0.0;
+        r = 0.;
     }
-    /* for x < 2.0 */
+    /* for x < 2. */
     else if ix < 0x_4000_0000 {
         if ix <= 0x_3fec_cccc {   /* lgamma(x) = lgamma(x+1)-log(x) */
             r = -log(x);
             if ix >= 0x_3FE7_6944 {
-                y = 1.0 - x;
+                y = 1. - x;
                 i = 0;
             } else if ix >= 0x_3FCD_A661 {
-                y = x - (TC-1.0);
+                y = x - (TC-1.);
                 i = 1;
             } else {
                 y = x;
                 i = 2;
             }
         } else {
-            r = 0.0;
+            r = 0.;
             if ix >= 0x_3FFB_B4C3 {  /* [1.7316,2] */
-                y = 2.0 - x;
+                y = 2. - x;
                 i = 0;
             } else if ix >= 0x_3FF3_B4C4 {  /* [1.23,1.73] */
                 y = x - TC;
                 i = 1;
             } else {
-                y = x - 1.0;
+                y = x - 1.;
                 i = 2;
             }
         }
@@ -270,7 +270,7 @@ pub fn lgamma_r(mut x: f64) -> (f64, isize)
             }
             2 => {
                 p1 = y*(U0+y*(U1+y*(U2+y*(U3+y*(U4+y*U5)))));
-                p2 = 1.0+y*(V1+y*(V2+y*(V3+y*(V4+y*V5))));
+                p2 = 1.+y*(V1+y*(V2+y*(V3+y*(V4+y*V5))));
                 r += -0.5*y + p1/p2;
             }
             #[cfg(feature = "checked")]
@@ -282,27 +282,27 @@ pub fn lgamma_r(mut x: f64) -> (f64, isize)
         i = x as isize;
         y = x - (i as f64);
         p = y*(S0+y*(S1+y*(S2+y*(S3+y*(S4+y*(S5+y*S6))))));
-        q = 1.0+y*(R1+y*(R2+y*(R3+y*(R4+y*(R5+y*R6)))));
+        q = 1.+y*(R1+y*(R2+y*(R3+y*(R4+y*(R5+y*R6)))));
         r = 0.5*y+p/q;
-        z = 1.0;    /* lgamma(1+s) = log(s) + lgamma(s) */
+        z = 1.;    /* lgamma(1+s) = log(s) + lgamma(s) */
         // TODO: In C, this was implemented using switch jumps with fallthrough.
         // Does this implementation have performance problems?
-        if i >= 7 { z *= y + 6.0; }
-        if i >= 6 { z *= y + 5.0; }
-        if i >= 5 { z *= y + 4.0; }
-        if i >= 4 { z *= y + 3.0; }
+        if i >= 7 { z *= y + 6.; }
+        if i >= 6 { z *= y + 5.; }
+        if i >= 5 { z *= y + 4.; }
+        if i >= 4 { z *= y + 3.; }
         if i >= 3 {
-            z *= y + 2.0;
+            z *= y + 2.;
             r += log(z);
         }
-    } else if ix < 0x_4390_0000 {  /* 8.0 <= x < 2**58 */
+    } else if ix < 0x_4390_0000 {  /* 8. <= x < 2**58 */
         t = log(x);
         z = 1./x;
         y = z*z;
         w = W0+z*(W1+y*(W2+y*(W3+y*(W4+y*(W5+y*W6)))));
         r = (x-0.5)*(t-1.)+w;
     } else {                     /* 2**58 <= x <= inf */
-        r =  x*(log(x)-1.0);
+        r =  x*(log(x)-1.);
     }
     if sign {
         r = nadj - r;

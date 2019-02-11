@@ -35,6 +35,6 @@ pub fn trunc(x: f64) -> f64 {
 mod tests {
     #[test]
     fn sanity_check() {
-        assert_eq!(super::trunc(1.1), 1.0);
+        assert_eq!(super::trunc(1.1), 1.);
     }
 }

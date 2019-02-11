@@ -1,6 +1,6 @@
 use core::f32;
 use core::u32;
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn fmodf(x: f32, y: f32) -> f32 {
@@ -17,7 +17,7 @@ pub fn fmodf(x: f32, y: f32) -> f32 {
 
     if uxi << 1 <= uyi << 1 {
         if uxi << 1 == uyi << 1 {
-            return 0.0 * x;
+            return 0. * x;
         }
 
         return x;
@@ -55,7 +55,7 @@ pub fn fmodf(x: f32, y: f32) -> f32 {
         i = uxi - uyi;
         if i >> 31 == 0 {
             if i == 0 {
-                return 0.0 * x;
+                return 0. * x;
             }
             uxi = i;
         }
@@ -67,7 +67,7 @@ pub fn fmodf(x: f32, y: f32) -> f32 {
     i = uxi - uyi;
     if i >> 31 == 0 {
         if i == 0 {
-            return 0.0 * x;
+            return 0. * x;
         }
         uxi = i;
     }

@@ -14,8 +14,8 @@
  */
 
 use core::f32;
-use math::consts::*;
-use math::sqrtf;
+use crate::math::consts::*;
+use crate::math::sqrtf;
 
 const PIO2_HI: f32 = 1.570_796_251_3_e+00; /* 0x_3fc9_0fda */
 const PIO2_LO: f32 = 7.549_789_415_9_e-08; /* 0x_33a2_2168 */

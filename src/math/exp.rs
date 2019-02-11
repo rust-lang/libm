@@ -67,7 +67,7 @@
 
 use core::f64;
 use super::scalbn;
-use math::consts::*;
+use crate::math::consts::*;
 
 const HALF: [f64; 2] = [0.5, -0.5];
 const LN2HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */

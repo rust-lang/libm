@@ -13,8 +13,8 @@
  * ====================================================
  */
 
-use math::consts::*;
-use math::sqrtf;
+use crate::math::consts::*;
+use crate::math::sqrtf;
 
 #[inline]
 pub fn hypotf(x: f32, y: f32) -> f32 {

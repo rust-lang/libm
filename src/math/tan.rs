@@ -11,7 +11,7 @@
 
 use core::f64;
 use super::{k_tan, rem_pio2};
-use math::consts::*;
+use crate::math::consts::*;
 
 // tan(x)
 // Return tangent function of x.
@@ -58,7 +58,7 @@ pub fn tan(x: f64) -> f64 {
             });
             return x;
         }
-        return k_tan(x, 0.0, 0);
+        return k_tan(x, 0., 0);
     }
 
     /* tan(Inf or NaN) is NaN */

@@ -1,5 +1,5 @@
 use core::f32;
-use math::consts::*;
+use crate::math::consts::*;
 
 pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
 {
@@ -86,7 +86,7 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
     if sy {
         y = -y;
     }
-    if ex == ey || (ex+1 == ey && (2.0*x > y || (2.0*x == y && (q%2) != 0))) {
+    if ex == ey || (ex+1 == ey && (2.*x > y || (2.*x == y && (q%2) != 0))) {
         x -= y;
         q += 1;
     }

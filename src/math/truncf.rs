@@ -35,6 +35,6 @@ pub fn truncf(x: f32) -> f32 {
 mod tests {
     #[test]
     fn sanity_check() {
-        assert_eq!(super::truncf(1.1), 1.0);
+        assert_eq!(super::truncf(1.1), 1.);
     }
 }

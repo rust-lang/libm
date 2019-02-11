@@ -1,4 +1,4 @@
-use math::consts::*;
+use crate::math::consts::*;
 
 pub fn modff(x: f32) -> (f32, f32) {
     let rv2: f32;

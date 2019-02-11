@@ -7,8 +7,8 @@
 
 use core::f32;
 
-use math::fabsf;
-use math::sqrt;
+use crate::math::fabsf;
+use crate::math::sqrt;
 
 use super::consts::*;
 use super::{numtestf, NumState};

@@ -77,9 +77,9 @@
  */
 
 use core::f64;
-use math::consts::*;
+use crate::math::consts::*;
 
-const TINY: f64 = 1.0e-300;
+const TINY: f64 = 1e-300;
 
 #[inline]
 pub fn sqrt(x: f64) -> f64 {
@@ -88,7 +88,7 @@ pub fn sqrt(x: f64) -> f64 {
     // and speed.
     llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
-            return if x < 0.0 {
+            return if x < 0. {
                 f64::NAN
             } else {
                 unsafe { ::core::intrinsics::sqrtf64(x) }
@@ -196,13 +196,13 @@ pub fn sqrt(x: f64) -> f64 {
 
     /* use floating add to find out rounding direction */
     if (ix0 as u32 | ix1) != 0 {
-        z = 1.0 - TINY; /* raise inexact flag */
-        if z >= 1.0 {
-            z = 1.0 + TINY;
+        z = 1. - TINY; /* raise inexact flag */
+        if z >= 1. {
+            z = 1. + TINY;
             if q1 == 0x_ffff_ffff {
                 q1 = 0;
                 q += 1;
-            } else if z > 1.0 {
+            } else if z > 1. {
                 if q1 == 0x_ffff_fffe {
                     q += 1;
                 }

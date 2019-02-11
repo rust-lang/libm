@@ -25,19 +25,19 @@ pub fn tanh(mut x: f64) -> f64 {
         if w > 0x_4034_0000 {
             /* |x| > 20 or nan */
             /* note: this branch avoids raising overflow */
-            t = 1.0 - 0.0 / x;
+            t = 1. - 0. / x;
         } else {
-            t = expm1(2.0 * x);
-            t = 1.0 - 2.0 / (t + 2.0);
+            t = expm1(2. * x);
+            t = 1. - 2. / (t + 2.);
         }
     } else if w > 0x_3fd0_58ae {
         /* |x| > log(5/3)/2 ~= 0.2554 */
-        t = expm1(2.0 * x);
-        t = t / (t + 2.0);
+        t = expm1(2. * x);
+        t = t / (t + 2.);
     } else if w >= 0x_0010_0000 {
         /* |x| >= 0x1p-1022, up to 2ulp error in [0.1,0.2554] */
-        t = expm1(-2.0 * x);
-        t = -t / (t + 2.0);
+        t = expm1(-2. * x);
+        t = -t / (t + 2.);
     } else {
         /* |x| is subnormal */
         /* note: the branch above would not raise underflow in [0x1p-1023,0x1p-1022) */

@@ -29,9 +29,9 @@
  * to produce the hexadecimal values shown.
  */
 
-use super::fabs;
 use core::f64;
-use math::consts::*;
+use super::fabs;
+use crate::math::consts::*;
 
 const ATANHI: [f64; 4] = [
     4.636_476_090_008_060_935_15_e-01, /* atan(0.5)hi 0x_3FDD_AC67, 0x_0561_BB4F */
@@ -88,7 +88,7 @@ pub fn atan(x: f64) -> f64 {
             return x;
         }
 
-        -1
+        -1_isize
     } else {
         x = fabs(x);
         if ix < 0x_3ff3_0000 {
@@ -140,19 +140,19 @@ mod tests {
     #[test]
     fn sanity_check() {
         for (input, answer) in [
-            (3.0_f64.sqrt() / 3.0, f64::consts::FRAC_PI_6),
-            (1.0, f64::consts::FRAC_PI_4),
-            (3.0_f64.sqrt(), f64::consts::FRAC_PI_3),
-            (-3.0_f64.sqrt() / 3.0, -f64::consts::FRAC_PI_6),
-            (-1.0, -f64::consts::FRAC_PI_4),
-            (-3.0_f64.sqrt(), -f64::consts::FRAC_PI_3),
+            (3_f64.sqrt() / 3., f64::consts::FRAC_PI_6),
+            (1., f64::consts::FRAC_PI_4),
+            (3_f64.sqrt(), f64::consts::FRAC_PI_3),
+            (-3_f64.sqrt() / 3., -f64::consts::FRAC_PI_6),
+            (-1., -f64::consts::FRAC_PI_4),
+            (-3_f64.sqrt(), -f64::consts::FRAC_PI_3),
         ]
         .iter()
         {
             assert!(
                 (atan(*input) - answer) / answer < 1e-5,
                 "\natan({:.4}/16) = {:.4}, actual: {}",
-                input * 16.0,
+                input * 16.,
                 answer,
                 atan(*input)
             );
@@ -161,7 +161,7 @@ mod tests {
 
     #[test]
     fn zero() {
-        assert_eq!(atan(0.0), 0.0);
+        assert_eq!(atan(0.), 0.);
     }
 
     #[test]

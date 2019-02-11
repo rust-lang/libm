@@ -3,7 +3,7 @@ pub fn frexpf(x: f32) -> (f32, isize) {
     let ee: isize = ((y>>23) & 0xff) as isize;
 
     if ee == 0 {
-        if x != 0.0 {
+        if x != 0. {
             let x1p64 = f32::from_bits(0x_5f80_0000);
             let (x, e) = frexpf(x*x1p64);
             return (x, e - 64);

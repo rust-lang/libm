@@ -31,7 +31,7 @@ pub fn floorf(x: f32) -> f32 {
         if ui >> 31 == 0 {
             ui = 0;
         } else if ui << 1 != 0 {
-            return -1.0;
+            return -1.;
         }
     }
     f32::from_bits(ui)

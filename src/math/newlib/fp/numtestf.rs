@@ -18,7 +18,7 @@
  *
  *****************************************************************/
 use super::NumState;
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn numtestf(x: f32) -> NumState {

@@ -13,8 +13,8 @@
  * ====================================================
  */
 
-use math::fabsf;
-use math::consts::*;
+use crate::math::fabsf;
+use crate::math::consts::*;
 
 const ONE: f32 = 1.; /* 0x_3f80_0000 */
 const PIO4: f32 = 7.853_981_256_5_e-01; /* 0x_3f49_0fda */
@@ -86,12 +86,12 @@ pub fn k_tanf(mut x: f32, mut y: f32, iy: i32) -> f32 {
         w
     } else {
         /* if allow error up to 2 ulp,
-        simply return -1.0/(x+r) here */
-        /*  compute -1.0/(x+r) accurately */
+        simply return -1./(x+r) here */
+        /*  compute -1./(x+r) accurately */
         let mut i = w.to_bits() as i32;
         z = f32::from_bits(i as u32 & 0x_ffff_f000);
         v = r - (z - x); /* z+v = r+x */
-        let a = -1. / w; /* a = -1.0/w */
+        let a = -1. / w; /* a = -1./w */
         i = a.to_bits() as i32;
         let t = f32::from_bits(i as u32 & 0x_ffff_f000);
         s = 1. + t * z;

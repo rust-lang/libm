@@ -1,4 +1,4 @@
-use math::consts::*;
+use crate::math::consts::*;
 
 pub fn copysignf(x: f32, y: f32) -> f32 {
     let mut ux = x.to_bits();

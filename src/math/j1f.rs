@@ -15,7 +15,7 @@
 
 use core::f32;
 use super::{cosf, fabsf, logf, sinf, sqrtf};
-use math::consts::*;
+use crate::math::consts::*;
 
 const INVSQRTPI: f32 = 5.641_896_128_7_e-01; /* 0x_3f10_6ebb */
 const TPI: f32       = 6.366_197_466_9_e-01; /* 0x_3f22_f983 */
@@ -36,8 +36,8 @@ fn common(ix: u32, x: f32, y1: bool, sign: bool) -> f32
     cc = s-c;
     if ix < 0x_7f00_0000 {
         ss = -s-c;
-        z = cosf(2.0*x) as f64;
-        if s*c > 0.0 {
+        z = cosf(2.*x) as f64;
+        if s*c > 0. {
             cc = z/ss;
         } else {
             ss = z/cc;
@@ -78,7 +78,7 @@ pub fn j1f(x: f32) -> f32
     sign = (ix>>31) != 0;
     ix &= UF_ABS;
     if ix >= UF_INF {
-        return 1.0/(x*x);
+        return 1./(x*x);
     }
     if ix >= 0x_4000_0000 {  /* |x| >= 2 */
         return common(ix, fabsf(x), false, sign);
@@ -86,7 +86,7 @@ pub fn j1f(x: f32) -> f32
     if ix >= 0x_3900_0000 {  /* |x| >= 2**-13 */
         z = x*x;
         r = z*(R00+z*(R01+z*(R02+z*R03)));
-        s = 1.0+z*(S01+z*(S02+z*(S03+z*(S04+z*S05))));
+        s = 1.+z*(S01+z*(S02+z*(S03+z*(S04+z*S05))));
         z = 0.5 + r/s;
     } else {
         z = 0.5;
@@ -134,7 +134,7 @@ pub fn y1f(x: f32) -> f32
     }
     z = x*x;
     u = U0[0]+z*(U0[1]+z*(U0[2]+z*(U0[3]+z*U0[4])));
-    v = 1.0+z*(V0[0]+z*(V0[1]+z*(V0[2]+z*(V0[3]+z*V0[4]))));
+    v = 1.+z*(V0[0]+z*(V0[1]+z*(V0[2]+z*(V0[3]+z*V0[4]))));
     x*(u/v) + TPI*(j1f(x)*logf(x)-1./x)
 }
 

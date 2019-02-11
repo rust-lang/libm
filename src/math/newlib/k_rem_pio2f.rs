@@ -15,7 +15,7 @@
  */
 
 use super::floorf;
-use math::scalbnf;
+use crate::math::scalbnf;
 
 #[allow(dead_code)]
 pub enum Precision {

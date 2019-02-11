@@ -15,7 +15,7 @@
 
 use core::f32;
 use super::{k_tanf, rem_pio2f};
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn tanf(x: f32) -> f32 {

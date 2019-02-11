@@ -36,7 +36,7 @@
 
 use core::f64;
 use super::{cos, fabs, get_high_word, get_low_word, log, j0, j1, sin, sqrt, y0, y1};
-use math::consts::*;
+use crate::math::consts::*;
 
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */
 
@@ -82,7 +82,7 @@ pub fn jn(n: isize, mut x: f64) -> f64
     sign &= (n & 1) != 0;  /* even n: 0, odd n: signbit(x) */
     x = fabs(x);
     if (ix|lx) == 0 || ix == 0x_7ff0_0000 {  /* if x is 0 or inf */
-        b = 0.0;
+        b = 0.;
     } else if (nm1 as f64) < x {
         /* Safe to use J(n+1,x)=2n/x *J(n,x)-J(n-1,x) */
         if ix >= 0x_52d0_0000 { /* x > 2**302 */
@@ -113,7 +113,7 @@ pub fn jn(n: isize, mut x: f64) -> f64
             while i < nm1 {
                 i += 1;
                 temp = b;
-                b = b*(2.0*(i as f64)/x) - a; /* avoid underflow */
+                b = b*(2.*(i as f64)/x) - a; /* avoid underflow */
                 a = temp;
             }
         }
@@ -122,11 +122,11 @@ pub fn jn(n: isize, mut x: f64) -> f64
          * J(n,x) = 1/n!*(x/2)^n  - ...
          */
         if nm1 > 32 {  /* underflow */
-            b = 0.0;
+            b = 0.;
         } else {
             temp = x*0.5;
             b = temp;
-            a = 1.0;
+            a = 1.;
             i = 2;
             while i <= nm1 + 1 {
                 a *= i as f64; /* a = n! */
@@ -176,28 +176,28 @@ pub fn jn(n: isize, mut x: f64) -> f64
 
         let mut k: isize;
 
-        nf = (nm1 as f64) + 1.0;
-        w = 2.0*nf/x;
-        h = 2.0/x;
+        nf = (nm1 as f64) + 1.;
+        w = 2.*nf/x;
+        h = 2./x;
         z = w+h;
         q0 = w;
-        q1 = w*z - 1.0;
+        q1 = w*z - 1.;
         k = 1;
-        while q1 < 1.0e9 {
+        while q1 < 1e9 {
             k += 1;
             z += h;
             tmp = z*q1 - q0;
             q0 = q1;
             q1 = tmp;
         }
-        t = 0.0;
+        t = 0.;
         i = k;
         while i >= 0 {
-            t = 1.0/(2.0*((i as f64)+nf)/x - t);
+            t = 1./(2.*((i as f64)+nf)/x - t);
             i -= 1;
         }
         a = t;
-        b = 1.0;
+        b = 1.;
         /*  estimate log((2/x)^n*n!) = n*log(2/x)+n*ln(n)
          *  Hence, if n*(log(2n/x)) > ...
          *  single 8.872_283_935_5_e+01
@@ -211,7 +211,7 @@ pub fn jn(n: isize, mut x: f64) -> f64
             i = nm1;
             while i > 0 {
                 temp = b;
-                b = b*(2.0*(i as f64))/x - a;
+                b = b*(2.*(i as f64))/x - a;
                 a = temp;
                 i -= 1;
             }
@@ -219,14 +219,14 @@ pub fn jn(n: isize, mut x: f64) -> f64
             i = nm1;
             while i > 0 {
                 temp = b;
-                b = b*(2.0*(i as f64))/x - a;
+                b = b*(2.*(i as f64))/x - a;
                 a = temp;
                 /* scale b to avoid spurious overflow */
                 let x1p500 = f64::from_bits(0x_5f30_0000_0000_0000); // 0x1p500 == 2^500
                 if b > x1p500 {
                     a /= b;
                     t /= b;
-                    b  = 1.0;
+                    b  = 1.;
                 }
                 i -= 1;
             }
@@ -324,7 +324,7 @@ pub fn yn(n: isize, x: f64) -> f64
         while i < nm1 && ib != 0x_fff0_0000 {
             i += 1;
             temp = b;
-            b = (2.0*(i as f64)/x)*b - a;
+            b = (2.*(i as f64)/x)*b - a;
             ib = get_high_word(b);
             a = temp;
         }

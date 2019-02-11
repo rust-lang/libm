@@ -14,7 +14,7 @@
  */
 
 use core::f32;
-use math::consts::*;
+use crate::math::consts::*;
 
 const IVLN2HI: f32 = 1.442_871_093_8; /* 0x_3fb8_b000 */
 const IVLN2LO: f32 = -1.760_528_539_3_e-04; /* 0x_b938_9ad4 */

@@ -1,6 +1,6 @@
 use core::f64;
 
-const TOINT: f64 = 1.0 / f64::EPSILON;
+const TOINT: f64 = 1. / f64::EPSILON;
 
 #[inline]
 pub fn round(mut x: f64) -> f64 {
@@ -17,7 +17,7 @@ pub fn round(mut x: f64) -> f64 {
     if e < 0x3ff - 1 {
         // raise inexact if x!=0
         force_eval!(x + TOINT);
-        return 0.0 * f;
+        return 0. * f;
     }
     y = x + TOINT - TOINT - x;
     if y > 0.5 {

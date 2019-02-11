@@ -12,7 +12,7 @@
 
 use core::f64;
 use super::{get_high_word, k_cos, k_sin, rem_pio2};
-use math::consts::*;
+use crate::math::consts::*;
 
 pub fn sincos(x: f64) -> (f64, f64)
 {
@@ -34,9 +34,9 @@ pub fn sincos(x: f64) -> (f64, f64)
             } else {
                 force_eval!(x+x1p120);
             }
-            return (x, 1.0);
+            return (x, 1.);
         }
-        return (k_sin(x, 0.0, 0), k_cos(x, 0.0));
+        return (k_sin(x, 0., 0), k_cos(x, 0.));
     }
 
     /* sincos(Inf or NaN) is NaN */
@@ -56,6 +56,6 @@ pub fn sincos(x: f64) -> (f64, f64)
         #[cfg(feature = "checked")]
         _ => unreachable!(),
         #[cfg(not(feature = "checked"))]
-        _ => (0.0, 1.0),
+        _ => (0., 1.),
     }
 }

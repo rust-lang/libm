@@ -16,7 +16,7 @@
 use core::f32;
 
 use super::scalbnf;
-use math::consts::*;
+use crate::math::consts::*;
 
 const HALF: [f32; 2] = [0.5, -0.5];
 const LN2_HI: f32 = 6.931_457_519_5_e-01; /* 0x_3f31_7200 */

@@ -77,9 +77,9 @@ pub fn log2(mut x: f64) -> f64 {
     ui = (hx as u64) << 32 | (ui & 0x_ffff_ffff);
     x = f64::from_bits(ui);
 
-    f = x - 1.0;
+    f = x - 1.;
     hfsq = 0.5 * f * f;
-    s = f / (2.0 + f);
+    s = f / (2. + f);
     z = s * s;
     w = z * z;
     t1 = w * (LG2 + w * (LG4 + w * LG6));

@@ -24,7 +24,7 @@ most ideas and constants are from boost and python
 */
 
 use core::f64;
-use math::consts::*;
+use crate::math::consts::*;
 
 use super::{exp, floor, k_cos, k_sin, pow};
 
@@ -41,7 +41,7 @@ fn sinpi(mut x: f64) -> f64
     x = 2. * (x - floor(x));
 
     /* reduce x into [-.25,.25] */
-    n = (4.0 * x) as isize;
+    n = (4. * x) as isize;
     n = (n+1)/2;
     x -= (n as f64) * 0.5;
 
@@ -144,9 +144,9 @@ pub fn tgamma(mut x: f64) -> f64
             let x1p_126 = f64::from_bits(0x_3810_0000_0000_0000); // 0x1p-126 == 2^-126
             force_eval!((x1p_126/x) as f32);
             if floor(x) * 0.5 == floor(x * 0.5) {
-                return 0.0;
+                return 0.;
             } else {
-                return -0.0;
+                return -0.;
             }
         }
         let x1p1023 = f64::from_bits(0x_7fe0_0000_0000_0000); // 0x1p1023 == 2^1023
@@ -168,7 +168,7 @@ pub fn tgamma(mut x: f64) -> f64
 
     z = absx - 0.5;
     r = s(absx) * exp(-y);
-    if x < 0.0 {
+    if x < 0. {
         /* reflection formula for negative x */
         /* sinpi(absx) is not 0, integers are already handled */
         r = -PI / (sinpi(absx) * absx * r);

@@ -1,4 +1,4 @@
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn fabsf(x: f32) -> f32 {

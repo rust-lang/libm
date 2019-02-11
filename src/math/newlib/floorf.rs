@@ -14,7 +14,7 @@
  */
 
 const HUGE: f32 = 1_e30;
-use math::consts::*;
+use crate::math::consts::*;
 
 /// Return x rounded toward -inf to integral value
 ///

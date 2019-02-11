@@ -13,7 +13,7 @@
 
 use core::f64;
 use super::rem_pio2_large;
-use math::consts::*;
+use crate::math::consts::*;
 
 // #if FLT_EVAL_METHOD==0 || FLT_EVAL_METHOD==1
 // #define EPS DBL_EPSILON
@@ -103,14 +103,14 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
                 return (-1, y0, y1);
             }
         } else if sign == 0 {
-            let z = x - 2.0 * PIO2_1;
-            let y0 = z - 2.0 * PIO2_1T;
-            let y1 = (z - y0) - 2.0 * PIO2_1T;
+            let z = x - 2. * PIO2_1;
+            let y0 = z - 2. * PIO2_1T;
+            let y1 = (z - y0) - 2. * PIO2_1T;
             return (2, y0, y1);
         } else {
-            let z = x + 2.0 * PIO2_1;
-            let y0 = z + 2.0 * PIO2_1T;
-            let y1 = (z - y0) + 2.0 * PIO2_1T;
+            let z = x + 2. * PIO2_1;
+            let y0 = z + 2. * PIO2_1T;
+            let y1 = (z - y0) + 2. * PIO2_1T;
             return (-2, y0, y1);
         }
     }
@@ -123,14 +123,14 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
                 return medium(x, ix);
             }
             if sign == 0 {
-                let z = x - 3.0 * PIO2_1;
-                let y0 = z - 3.0 * PIO2_1T;
-                let y1 = (z - y0) - 3.0 * PIO2_1T;
+                let z = x - 3. * PIO2_1;
+                let y0 = z - 3. * PIO2_1T;
+                let y1 = (z - y0) - 3. * PIO2_1T;
                 return (3, y0, y1);
             } else {
-                let z = x + 3.0 * PIO2_1;
-                let y0 = z + 3.0 * PIO2_1T;
-                let y1 = (z - y0) + 3.0 * PIO2_1T;
+                let z = x + 3. * PIO2_1;
+                let y0 = z + 3. * PIO2_1T;
+                let y1 = (z - y0) + 3. * PIO2_1T;
                 return (-3, y0, y1);
             }
         } else {
@@ -139,14 +139,14 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
                 return medium(x, ix);
             }
             if sign == 0 {
-                let z = x - 4.0 * PIO2_1;
-                let y0 = z - 4.0 * PIO2_1T;
-                let y1 = (z - y0) - 4.0 * PIO2_1T;
+                let z = x - 4. * PIO2_1;
+                let y0 = z - 4. * PIO2_1T;
+                let y1 = (z - y0) - 4. * PIO2_1T;
                 return (4, y0, y1);
             } else {
-                let z = x + 4.0 * PIO2_1;
-                let y0 = z + 4.0 * PIO2_1T;
-                let y1 = (z - y0) + 4.0 * PIO2_1T;
+                let z = x + 4. * PIO2_1;
+                let y0 = z + 4. * PIO2_1T;
+                let y1 = (z - y0) + 4. * PIO2_1T;
                 return (-4, y0, y1);
             }
         }
@@ -169,7 +169,7 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
     ui &= (!1) >> 12;
     ui |= (0x3ff + 23) << 52;
     let mut z = f64::from_bits(ui);
-    let mut tx = [0.0; 3];
+    let mut tx = [0.; 3];
 
     for txi in tx.iter_mut().take(2) {
         *txi = z as i32 as f64;
@@ -178,7 +178,7 @@ pub fn rem_pio2(x: f64) -> (i32, f64, f64) {
     tx[2] = z;
     /* skip zero terms, first term is non-zero */
     let mut i = 2;
-    while i != 0 && tx[i] == 0.0 {
+    while i != 0 && tx[i] == 0. {
         i -= 1;
     }
     let (n, ty) = rem_pio2_large(&tx[..=i], ((ix >> 20) - (0x3ff + 23)) as i32, 1);

@@ -17,8 +17,8 @@
 use core::f32;
 use super::k_rem_pio2f;
 use super::Precision;
-use math::fabsf;
-use math::consts::*;
+use crate::math::fabsf;
+use crate::math::consts::*;
 
 /* Table of constants for 2/pi, 396 Hex digits (476 decimal) of 2/pi */
 const TWO_OVER_PI: [u8; 198] = [
@@ -39,39 +39,16 @@ const TWO_OVER_PI: [u8; 198] = [
 
 /* This array is like the one in e_rem_pio2.c, but the numbers are
 single precision and the last 8 bits are forced to 0.  */
+#[rustfmt::skip]
 const NPIO2_HW: [u32; 32] = [
-    0x_3fc9_0f00,
-    0x_4049_0f00,
-    0x_4096_cb00,
-    0x_40c9_0f00,
-    0x_40fb_5300,
-    0x_4116_cb00,
-    0x_412f_ed00,
-    0x_4149_0f00,
-    0x_4162_3100,
-    0x_417b_5300,
-    0x_418a_3a00,
-    0x_4196_cb00,
-    0x_41a3_5c00,
-    0x_41af_ed00,
-    0x_41bc_7e00,
-    0x_41c9_0f00,
-    0x_41d5_a000,
-    0x_41e2_3100,
-    0x_41ee_c200,
-    0x_41fb_5300,
-    0x_4203_f200,
-    0x_420a_3a00,
-    0x_4210_8300,
-    0x_4216_cb00,
-    0x_421d_1400,
-    0x_4223_5c00,
-    0x_4229_a500,
-    0x_422f_ed00,
-    0x_4236_3600,
-    0x_423c_7e00,
-    0x_4242_c700,
-    0x_4249_0f00,
+    0x_3fc9_0f00, 0x_4049_0f00, 0x_4096_cb00, 0x_40c9_0f00,
+    0x_40fb_5300, 0x_4116_cb00, 0x_412f_ed00, 0x_4149_0f00,
+    0x_4162_3100, 0x_417b_5300, 0x_418a_3a00, 0x_4196_cb00,
+    0x_41a3_5c00, 0x_41af_ed00, 0x_41bc_7e00, 0x_41c9_0f00,
+    0x_41d5_a000, 0x_41e2_3100, 0x_41ee_c200, 0x_41fb_5300,
+    0x_4203_f200, 0x_420a_3a00, 0x_4210_8300, 0x_4216_cb00,
+    0x_421d_1400, 0x_4223_5c00, 0x_4229_a500, 0x_422f_ed00,
+    0x_4236_3600, 0x_423c_7e00, 0x_4242_c700, 0x_4249_0f00,
 ];
 
 /*

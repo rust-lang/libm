@@ -25,7 +25,7 @@
 // SUCH DAMAGE.
 
 use super::scalbn;
-use math::consts::*;
+use crate::math::consts::*;
 
 const TBLSIZE: usize = 256;
 
@@ -349,21 +349,21 @@ pub fn exp2(mut x: f64) -> f64 {
         }
         if ix >= 0x_7ff0_0000 {
             /* -inf or -nan */
-            return -1.0 / x;
+            return -1. / x;
         }
         if ui >> 63 != 0 {
             /* x <= -1022 */
             /* underflow */
-            if x <= -1075.0 || x - x1p52 + x1p52 != x {
+            if x <= -1075. || x - x1p52 + x1p52 != x {
                 force_eval!((_0x1p_149 / x) as f32);
             }
-            if x <= -1075.0 {
-                return 0.0;
+            if x <= -1075. {
+                return 0.;
             }
         }
     } else if ix < 0x_3c90_0000 {
         /* |x| < 0x1p-54 */
-        return 1.0 + x;
+        return 1. + x;
     }
 
     /* Reduce x, computing z, i0, and k. */

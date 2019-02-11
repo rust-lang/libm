@@ -35,7 +35,7 @@
 
 use core::f64;
 use super::sqrt;
-use math::consts::*;
+use crate::math::consts::*;
 
 const PIO2_HI: f64 = f64::consts::FRAC_PI_2; /* 0x_3FF9_21FB, 0x_5444_2D18 */
 const PIO2_LO: f64 = 6.123_233_995_736_766_035_87_e-17; /* 0x_3C91_A626, 0x_3314_5C07 */
@@ -53,7 +53,7 @@ const QS4: f64 = 7.703_815_055_590_193_527_91_e-02; /* 0x_3FB3_B8C5, 0x_B12E_928
 #[inline]
 fn r(z: f64) -> f64 {
     let p: f64 = z * (PS0 + z * (PS1 + z * (PS2 + z * (PS3 + z * (PS4 + z * PS5)))));
-    let q: f64 = 1.0 + z * (QS1 + z * (QS2 + z * (QS3 + z * QS4)));
+    let q: f64 = 1. + z * (QS1 + z * (QS2 + z * (QS3 + z * QS4)));
     p / q
 }
 
@@ -93,13 +93,13 @@ pub fn acos(x: f64) -> f64 {
     }
     /* x < -0.5 */
     if (hx >> 31) != 0 {
-        z = (1.0 + x) * 0.5;
+        z = (1. + x) * 0.5;
         s = sqrt(z);
         w = r(z) * s - PIO2_LO;
         return 2. * (PIO2_HI - (s + w));
     }
     /* x > 0.5 */
-    z = (1.0 - x) * 0.5;
+    z = (1. - x) * 0.5;
     s = sqrt(z);
     // Set the low 4 bytes to zero
     df = f64::from_bits(s.to_bits() & 0xff_ff_ff_ff_00_00_00_00);

@@ -15,7 +15,7 @@
 
 use super::atanf;
 use super::fabsf;
-use math::consts::*;
+use crate::math::consts::*;
 
 const PI: f32 = 3.141_592_741_0; /* 0x_4049_0fdb */
 const PI_LO: f32 = -8.742_277_657_3_e-08; /* 0x_b3bb_bd2e */
@@ -29,7 +29,7 @@ pub fn atan2f(y: f32, x: f32) -> f32 {
     let mut iy = y.to_bits();
 
     if ix == UF_1 {
-        /* x=1.0 */
+        /* x = 1. */
         return atanf(y);
     }
     let m = ((iy >> 31) & 1) | ((ix >> 30) & 2); /* 2*sign(x)+sign(y) */

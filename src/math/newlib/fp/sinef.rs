@@ -7,13 +7,11 @@
 
 use core::f32;
 
-use math::fabsf;
+use crate::math::fabsf;
 
 use super::consts::*;
 use super::{numtestf, NumState};
 
-const HALF_PI: f32 = f32::consts::FRAC_PI_2;
-const ONE_OVER_PI: f32 = f32::consts::FRAC_1_PI;
 const R: [f32; 4] = [
     -0.166_666_566_8,
     0.833_302_513_9_e-02,
@@ -51,7 +49,7 @@ pub fn sinef(x: f32, cosine: bool) -> f32 {
     /* Use sin and cos properties to ease computations. */
     let mut y = if cosine {
         sgn = 1;
-        fabsf(x) + HALF_PI
+        fabsf(x) + f32::consts::FRAC_PI_2
     } else if x < 0. {
         sgn = -1;
         -x
@@ -68,9 +66,9 @@ pub fn sinef(x: f32, cosine: bool) -> f32 {
 
     /* Calculate the exponent. */
     let n = if y < 0. {
-        (y * ONE_OVER_PI - 0.5) as i32
+        (y * f32::consts::FRAC_1_PI - 0.5) as i32
     } else {
-        (y * ONE_OVER_PI + 0.5) as i32
+        (y * f32::consts::FRAC_1_PI + 0.5) as i32
     };
     let mut xn = n as f32;
 

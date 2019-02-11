@@ -60,7 +60,7 @@
 
 use core::f64;
 use super::{fabs, get_high_word, scalbn, sqrt, with_set_high_word, with_set_low_word};
-use math::consts::*;
+use crate::math::consts::*;
 
 const BP: [f64; 2] = [1., 1.5];
 const DP_H: [f64; 2] = [0., 5.849_624_872_207_641_601_56_e-01]; /* 0x_3fe2_b803_4000_0000 */
@@ -106,12 +106,12 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
     /* x**0 = 1, even if x is NaN */
     if ((iy as u32) | ly) == 0 {
-        return 1.0;
+        return 1.;
     }
 
     /* 1**y = 1, even if y is NaN */
     if hx == 0x_3ff0_0000 && lx == 0 {
-        return 1.0;
+        return 1.;
     }
 
     /* NaN if either arg is NaN */
@@ -180,7 +180,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
         if iy == 0x_3ff0_0000 {
             /* y is +-1 */
-            return if hy >= 0 { x } else { 1.0 / x };
+            return if hy >= 0 { x } else { 1. / x };
         }
 
         if hy == 0x_4000_0000 {
@@ -206,7 +206,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
             if hy < 0 {
                 /* z = (1/|x|) */
-                z = 1.0 / z;
+                z = 1. / z;
             }
 
             if hx < 0 {
@@ -221,7 +221,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
         }
     }
 
-    let mut s: f64 = 1.0; /* sign of result */
+    let mut s: f64 = 1.; /* sign of result */
     if hx < 0 {
         if yisint == 0 {
             /* (x<0)**(non-int) is NaN */
@@ -266,7 +266,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
         /* now |1-x| is TINY <= 2**-20, suffice to compute
         log(x) by x-x^2/2+x^3/3-x^4/4 */
-        let t: f64 = ax - 1.0; /* t has 20 trailing zeros */
+        let t: f64 = ax - 1.; /* t has 20 trailing zeros */
         let w: f64 = (t * t) * (0.5 - t * (0.333_333_333_333_333_333_333_3 - t * 0.25));
         let u: f64 = IVLN2_H * t; /* ivln2_h has 21 sig. bits */
         let v: f64 = t * IVLN2_L - w * IVLN2;
@@ -304,13 +304,13 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
         /* compute ss = s_h+s_l = (x-1)/(x+1) or (x-1.5)/(x+1.5) */
         let u: f64 = ax - BP[k as usize]; /* bp[0]=1.0, bp[1]=1.5 */
-        let v: f64 = 1.0 / (ax + BP[k as usize]);
+        let v: f64 = 1. / (ax + BP[k as usize]);
         let ss: f64 = u * v;
         let s_h = with_set_low_word(ss, 0);
 
         /* t_h=ax+bp[k] High */
         let t_h: f64 = with_set_high_word(
-            0.0,
+            0.,
             ((ix as u32 >> 1) | 0x_2000_0000) + 0x_0008_0000 + ((k as u32) << 18),
         );
         let t_l: f64 = ax - (t_h - BP[k as usize]);
@@ -321,8 +321,8 @@ pub fn pow(x: f64, y: f64) -> f64 {
         let mut r: f64 = s2 * s2 * (L1 + s2 * (L2 + s2 * (L3 + s2 * (L4 + s2 * (L5 + s2 * L6)))));
         r += s_l * (s_h + ss);
         let s2: f64 = s_h * s_h;
-        let t_h: f64 = with_set_low_word(3.0 + s2 + r, 0);
-        let t_l: f64 = r - ((t_h - 3.0) - s2);
+        let t_h: f64 = with_set_low_word(3. + s2 + r, 0);
+        let t_l: f64 = r - ((t_h - 3.) - s2);
 
         /* u+v = ss*(1+...) */
         let u: f64 = s_h * t_h;
@@ -382,7 +382,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
         /* if |z| > 0.5, set n = [z+0.5] */
         n = j + (0x_0010_0000 >> (k + 1));
         k = ((n & IF_ABS) >> 20) - 0x3ff; /* new k for n */
-        let t: f64 = with_set_high_word(0.0, (n & !(0x_000f_ffff >> k)) as u32);
+        let t: f64 = with_set_high_word(0., (n & !(0x_000f_ffff >> k)) as u32);
         n = ((n & 0x_000f_ffff) | 0x_0010_0000) >> (20 - k);
         if j < 0 {
             n = -n;
@@ -397,8 +397,8 @@ pub fn pow(x: f64, y: f64) -> f64 {
     let w: f64 = v - (z - u);
     let t: f64 = z * z;
     let t1: f64 = z - t * (P1 + t * (P2 + t * (P3 + t * (P4 + t * P5))));
-    let r: f64 = (z * t1) / (t1 - 2.0) - (w + z * w);
-    z = 1.0 - (r - z);
+    let r: f64 = (z * t1) / (t1 - 2.) - (w + z * w);
+    z = 1. - (r - z);
     j = get_high_word(z) as i32;
     j += n << 20;
 

@@ -15,7 +15,7 @@ pub fn fmod(x: f64, y: f64) -> f64 {
     }
     if uxi << 1 <= uyi << 1 {
         if uxi << 1 == uyi << 1 {
-            return 0.0 * x;
+            return 0. * x;
         }
         return x;
     }
@@ -49,7 +49,7 @@ pub fn fmod(x: f64, y: f64) -> f64 {
         i = uxi - uyi;
         if i >> 63 == 0 {
             if i == 0 {
-                return 0.0 * x;
+                return 0. * x;
             }
             uxi = i;
         }
@@ -59,7 +59,7 @@ pub fn fmod(x: f64, y: f64) -> f64 {
     i = uxi - uyi;
     if i >> 63 == 0 {
         if i == 0 {
-            return 0.0 * x;
+            return 0. * x;
         }
         uxi = i;
     }

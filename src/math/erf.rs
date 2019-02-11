@@ -104,7 +104,7 @@ use super::{exp, fabs, get_high_word, with_set_low_word};
  *              erfc/erf(NaN) is NaN
  */
 
-use math::consts::*;
+use crate::math::consts::*;
 
 const ERX: f64 = 8.450_629_115_104_675_292_97_e-01; /* 0x_3FEB_0AC1, 0x_6000_0000 */
 /*
@@ -179,11 +179,11 @@ fn erfc1(x: f64) -> f64 {
     let p: f64;
     let q: f64;
 
-    s = fabs(x) - 1.0;
+    s = fabs(x) - 1.;
     p = PA0 + s * (PA1 + s * (PA2 + s * (PA3 + s * (PA4 + s * (PA5 + s * PA6)))));
-    q = 1.0 + s * (QA1 + s * (QA2 + s * (QA3 + s * (QA4 + s * (QA5 + s * QA6)))));
+    q = 1. + s * (QA1 + s * (QA2 + s * (QA3 + s * (QA4 + s * (QA5 + s * QA6)))));
 
-    1.0 - ERX - p / q
+    1. - ERX - p / q
 }
 
 fn erfc2(ix: u32, mut x: f64) -> f64 {
@@ -198,18 +198,18 @@ fn erfc2(ix: u32, mut x: f64) -> f64 {
     }
 
     x = fabs(x);
-    s = 1.0 / (x * x);
+    s = 1. / (x * x);
     if ix < 0x_4006_db6d {
         /* |x| < 1/.35 ~ 2.85714 */
         r = RA0 + s * (RA1 + s * (RA2 + s * (RA3 + s * (RA4 + s * (RA5 + s * (RA6 + s * RA7))))));
-        big_s = 1.0
+        big_s = 1.
             + s * (SA1
                 + s * (SA2 + s * (SA3 + s * (SA4 + s * (SA5 + s * (SA6 + s * (SA7 + s * SA8)))))));
     } else {
         /* |x| > 1/.35 */
         r = RB0 + s * (RB1 + s * (RB2 + s * (RB3 + s * (RB4 + s * (RB5 + s * RB6)))));
         big_s =
-            1.0 + s * (SB1 + s * (SB2 + s * (SB3 + s * (SB4 + s * (SB5 + s * (SB6 + s * SB7))))));
+            1. + s * (SB1 + s * (SB2 + s * (SB3 + s * (SB4 + s * (SB5 + s * (SB6 + s * SB7))))));
     }
     z = with_set_low_word(x, 0);
 
@@ -229,27 +229,27 @@ pub fn erf(x: f64) -> f64 {
     ix &= UF_ABS;
     if ix >= 0x_7ff0_0000 {
         /* erf(nan)=nan, erf(+-inf)=+-1 */
-        return 1.0 - 2.0 * (sign as f64) + 1.0 / x;
+        return 1. - 2. * (sign as f64) + 1. / x;
     }
     if ix < 0x_3feb_0000 {
         /* |x| < 0.84375 */
         if ix < 0x_3e30_0000 {
             /* |x| < 2**-28 */
             /* avoid underflow */
-            return 0.125 * (8.0 * x + EFX8 * x);
+            return 0.125 * (8. * x + EFX8 * x);
         }
         z = x * x;
         r = PP0 + z * (PP1 + z * (PP2 + z * (PP3 + z * PP4)));
-        s = 1.0 + z * (QQ1 + z * (QQ2 + z * (QQ3 + z * (QQ4 + z * QQ5))));
+        s = 1. + z * (QQ1 + z * (QQ2 + z * (QQ3 + z * (QQ4 + z * QQ5))));
         y = r / s;
         return x + x * y;
     }
     if ix < 0x_4018_0000 {
         /* 0.84375 <= |x| < 6 */
-        y = 1.0 - erfc2(ix, x);
+        y = 1. - erfc2(ix, x);
     } else {
         let x1p_1022 = f64::from_bits(0x_0010_0000_0000_0000);
-        y = 1.0 - x1p_1022;
+        y = 1. - x1p_1022;
     }
 
     if sign != 0 {
@@ -272,28 +272,28 @@ pub fn erfc(x: f64) -> f64 {
     ix &= UF_ABS;
     if ix >= 0x_7ff0_0000 {
         /* erfc(nan)=nan, erfc(+-inf)=0,2 */
-        return 2.0 * (sign as f64) + 1.0 / x;
+        return 2. * (sign as f64) + 1. / x;
     }
     if ix < 0x_3feb_0000 {
         /* |x| < 0.84375 */
         if ix < 0x_3c70_0000 {
             /* |x| < 2**-56 */
-            return 1.0 - x;
+            return 1. - x;
         }
         z = x * x;
         r = PP0 + z * (PP1 + z * (PP2 + z * (PP3 + z * PP4)));
-        s = 1.0 + z * (QQ1 + z * (QQ2 + z * (QQ3 + z * (QQ4 + z * QQ5))));
+        s = 1. + z * (QQ1 + z * (QQ2 + z * (QQ3 + z * (QQ4 + z * QQ5))));
         y = r / s;
         if sign != 0 || ix < 0x_3fd0_0000 {
             /* x < 1/4 */
-            return 1.0 - (x + x * y);
+            return 1. - (x + x * y);
         }
         return 0.5 - (x - 0.5 + x * y);
     }
     if ix < 0x_403c_0000 {
         /* 0.84375 <= |x| < 28 */
         if sign != 0 {
-            return 2.0 - erfc2(ix, x);
+            return 2. - erfc2(ix, x);
         } else {
             return erfc2(ix, x);
         }
@@ -301,7 +301,7 @@ pub fn erfc(x: f64) -> f64 {
 
     let x1p_1022 = f64::from_bits(0x_0010_0000_0000_0000);
     if sign != 0 {
-        2.0 - x1p_1022
+        2. - x1p_1022
     } else {
         x1p_1022 * x1p_1022
     }

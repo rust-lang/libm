@@ -1,5 +1,5 @@
 use super::expm1f;
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn tanhf(mut x: f32) -> f32 {

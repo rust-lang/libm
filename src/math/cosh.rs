@@ -1,7 +1,7 @@
 use super::exp;
 use super::expm1;
 use super::k_expo2;
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn cosh(mut x: f64) -> f64 {

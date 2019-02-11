@@ -56,7 +56,7 @@
 
 use super::{cos, fabs, get_high_word, get_low_word, log, sin, sqrt};
 use core::f64;
-use math::consts::*;
+use crate::math::consts::*;
 
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */
 const TPI: f64 = 6.366_197_723_675_813_824_33_e-01; /* 0x_3FE4_5F30, 0x_6DC9_C883 */
@@ -85,8 +85,8 @@ fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
     if ix < 0x_7fe0_0000 {
         /* avoid overflow in 2*x */
         ss = -s - c;
-        z = cos(2.0 * x);
-        if s * c > 0.0 {
+        z = cos(2. * x);
+        if s * c > 0. {
             cc = z / ss;
         } else {
             ss = z / cc;
@@ -126,7 +126,7 @@ pub fn j1(x: f64) -> f64 {
     sign = (ix >> 31) != 0;
     ix &= UF_ABS;
     if ix >= 0x_7ff0_0000 {
-        return 1.0 / (x * x);
+        return 1. / (x * x);
     }
     if ix >= 0x_4000_0000 {
         /* |x| >= 2 */
@@ -136,7 +136,7 @@ pub fn j1(x: f64) -> f64 {
         /* |x| >= 2**-127 */
         z = x * x;
         r = z * (R00 + z * (R01 + z * (R02 + z * R03)));
-        s = 1.0 + z * (S01 + z * (S02 + z * (S03 + z * (S04 + z * S05))));
+        s = 1. + z * (S01 + z * (S02 + z * (S03 + z * (S04 + z * S05))));
         z = r / s;
     } else {
         /* avoid underflow, raise inexact if x!=0 */
@@ -178,7 +178,7 @@ pub fn y1(x: f64) -> f64 {
         return f64::NAN;
     }
     if ix >= 0x_7ff0_0000 {
-        return 1.0 / x;
+        return 1. / x;
     }
 
     if ix >= 0x_4000_0000 {

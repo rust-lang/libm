@@ -1,6 +1,6 @@
 use super::expm1f;
 use super::k_expo2f;
-use math::consts::*;
+use crate::math::consts::*;
 
 #[inline]
 pub fn sinhf(x: f32) -> f32 {

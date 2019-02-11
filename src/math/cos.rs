@@ -11,7 +11,7 @@
 
 use core::f64;
 use super::{k_cos, k_sin, rem_pio2};
-use math::consts::*;
+use crate::math::consts::*;
 
 // cos(x)
 // Return cosine function of x.

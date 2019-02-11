@@ -193,8 +193,8 @@ impl F32Ext for f32 {
     #[inline]
     fn div_euc(self, rhs: Self) -> Self {
         let q = (self / rhs).trunc();
-        if self % rhs < 0.0 {
-            return if rhs > 0.0 { q - 1.0 } else { q + 1.0 };
+        if self % rhs < 0. {
+            return if rhs > 0. { q - 1. } else { q + 1. };
         }
         q
     }
@@ -202,7 +202,7 @@ impl F32Ext for f32 {
     #[inline]
     fn mod_euc(self, rhs: f32) -> f32 {
         let r = self % rhs;
-        if r < 0.0 {
+        if r < 0. {
             r + rhs.abs()
         } else {
             r
@@ -324,21 +324,21 @@ impl F32Ext for f32 {
         if self == f32::NEG_INFINITY {
             f32::NEG_INFINITY
         } else {
-            (self + ((self * self) + 1.0).sqrt()).ln()
+            (self + ((self * self) + 1.).sqrt()).ln()
         }
     }
 
     #[inline]
     fn acosh(self) -> Self {
         match self {
-            x if x < 1.0 => f32::NAN,
-            x => (x + ((x * x) - 1.0).sqrt()).ln(),
+            x if x < 1. => f32::NAN,
+            x => (x + ((x * x) - 1.).sqrt()).ln(),
         }
     }
 
     #[inline]
     fn atanh(self) -> Self {
-        0.5 * ((2.0 * self) / (1.0 - self)).ln_1p()
+        0.5 * ((2. * self) / (1. - self)).ln_1p()
     }
 }
 
@@ -475,8 +475,8 @@ impl F64Ext for f64 {
     #[inline]
     fn div_euc(self, rhs: Self) -> Self {
         let q = (self / rhs).trunc();
-        if self % rhs < 0.0 {
-            return if rhs > 0.0 { q - 1.0 } else { q + 1.0 };
+        if self % rhs < 0. {
+            return if rhs > 0. { q - 1. } else { q + 1. };
         }
         q
     }
@@ -484,7 +484,7 @@ impl F64Ext for f64 {
     #[inline]
     fn mod_euc(self, rhs: f64) -> f64 {
         let r = self % rhs;
-        if r < 0.0 {
+        if r < 0. {
             r + rhs.abs()
         } else {
             r
@@ -606,21 +606,21 @@ impl F64Ext for f64 {
         if self == f64::NEG_INFINITY {
             f64::NEG_INFINITY
         } else {
-            (self + ((self * self) + 1.0).sqrt()).ln()
+            (self + ((self * self) + 1.).sqrt()).ln()
         }
     }
 
     #[inline]
     fn acosh(self) -> Self {
         match self {
-            x if x < 1.0 => f64::NAN,
-            x => (x + ((x * x) - 1.0).sqrt()).ln(),
+            x if x < 1. => f64::NAN,
+            x => (x + ((x * x) - 1.).sqrt()).ln(),
         }
     }
 
     #[inline]
     fn atanh(self) -> Self {
-        0.5 * ((2.0 * self) / (1.0 - self)).ln_1p()
+        0.5 * ((2. * self) / (1. - self)).ln_1p()
     }
 }
 

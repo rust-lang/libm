@@ -14,7 +14,7 @@
  */
 
 use core::f32;
-use math::consts::*;
+use crate::math::consts::*;
 
 const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
 const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */

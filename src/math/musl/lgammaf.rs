@@ -16,7 +16,7 @@
 use core::f32;
 use super::{floorf, k_cosf, k_sinf};
 use crate::math::logf;
-use math::consts::*;
+use crate::math::consts::*;
 
 const PI: f32  =  3.141_592_741; /* 0x_4049_0fdb */
 const A0: f32  =  7.721_566_408_9_e-02; /* 0x_3d9e_233f */
@@ -91,7 +91,7 @@ fn sin_pi(mut x: f32) -> f32
     /* spurious inexact if odd int */
     x = 2.*(x*0.5 - floorf(x*0.5));  /* x mod 2. */
 
-    n = (x*4.0) as isize;
+    n = (x*4.) as isize;
     n = (n+1)/2;
     y = (x as f64) - (n as f64)*0.5;
     y *= 3.141_592_653_589_793_238_46;

@@ -13,7 +13,7 @@
  * ====================================================
  */
 
-use math::consts::*;
+use crate::math::consts::*;
 
 use core::f32;
 use super::{cosf, fabsf, logf, sinf, sqrtf};
@@ -40,8 +40,8 @@ fn common(ix: u32, x: f32, y0: bool) -> f32
     cc = s+c;
     if ix < 0x_7f00_0000 {
         ss = s-c;
-        z = -cosf(2.0*x);
-        if s*c < 0.0 {
+        z = -cosf(2.*x);
+        if s*c < 0. {
             cc = z/ss;
         } else {
             ss = z/cc;
@@ -130,7 +130,7 @@ pub fn y0f(x: f32) -> f32
         /* large ulp error at x ~= 0.89 */
         z = x*x;
         u = U00+z*(U01+z*(U02+z*(U03+z*(U04+z*(U05+z*U06)))));
-        v = 1.0+z*(V01+z*(V02+z*(V03+z*V04)));
+        v = 1.+z*(V01+z*(V02+z*(V03+z*V04)));
         u/v + TPI*(j0f(x)*logf(x))
     } else {
       U00 + TPI*logf(x)

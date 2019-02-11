@@ -24,7 +24,7 @@
 // OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
-use math::consts::*;
+use crate::math::consts::*;
 
 const TBLSIZE: usize = 16;
 
@@ -108,12 +108,12 @@ pub fn exp2f(mut x: f32) -> f32 {
             }
             if ui >= 0x_c316_0000 {
                 /* x <= -150 */
-                return 0.0;
+                return 0.;
             }
         }
     } else if ix <= 0x_3300_0000 {
         /* |x| <= 0x1p-25 */
-        return 1.0 + x;
+        return 1. + x;
     }
 
     /* Reduce x, computing z, i0, and k. */

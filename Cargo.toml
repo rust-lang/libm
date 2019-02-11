@@ -9,6 +9,7 @@ name = "libm"
 repository = "https://github.com/rust-lang-nursery/libm"
 version = "0.2.0"
 exclude = ["/ci/*"]
+edition = "2018"
 
 [features]
 # only used to run our test suite

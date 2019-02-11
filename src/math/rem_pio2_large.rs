@@ -399,7 +399,7 @@ pub fn rem_pio2_large(x: &[f64], e0: i32, prec: usize) -> (i32, [f64; 3]) {
 
         /* compute n */
         z = scalbn(z, q0); /* actual value of z */
-        z -= 8.0 * floor(z * 0.125); /* trim off integer >= 8 */
+        z -= 8. * floor(z * 0.125); /* trim off integer >= 8 */
         n = z as i32;
         z -= n as f64;
         ih = 0;

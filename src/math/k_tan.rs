@@ -41,7 +41,7 @@
 //              tan(x) = tan(pi/4-y) = (1-tan(y))/(1+tan(y))
 //                     = 1 - 2*(tan(y) - (tan(y)^2)/(1+tan(y)))
 
-use math::consts::*;
+use crate::math::consts::*;
 
 static T: [f64; 13] = [
     3.333_333_333_333_340_919_86_e-01,  /* 3FD55555, 55555563 */
@@ -88,8 +88,8 @@ pub fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
     let w = x + r;
     if big {
         let sign = hx >> 31;
-        let s = 1.0 - 2.0 * odd as f64;
-        let v = s - 2.0 * (x + (r - w * w / (w + s)));
+        let s = 1. - 2. * odd as f64;
+        let v = s - 2. * (x + (r - w * w / (w + s)));
         return if sign != 0 { -v } else { v };
     }
     if odd == 0 {
@@ -98,9 +98,9 @@ pub fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
     /* -1.0/(x+r) has up to 2ulp error, so compute it accurately */
     let w0 = zero_low_word(w);
     let v = r - (w0 - x); /* w0+v = r+x */
-    let a = -1.0 / w;
+    let a = -1. / w;
     let a0 = zero_low_word(a);
-    a0 + a * (1.0 + a0 * w0 + a0 * v)
+    a0 + a * (1. + a0 * w0 + a0 * v)
 }
 
 #[inline]

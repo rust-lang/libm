@@ -13,7 +13,7 @@
  * ====================================================
  */
 
-use math::consts::*;
+use crate::math::consts::*;
 const ONE: f32 = 1.; /* 0x_3F80_0000 */
 const PI: f32 = 3.141_592_502_6; /* 0x_4049_0fda */
 const PIO2_HI: f32 = 1.570_796_251_3; /* 0x_3fc9_0fda */
@@ -38,7 +38,7 @@ pub fn acosf(x: f32) -> f32 {
     if ix == UF_1 {
         /* |x|==1 */
         if (hx > 0) {
-            return 0.0; /* acos(1) = 0  */
+            return 0.; /* acos(1) = 0  */
         } else {
             return PI + 2. * PIO2_LO; /* acos(-1)= pi */
         }

@@ -1,5 +1,5 @@
 use super::{log1pf, logf, sqrtf};
-use math::consts::*;
+use crate::math::consts::*;
 
 const LN2: f32 = 0.693_147_180_559_945_309_417_232_121_458_176_568;
 
@@ -17,10 +17,10 @@ pub fn asinhf(mut x: f32) -> f32 {
         x = logf(x) + LN2;
     } else if i >= 0x_3f80_0000 + (1 << 23) {
         /* |x| >= 2 */
-        x = logf(2.0 * x + 1.0 / (sqrtf(x * x + 1.0) + x));
+        x = logf(2. * x + 1. / (sqrtf(x * x + 1.) + x));
     } else if i >= 0x_3f80_0000 - (12 << 23) {
         /* |x| >= 0x1p-12, up to 1.6ulp error in [0.125,0.5] */
-        x = log1pf(x + x * x / (sqrtf(x * x + 1.0) + 1.0));
+        x = log1pf(x + x * x / (sqrtf(x * x + 1.) + 1.));
     } else {
         /* |x| < 0x1p-12, raise inexact if x!=0 */
         let x1p120 = f32::from_bits(0x_7b80_0000);

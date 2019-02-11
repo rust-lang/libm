@@ -1,5 +1,5 @@
 use core::f64;
-use math::consts::*;
+use crate::math::consts::*;
 
 pub fn remquo(mut x: f64, mut y: f64) -> (f64, isize)
 {
@@ -87,7 +87,7 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, isize)
     if sy {
         y = -y;
     }
-    if ex == ey || (ex+1 == ey && (2.0*x > y || (2.0*x == y && (q%2) != 0))) {
+    if ex == ey || (ex+1 == ey && (2.*x > y || (2.*x == y && (q%2) != 0))) {
         x -= y;
         q += 1;
     }

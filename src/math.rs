@@ -164,8 +164,6 @@ pub mod musl;
 #[cfg(not(feature = "newlib"))]
 pub use self::musl::*;
 
-pub mod fp;
-
 #[rustfmt::skip]
 pub use self::{
     acoshf::acoshf,
@@ -301,7 +299,7 @@ fn get_low_word(x: f64) -> u32 {
 #[inline]
 fn with_set_high_word(f: f64, hi: u32) -> f64 {
     let mut tmp = f.to_bits();
-    tmp &= 0x00000000_ffffffff;
+    tmp &= 0x_0000_0000_ffff_ffff;
     tmp |= (hi as u64) << 32;
     f64::from_bits(tmp)
 }
@@ -309,7 +307,7 @@ fn with_set_high_word(f: f64, hi: u32) -> f64 {
 #[inline]
 fn with_set_low_word(f: f64, lo: u32) -> f64 {
     let mut tmp = f.to_bits();
-    tmp &= 0xffffffff_00000000;
+    tmp &= 0x_ffff_ffff_0000_0000;
     tmp |= lo as u64;
     f64::from_bits(tmp)
 }

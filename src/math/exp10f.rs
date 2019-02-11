@@ -12,7 +12,7 @@ pub fn exp10f(x: f32) -> f32 {
     let u = n.to_bits();
     /* fabsf(n) < 8 without raising invalid on nan */
     if (u>>23 & 0xff) < 0x7f+3 {
-        if y == 0.0 {
+        if y == 0. {
             return P10[((n as isize) + 7) as usize]
         }
         y = exp2f(LN10_F32 * y);

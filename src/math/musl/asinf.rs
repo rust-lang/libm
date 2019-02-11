@@ -16,9 +16,8 @@
 use core::f32;
 use core::f64;
 
-use math::consts::*;
-use math::fabsf;
-use math::sqrt;
+use crate::math::consts::*;
+use crate::math::{fabsf, sqrt};
 
 const PIO2: f64 = f64::consts::FRAC_PI_2;
 

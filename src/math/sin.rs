@@ -11,7 +11,7 @@
 
 use core::f64;
 use super::{k_cos, k_sin, rem_pio2};
-use math::consts::*;
+use crate::math::consts::*;
 
 // sin(x)
 // Return sine function of x.
@@ -61,7 +61,7 @@ pub fn sin(x: f64) -> f64 {
             }
             return x;
         }
-        return k_sin(x, 0.0, 0);
+        return k_sin(x, 0., 0);
     }
 
     /* sin(Inf or NaN) is NaN */

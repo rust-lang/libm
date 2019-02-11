@@ -11,7 +11,7 @@
  */
 
 use core::f64;
-use math::consts::*;
+use crate::math::consts::*;
 
 const O_THRESHOLD: f64 = 7.097_827_128_933_839_730_96_e+02; /* 0x_4086_2E42, 0x_FEFA_39EF */
 const LN2_HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */
@@ -44,7 +44,7 @@ pub fn expm1(mut x: f64) -> f64 {
             return x;
         }
         if sign != 0 {
-            return -1.0;
+            return -1.;
         }
         if x > O_THRESHOLD {
             x *= f64::from_bits(0x_7fe0_0000_0000_0000);
@@ -81,16 +81,16 @@ pub fn expm1(mut x: f64) -> f64 {
         }
         return x;
     } else {
-        c = 0.0;
+        c = 0.;
         k = 0;
     }
 
     /* x is now in primary range */
     let hfx = 0.5 * x;
     let hxs = x * hfx;
-    let r1 = 1.0 + hxs * (Q1 + hxs * (Q2 + hxs * (Q3 + hxs * (Q4 + hxs * Q5))));
-    t = 3.0 - r1 * hfx;
-    let mut e = hxs * ((r1 - t) / (6.0 - x * t));
+    let r1 = 1. + hxs * (Q1 + hxs * (Q2 + hxs * (Q3 + hxs * (Q4 + hxs * Q5))));
+    t = 3. - r1 * hfx;
+    let mut e = hxs * ((r1 - t) / (6. - x * t));
     if k == 0 {
         /* c is 0 */
         return x - (x * e - hxs);
@@ -103,28 +103,28 @@ pub fn expm1(mut x: f64) -> f64 {
     }
     if k == 1 {
         if x < -0.25 {
-            return -2.0 * (e - (x + 0.5));
+            return -2. * (e - (x + 0.5));
         }
-        return 1.0 + 2.0 * (x - e);
+        return 1. + 2. * (x - e);
     }
     ui = ((0x3ff + k) as u64) << 52; /* 2^k */
     let twopk = f64::from_bits(ui);
     if k < 0 || k > 56 {
         /* suffice to return exp(x)-1 */
-        y = x - e + 1.0;
+        y = x - e + 1.;
         if k == 1024 {
             y *= 2. * f64::from_bits(0x_7fe0_0000_0000_0000);
         } else {
             y *= twopk;
         }
-        return y - 1.0;
+        return y - 1.;
     }
     ui = ((0x3ff - k) as u64) << 52; /* 2^-k */
     let uf = f64::from_bits(ui);
     if k < 20 {
-        y = (x - e + (1.0 - uf)) * twopk;
+        y = (x - e + (1. - uf)) * twopk;
     } else {
-        y = (x - (e + uf) + 1.0) * twopk;
+        y = (x - (e + uf) + 1.) * twopk;
     }
     y
 }

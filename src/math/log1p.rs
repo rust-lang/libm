@@ -87,7 +87,7 @@ pub fn log1p(x: f64) -> f64 {
     if hx < 0x_3fda_827a || (hx >> 31) > 0 {
         /* 1+x < sqrt(2)+ */
         if hx >= 0x_bff0_0000 {
-            /* x <= -1.0 */
+            /* x <= -1. */
             if x == -1. {
                 return f64::NEG_INFINITY; /* log1p(-1) = -inf */
             }
@@ -132,7 +132,7 @@ pub fn log1p(x: f64) -> f64 {
         f = f64::from_bits(ui) - 1.;
     }
     hfsq = 0.5 * f * f;
-    s = f / (2.0 + f);
+    s = f / (2. + f);
     z = s * s;
     w = z * z;
     t1 = w * (LG2 + w * (LG4 + w * LG6));

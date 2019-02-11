@@ -36,14 +36,14 @@ pub fn sinh(x: f64) -> f64 {
                 /* note: this branch avoids spurious underflow */
                 return x;
             }
-            return h * (2.0 * t - t * t / (t + 1.0));
+            return h * (2. * t - t * t / (t + 1.));
         }
         /* note: |x|>log(0x1p26)+eps could be just h*exp(x) */
-        return h * (t + t / (t + 1.0));
+        return h * (t + t / (t + 1.));
     }
 
     /* |x| > log(DBL_MAX) or nan */
     /* note: the result is stored to handle overflow */
-    t = 2.0 * h * expo2(absx);
+    t = 2. * h * expo2(absx);
     t
 }

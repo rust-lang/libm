@@ -1,4 +1,6 @@
 // Public modules
+pub mod fp;
+
 mod asinf;
 mod cbrtf;
 mod cosf;
@@ -36,10 +38,10 @@ use self::{
     rem_pio2f::rem_pio2f,
 };
 
-use math::powf;
+use crate::math::powf;
 #[inline]
 pub fn exp2f(x: f32) -> f32 {
-    powf(2.0, x)
+    powf(2., x)
 }
 
-pub use math::musl::acosf; //temporary
+pub use crate::math::musl::acosf; //temporary

@@ -14,7 +14,7 @@
  */
 
 use super::{expf, fabsf};
-use math::consts::*;
+use crate::math::consts::*;
 
 const ERX: f32  =  8.450_629_115_1_e-01; /* 0x_3f58_560b */
 /*
@@ -89,7 +89,7 @@ fn erfc1(x: f32) -> f32 {
     let p: f32;
     let q: f32;
 
-    s = fabsf(x) - 1.0;
+    s = fabsf(x) - 1.;
     p = PA0+s*(PA1+s*(PA2+s*(PA3+s*(PA4+s*(PA5+s*PA6)))));
     q = 1.+s*(QA1+s*(QA2+s*(QA3+s*(QA4+s*(QA5+s*QA6)))));
     1. - ERX - p/q
@@ -110,12 +110,12 @@ fn erfc2(mut ix: u32, mut x: f32) -> f32 {
     if ix < 0x_4036_db6d {   /* |x| < 1/0.35 */
         r = RA0+s*(RA1+s*(RA2+s*(RA3+s*(RA4+s*(
              RA5+s*(RA6+s*RA7))))));
-        big_s = 1.0+s*(SA1+s*(SA2+s*(SA3+s*(SA4+s*(
+        big_s = 1.+s*(SA1+s*(SA2+s*(SA3+s*(SA4+s*(
              SA5+s*(SA6+s*(SA7+s*SA8)))))));
     } else {                 /* |x| >= 1/0.35 */
         r = RB0+s*(RB1+s*(RB2+s*(RB3+s*(RB4+s*(
              RB5+s*RB6)))));
-        big_s = 1.0+s*(SB1+s*(SB2+s*(SB3+s*(SB4+s*(
+        big_s = 1.+s*(SB1+s*(SB2+s*(SB3+s*(SB4+s*(
              SB5+s*(SB6+s*SB7))))));
     }
     ix = x.to_bits();
@@ -138,24 +138,24 @@ pub fn erff(x: f32) -> f32
     ix &= UF_ABS;
     if ix >= UF_INF {
         /* erf(nan)=nan, erf(+-inf)=+-1 */
-        return 1.0-2.0*(sign as f32) + 1.0/x;
+        return 1.-2.*(sign as f32) + 1./x;
     }
     if ix < 0x_3f58_0000 {  /* |x| < 0.84375 */
         if ix < 0x_3180_0000 {  /* |x| < 2**-28 */
             /*avoid underflow */
-            return 0.125*(8.0*x + EFX8*x);
+            return 0.125*(8.*x + EFX8*x);
         }
         z = x*x;
         r = PP0+z*(PP1+z*(PP2+z*(PP3+z*PP4)));
-        s = 1.0+z*(QQ1+z*(QQ2+z*(QQ3+z*(QQ4+z*QQ5))));
+        s = 1.+z*(QQ1+z*(QQ2+z*(QQ3+z*(QQ4+z*QQ5))));
         y = r/s;
         return x + x*y;
     }
     if ix < 0x_40c0_0000 {  /* |x| < 6 */
-        y = 1.0 - erfc2(ix,x);
+        y = 1. - erfc2(ix,x);
     } else {
         let x1p_120 = f32::from_bits(0x_0380_0000);
-        y = 1.0 - x1p_120;
+        y = 1. - x1p_120;
     }
 
     if sign != 0 {
@@ -196,7 +196,7 @@ pub fn erfcf(x: f32) -> f32 {
     }
     if ix < 0x_41e0_0000 {  /* |x| < 28 */
         if sign != 0 {
-            return 2.0 - erfc2(ix, x);
+            return 2. - erfc2(ix, x);
         } else {
             return erfc2(ix, x);
         }
@@ -204,7 +204,7 @@ pub fn erfcf(x: f32) -> f32 {
 
     let x1p_120 = f32::from_bits(0x_0380_0000);
     if sign != 0 {
-        2.0 - x1p_120
+        2. - x1p_120
     } else {
         x1p_120*x1p_120
     }

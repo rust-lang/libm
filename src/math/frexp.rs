@@ -3,7 +3,7 @@ pub fn frexp(x: f64) -> (f64, isize) {
     let ee = ((y>>52) & 0x7ff) as isize;
 
     if ee == 0 {
-        if x != 0.0 {
+        if x != 0. {
             let x1p64 = f64::from_bits(0x_43f0_0000_0000_0000);
             let (x, e) = frexp(x*x1p64);
             return (x, e - 64);

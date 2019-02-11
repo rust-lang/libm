@@ -11,7 +11,7 @@
  */
 
 use core::f32;
-use math::consts::*;
+use crate::math::consts::*;
 
 const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
 const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
@@ -43,7 +43,7 @@ pub fn log1pf(x: f32) -> f32 {
     if ix < 0x_3ed4_13d0 || (ix >> 31) > 0 {
         /* 1+x < sqrt(2)+  */
         if ix >= 0x_bf80_0000 {
-            /* x <= -1.0 */
+            /* x <= -1. */
             if x == -1. {
                 return f32::INFINITY; /* log1p(-1)=+inf */
             }
@@ -87,7 +87,7 @@ pub fn log1pf(x: f32) -> f32 {
         ui = iu;
         f = f32::from_bits(ui) - 1.;
     }
-    s = f / (2.0 + f);
+    s = f / (2. + f);
     z = s * s;
     w = z * z;
     t1 = w * (LG2 + w * LG4);
