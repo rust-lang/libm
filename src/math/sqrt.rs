@@ -148,13 +148,13 @@ pub fn sqrt(x: f64) -> f64 {
     if (m & 1) == 1 {
         /* odd m, double x to make it even */
         ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
-        ix1 += ix1;
+        ix1 = ix1.wrapping_add(ix1);
     }
     m >>= 1; /* m = [m/2] */
 
     /* generate sqrt(x) bit by bit */
     ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
-    ix1 += ix1;
+    ix1 = ix1.wrapping_add(ix1);
     q = 0; /* [q,q1] = sqrt(x) */
     q1 = 0;
     s0 = 0;
@@ -169,7 +169,7 @@ pub fn sqrt(x: f64) -> f64 {
             q += r as i32;
         }
         ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
-        ix1 += ix1;
+        ix1 = ix1.wrapping_add(ix1);
         r >>= 1;
     }
 
@@ -178,7 +178,7 @@ pub fn sqrt(x: f64) -> f64 {
         t1 = s1 + r;
         t = s0;
         if t < ix0 || (t == ix0 && t1 <= ix1) {
-            s1 = t1 + r;
+            s1 = t1.wrapping_add(r);
             if (t1 & sign) == sign && (s1 & sign) == 0 {
                 s0 += 1;
             }
@@ -186,11 +186,11 @@ pub fn sqrt(x: f64) -> f64 {
             if ix1 < t1 {
                 ix0 -= 1;
             }
-            ix1 -= t1;
+            ix1 = ix1.wrapping_sub(t1);
             q1 += r;
         }
         ix0 = ix0 + ix0 + ((ix1 & sign) >> 31) as i32;
-        ix1 += ix1;
+        ix1 = ix1.wrapping_add(ix1);
         r >>= 1;
     }
 
