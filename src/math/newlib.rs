@@ -1,16 +1,19 @@
 // Public modules
 pub mod fp;
 
-mod asinf;
-mod cbrtf;
-mod cosf;
-mod floorf;
-mod hypotf;
-mod sinf;
-mod tanf;
+pub mod acosf;
+pub mod asinf;
+pub mod cbrtf;
+pub mod cosf;
+pub mod floorf;
+pub mod hypotf;
+pub mod sinf;
+pub mod tanf;
 
 #[rustfmt::skip]
+#[cfg(feature = "newlib")]
 pub use self::{
+    acosf::acosf,
     asinf::asinf,
     cbrtf::cbrtf,
     cosf::cosf,
@@ -44,4 +47,4 @@ pub fn exp2f(x: f32) -> f32 {
     powf(2., x)
 }
 
-pub use crate::math::musl::acosf; //temporary
+//pub use crate::math::musl::acosf; //temporary

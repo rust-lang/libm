@@ -14,7 +14,7 @@
  * ====================================================
  */
 
-use super::floorf;
+use super::floorf::floorf;
 use crate::math::scalbnf;
 
 #[allow(dead_code)]

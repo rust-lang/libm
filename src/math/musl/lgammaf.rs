@@ -14,8 +14,7 @@
  */
 
 use core::f32;
-use super::{floorf, k_cosf, k_sinf};
-use crate::math::logf;
+use super::{floorf::floorf, logf, k_cosf, k_sinf};
 use crate::math::consts::*;
 
 const PI: f32  =  3.141_592_741; /* 0x_4049_0fdb */

@@ -1,4 +1,5 @@
-use super::{exp, fabs, get_high_word, with_set_low_word};
+use super::{exp, fabs};
+use crate::math::{get_high_word, with_set_low_word};
 /* origin: FreeBSD /usr/src/lib/msun/src/s_erf.c */
 /*
  * ====================================================

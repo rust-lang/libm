@@ -14,7 +14,13 @@
  */
 
 use core::f32;
-use super::{cosf, fabsf, logf, sinf, sqrtf};
+use super::{
+    fabsf,
+    logf,
+    sqrtf,
+    cosf::cosf,
+    sinf::sinf
+};
 use crate::math::consts::*;
 
 const INVSQRTPI: f32 = 5.641_896_128_7_e-01; /* 0x_3f10_6ebb */

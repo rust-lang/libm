@@ -13,7 +13,11 @@
  * ====================================================
  */
 
+
+use core::f32;
 use crate::math::consts::*;
+use crate::math::sqrtf;
+
 const ONE: f32 = 1.; /* 0x_3F80_0000 */
 const PI: f32 = 3.141_592_502_6; /* 0x_4049_0fda */
 const PIO2_HI: f32 = 1.570_796_251_3; /* 0x_3fc9_0fda */
@@ -33,18 +37,18 @@ const Q_S4: f32 = 7.703_815_400_6_e-02; /* 0x_3d9d_c62e */
 #[inline]
 pub fn acosf(x: f32) -> f32 {
     let hx = x.to_bits() as i32;
-    let ix = hx & UF_ABS;
+    let ix = hx & IF_ABS;
 
-    if ix == UF_1 {
+    if ix == IF_1 {
         /* |x|==1 */
-        if (hx > 0) {
+        if hx > 0 {
             return 0.; /* acos(1) = 0  */
         } else {
             return PI + 2. * PIO2_LO; /* acos(-1)= pi */
         }
-    } else if ix > UF_1 {
+    } else if ix > IF_1 {
         /* |x| >= 1 */
-        return (x - x) / (x - x); /* acos(|x|>1) is NaN */
+        return f32::NAN; /* acos(|x|>1) is NaN */
     }
     let z: f32;
     let w: f32;
@@ -54,7 +58,7 @@ pub fn acosf(x: f32) -> f32 {
     let s: f32;
     if ix < 0x_3f00_0000 {
         /* |x| < 0.5 */
-        if (ix <= 0x_2300_0000) {
+        if ix <= 0x_2300_0000 {
             return PIO2_HI + PIO2_LO; /*if|x|<2**-57*/
         }
         z = x * x;
@@ -76,8 +80,8 @@ pub fn acosf(x: f32) -> f32 {
         z = (ONE - x) * 0.5;
         s = sqrtf(z);
         let idf = s.to_bits() as i32;
-        let df = f32::from_bits((idf & 0x_ffff_f000) as u32);
-        c = (z - df * df) / (s + df);
+        let df = f32::from_bits((idf as u32) & 0x_ffff_f000);
+        let c = (z - df * df) / (s + df);
         p = z * (P_S0 + z * (P_S1 + z * (P_S2 + z * (P_S3 + z * (P_S4 + z * P_S5)))));
         q = ONE + z * (Q_S1 + z * (Q_S2 + z * (Q_S3 + z * Q_S4)));
         r = p / q;

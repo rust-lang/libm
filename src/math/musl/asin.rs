@@ -40,7 +40,8 @@
  */
 
 use core::f64;
-use super::{fabs, get_high_word, get_low_word, sqrt, with_set_low_word};
+use super::{fabs, sqrt};
+use crate::math::{get_high_word, get_low_word, with_set_low_word};
 use crate::math::consts::*;
 
 const PIO2_HI: f64 = f64::consts::FRAC_PI_2; /* 0x_3FF9_21FB, 0x_5444_2D18 */

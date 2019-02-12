@@ -14,7 +14,7 @@
  * ====================================================
  */
 
-use crate::math::rem_pio2_large;
+use super::rem_pio2_large;
 use crate::math::consts::*;
 
 use core::f64;

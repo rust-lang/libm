@@ -59,8 +59,13 @@
 //
 
 use core::f64;
-use super::{fabs, get_high_word, scalbn, sqrt, with_set_high_word, with_set_low_word};
-use crate::math::consts::*;
+use super::{fabs, scalbn, sqrt};
+use crate::math::{
+    consts::*,
+    get_high_word,
+    with_set_high_word,
+    with_set_low_word,
+};
 
 const BP: [f64; 2] = [1., 1.5];
 const DP_H: [f64; 2] = [0., 5.849_624_872_207_641_601_56_e-01]; /* 0x_3fe2_b803_4000_0000 */

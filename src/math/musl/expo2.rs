@@ -1,4 +1,5 @@
-use super::{combine_words, exp};
+use super::exp;
+use crate::math::combine_words;
 
 /* exp(x)/2 for x >= log(DBL_MAX), slightly better than 0.5*exp(x/2)*exp(x/2) */
 #[inline]

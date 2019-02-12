@@ -55,8 +55,12 @@
  */
 
 use core::f64;
-use super::{cos, get_low_word, get_high_word, fabs, log, sin, sqrt};
-use crate::math::consts::*;
+use super::{cos, fabs, log, sin, sqrt};
+use crate::math::{
+    consts::*,
+    get_low_word,
+    get_high_word,
+};
 
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */
 const TPI: f64       = 6.366_197_723_675_813_824_33_e-01; /* 0x_3FE4_5F30, 0x_6DC9_C883 */

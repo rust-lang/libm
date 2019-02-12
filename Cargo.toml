@@ -15,7 +15,8 @@ edition = "2018"
 # only used to run our test suite
 checked = []
 newlib = []
-default = ['stable']
+musl = []
+default = ['stable', 'musl']
 stable = []
 
 [workspace]
