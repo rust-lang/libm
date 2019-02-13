@@ -13,8 +13,8 @@
  * See comments in log10.c.
  */
 
-use core::f32;
 use crate::math::consts::*;
+use core::f32;
 
 const IVLN10HI: f32 = 4.343_261_718_8_e-01; /* 0x_3ede_6000 */
 const IVLN10LO: f32 = -3.168_997_136_5_e-05; /* 0x_b804_ead9 */
@@ -26,27 +26,17 @@ const LG2: f32 = 0.400_009_721_52; /* 0x_cc_ce13.0p-25 */
 const LG3: f32 = 0.284_987_866_88; /* 0x_91_e9ee.0p-25 */
 const LG4: f32 = 0.242_790_788_41; /* 0x_f8_9e26.0p-26 */
 
+/// Base 10 logarithm (f32)
+///
+/// Returns the base 10 logarithm of `x`. It is implemented as `log(x)/log(10)`.
 #[inline]
 pub fn log10f(mut x: f32) -> f32 {
     let x1p25f = f32::from_bits(0x_4c00_0000); // 0x1p25f === 2 ^ 25
 
     let mut ui: u32 = x.to_bits();
-    let hfsq: f32;
-    let f: f32;
-    let s: f32;
-    let z: f32;
-    let r: f32;
-    let w: f32;
-    let t1: f32;
-    let t2: f32;
-    let dk: f32;
-    let mut hi: f32;
-    let lo: f32;
-    let mut ix: u32;
-    let mut k: i32;
 
-    ix = ui;
-    k = 0;
+    let mut ix = ui;
+    let mut k = 0;
     if ix < UF_MIN || (ix >> 31) > 0 {
         /* x < 2**-126  */
         if ix << 1 == 0 {
@@ -73,20 +63,20 @@ pub fn log10f(mut x: f32) -> f32 {
     ui = ix;
     x = f32::from_bits(ui);
 
-    f = x - 1.;
-    s = f / (2. + f);
-    z = s * s;
-    w = z * z;
-    t1 = w * (LG2 + w * LG4);
-    t2 = z * (LG1 + w * LG3);
-    r = t2 + t1;
-    hfsq = 0.5 * f * f;
+    let f = x - 1.;
+    let s = f / (2. + f);
+    let z = s * s;
+    let w = z * z;
+    let t1 = w * (LG2 + w * LG4);
+    let t2 = z * (LG1 + w * LG3);
+    let r = t2 + t1;
+    let hfsq = 0.5 * f * f;
 
-    hi = f - hfsq;
+    let hi = f - hfsq;
     ui = hi.to_bits();
     ui &= 0x_ffff_f000;
-    hi = f32::from_bits(ui);
-    lo = f - hi - hfsq + s * (hfsq + r);
-    dk = k as f32;
+    let hi = f32::from_bits(ui);
+    let lo = f - hi - hfsq + s * (hfsq + r);
+    let dk = k as f32;
     dk * LOG10_2LO + (lo + hi) * IVLN10LO + lo * IVLN10HI + hi * IVLN10HI + dk * LOG10_2HI
 }

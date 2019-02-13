@@ -4,6 +4,10 @@ use crate::math::consts::*;
 const LN2: f32 = 0.693_147_180_559_945_309_417_232_121_458_176_568;
 
 /* asinh(x) = sign(x)*log(|x|+sqrt(x*x+1)) ~= x - x^3/6 + o(x^5) */
+/// Inverse hyperbolic sine (f32)
+///
+/// Calculates the inverse hyperbolic sine of `x`.
+/// Is defined as `sgn(x)*log(|x|+sqrt(x*x+1))`.
 pub fn asinhf(mut x: f32) -> f32 {
     let u = x.to_bits();
     let i = u & UF_ABS;

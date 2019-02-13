@@ -13,8 +13,8 @@
  * ====================================================
  */
 
-use core::f32;
 use crate::math::consts::*;
+use core::f32;
 
 const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
 const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
@@ -24,6 +24,10 @@ const LG2: f32 = 0.400_009_721_52; /*  0x_cc_ce13.0p-25 */
 const LG3: f32 = 0.284_987_866_88; /*  0x_91_e9ee.0p-25 */
 const LG4: f32 = 0.242_790_788_41; /*  0x_f8_9e26.0p-26 */
 
+/// Natural logarithm (f32)
+///
+/// Returns the natural logarithm of `x`, that is, its logarithm base *e*
+/// (where *e* is the base of the natural system of logarithms, 2.71828…).
 #[inline]
 pub fn logf(mut x: f32) -> f32 {
     let x1p25 = f32::from_bits(0x_4c00_0000); // 0x1p25f === 2 ^ 25

@@ -29,15 +29,15 @@
  * to produce the hexadecimal values shown.
  */
 
-use core::f64;
 use super::fabs;
 use crate::math::consts::*;
+use core::f64;
 
 const ATANHI: [f64; 4] = [
     4.636_476_090_008_060_935_15_e-01, /* atan(0.5)hi 0x_3FDD_AC67, 0x_0561_BB4F */
     7.853_981_633_974_482_789_99_e-01, /* atan(1.0)hi 0x_3FE9_21FB, 0x_5444_2D18 */
     9.827_937_232_473_290_540_82_e-01, /* atan(1.5)hi 0x_3FEF_730B, 0x_D281_F69B */
-    f64::consts::FRAC_PI_2,         /* atan(inf)hi 0x_3FF9_21FB, 0x_5444_2D18 */
+    f64::consts::FRAC_PI_2,            /* atan(inf)hi 0x_3FF9_21FB, 0x_5444_2D18 */
 ];
 
 const ATANLO: [f64; 4] = [
@@ -61,6 +61,10 @@ const AT: [f64; 11] = [
     1.628_582_011_536_578_236_23_e-02,  /* 0x_3F90_AD3A, 0x_E322_DA11 */
 ];
 
+/// Arctangent (f64)
+///
+/// Computes the inverse tangent (arc tangent) of the input value.
+/// Returns a value in radians, in the range of -pi/2 to pi/2.
 #[inline]
 pub fn atan(x: f64) -> f64 {
     let mut x = x;

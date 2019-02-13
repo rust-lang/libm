@@ -13,10 +13,9 @@
  * ====================================================
  */
 
-
-use core::f32;
 use crate::math::consts::*;
 use crate::math::sqrtf;
+use core::f32;
 
 const ONE: f32 = 1.; /* 0x_3F80_0000 */
 const PI: f32 = 3.141_592_502_6; /* 0x_4049_0fda */

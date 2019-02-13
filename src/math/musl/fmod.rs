@@ -1,6 +1,11 @@
-use core::u64;
 use core::f64;
+use core::u64;
 
+/// Floating-point remainder (modulo) (f64)
+///
+/// Computes the floating-point remainder of `x/y` (`x` modulo `y`).
+/// Returns the value `x-i*y`, for the largest integer `i` such that,
+/// if `y` is nonzero, the result has the same sign as `x` and magnitude less than the magnitude of `y`.
 #[inline]
 pub fn fmod(x: f64, y: f64) -> f64 {
     let mut uxi = x.to_bits();

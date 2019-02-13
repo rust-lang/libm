@@ -18,6 +18,10 @@ fn sq(x: f64) -> (f64, f64) {
     (hi, lo)
 }
 
+/// Distance from origin (f64)
+///
+/// Calculates the Euclidean distance `sqrt(x*x + y*y)` between the origin (0,0)
+/// and a point represented by the Cartesian coordinates (`x`,`y`).
 #[inline]
 pub fn hypot(mut x: f64, mut y: f64) -> f64 {
     let x1p700 = f64::from_bits(0x_6bb0_0000_0000_0000); // 0x1p700 === 2 ^ 700

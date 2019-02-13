@@ -3,7 +3,11 @@ use crate::math::consts::*;
 
 const LN2: f32 = 0.693_147_180_559_945_309_417_232_121_458_176_568;
 
-/* acosh(x) = log(x + sqrt(x*x-1)) */
+/// Inverse hyperbolic cosine (f32)
+///
+/// Calculates the inverse hyperbolic cosine of `x`.
+/// Is defined as `log(x + sqrt(x*x-1))`.
+/// `x` must be a number greater than or equal to 1.
 pub fn acoshf(x: f32) -> f32 {
     let u = x.to_bits();
     let a = u & UF_ABS;

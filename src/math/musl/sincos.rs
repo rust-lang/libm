@@ -10,15 +10,11 @@
  * ====================================================
  */
 
-use core::f64;
 use super::{k_cos, k_sin, rem_pio2};
-use crate::math::{
-    consts::*,
-    get_high_word,
-};
+use crate::math::{consts::*, get_high_word};
+use core::f64;
 
-pub fn sincos(x: f64) -> (f64, f64)
-{
+pub fn sincos(x: f64) -> (f64, f64) {
     let s: f64;
     let c: f64;
     let mut ix: u32;
@@ -33,9 +29,9 @@ pub fn sincos(x: f64) -> (f64, f64)
             /* raise inexact if x!=0 and underflow if subnormal */
             let x1p120 = f64::from_bits(0x_4770_0000_0000_0000); // 0x1p120 == 2^120
             if ix < 0x_0010_0000 {
-                force_eval!(x/x1p120);
+                force_eval!(x / x1p120);
             } else {
-                force_eval!(x+x1p120);
+                force_eval!(x + x1p120);
             }
             return (x, 1.);
         }
@@ -51,7 +47,7 @@ pub fn sincos(x: f64) -> (f64, f64)
     let (n, y0, y1) = rem_pio2(x);
     s = k_sin(y0, y1, 1);
     c = k_cos(y0, y1);
-    match n&3 {
+    match n & 3 {
         0 => (s, c),
         1 => (c, -s),
         2 => (-s, -c),

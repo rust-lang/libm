@@ -17,9 +17,9 @@
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
 
-use core::f64;
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
+use core::f64;
 
 const IVLN2HI: f64 = 1.442_695_040_721_446_275_71; /* 0x_3ff7_1547, 0x_6520_0000 */
 const IVLN2LO: f64 = 1.675_171_316_488_651_183_53_e-10; /* 0x_3de7_05fc, 0x_2eef_a200 */

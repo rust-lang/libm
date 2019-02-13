@@ -1,6 +1,6 @@
-use core::f64;
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
+use core::f64;
 
 const TOINT: f64 = 1. / f64::EPSILON;
 

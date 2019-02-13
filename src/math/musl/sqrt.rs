@@ -76,8 +76,8 @@
  *      sqrt(NaN) = NaN         ... with invalid signal for signaling NaN
  */
 
-use core::f64;
 use crate::math::consts::*;
+use core::f64;
 
 const TINY: f64 = 1e-300;
 

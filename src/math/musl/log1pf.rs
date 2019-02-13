@@ -10,8 +10,8 @@
  * ====================================================
  */
 
-use core::f32;
 use crate::math::consts::*;
+use core::f32;
 
 const LN2_HI: f32 = 6.931_381_225_6_e-01; /* 0x_3f31_7180 */
 const LN2_LO: f32 = 9.058_000_614_5_e-06; /* 0x_3717_f7d1 */
@@ -21,25 +21,18 @@ const LG2: f32 = 0.400_009_721_52; /* 0xccce13.0p-25 */
 const LG3: f32 = 0.284_987_866_88; /* 0x91e9ee.0p-25 */
 const LG4: f32 = 0.242_790_788_41; /* 0xf89e26.0p-26 */
 
+/// Log of 1 + X (f32)
+///
+/// Calculates the natural logarithm of `1+x`.
+/// You can use `log1p` rather than `log(1+x)` for greater precision when `x` is very small.
 #[inline]
 pub fn log1pf(x: f32) -> f32 {
     let mut ui: u32 = x.to_bits();
-    let hfsq: f32;
     let mut f: f32 = 0.;
     let mut c: f32 = 0.;
-    let s: f32;
-    let z: f32;
-    let r: f32;
-    let w: f32;
-    let t1: f32;
-    let t2: f32;
-    let dk: f32;
-    let ix: u32;
-    let mut iu: u32;
-    let mut k: i32;
 
-    ix = ui;
-    k = 1;
+    let ix = ui;
+    let mut k = 1_i32;
     if ix < 0x_3ed4_13d0 || (ix >> 31) > 0 {
         /* 1+x < sqrt(2)+  */
         if ix >= 0x_bf80_0000 {
@@ -68,7 +61,7 @@ pub fn log1pf(x: f32) -> f32 {
     }
     if k > 0 {
         ui = (1. + x).to_bits();
-        iu = ui;
+        let mut iu = ui;
         iu += UF_1 - 0x_3f35_04f3;
         k = (iu >> 23) as i32 - 0x7f;
         /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
@@ -87,13 +80,13 @@ pub fn log1pf(x: f32) -> f32 {
         ui = iu;
         f = f32::from_bits(ui) - 1.;
     }
-    s = f / (2. + f);
-    z = s * s;
-    w = z * z;
-    t1 = w * (LG2 + w * LG4);
-    t2 = z * (LG1 + w * LG3);
-    r = t2 + t1;
-    hfsq = 0.5 * f * f;
-    dk = k as f32;
+    let s = f / (2. + f);
+    let z = s * s;
+    let w = z * z;
+    let t1 = w * (LG2 + w * LG4);
+    let t2 = z * (LG1 + w * LG3);
+    let r = t2 + t1;
+    let hfsq = 0.5 * f * f;
+    let dk = k as f32;
     s * (hfsq + r) + (dk * LN2_LO + c) - hfsq + f + dk * LN2_HI
 }

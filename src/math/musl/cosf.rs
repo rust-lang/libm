@@ -14,9 +14,9 @@
  * ====================================================
  */
 
-use super::{k_cosf, k_sinf, rem_pio2f};
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
+use super::{k_cosf, k_sinf, rem_pio2f};
 use crate::math::consts::*;
 
 use core::f32;

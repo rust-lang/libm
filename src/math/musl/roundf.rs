@@ -1,6 +1,6 @@
-use core::f32;
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
+use core::f32;
 
 const TOINT: f32 = 1. / f32::EPSILON;
 

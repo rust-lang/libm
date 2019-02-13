@@ -2,6 +2,9 @@ use core::f64;
 
 const TOINT: f64 = 1. / f64::EPSILON;
 
+/// Floor (f64)
+///
+/// Finds the nearest integer less than or equal to `x`.
 #[inline]
 pub fn floor(x: f64) -> f64 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized

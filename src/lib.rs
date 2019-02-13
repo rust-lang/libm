@@ -17,10 +17,8 @@
 )]
 #![allow(clippy::many_single_char_names)]
 #![allow(clippy::excessive_precision)]
-
 #![allow(clippy::cast_lossless)]
 #![allow(clippy::float_cmp)]
-
 #![cfg_attr(
     all(target_os = "cuda", not(feature = "stable")),
     feature(core_intrinsics, link_llvm_intrinsics)

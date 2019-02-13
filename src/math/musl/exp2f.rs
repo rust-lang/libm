@@ -76,6 +76,9 @@ static EXP2FT: [u64; TBLSIZE] = [
 
 use core::f32;
 
+/// Exponential, base 2 (f32)
+///
+/// Calculate `2^x`, that is, 2 raised to the power `x`.
 #[inline]
 pub fn exp2f(mut x: f32) -> f32 {
     llvm_intrinsically_optimized! {

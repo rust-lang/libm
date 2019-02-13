@@ -13,8 +13,8 @@
  * ====================================================
  */
 
-use crate::math::fabsf;
 use crate::math::consts::*;
+use crate::math::fabsf;
 
 const ONE: f32 = 1.; /* 0x_3f80_0000 */
 const PIO4: f32 = 7.853_981_256_5_e-01; /* 0x_3f49_0fda */

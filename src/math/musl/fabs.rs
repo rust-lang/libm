@@ -1,7 +1,10 @@
-use core::u64;
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
+use core::u64;
 
+/// Absolute value (magnitude) (f64)
+/// Calculates the absolute value (magnitude) of the argument `x`,
+/// by direct manipulation of the bit representation of `x`.
 #[inline]
 pub fn fabs(x: f64) -> f64 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized

@@ -1,6 +1,6 @@
-use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
 use crate::math::consts::*;
+use core::f32;
 
 #[inline]
 pub fn sinf(x: f32) -> f32 {

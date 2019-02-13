@@ -23,16 +23,15 @@ Gamma(x)*Gamma(-x) = -pi/(x sin(pi x))
 most ideas and constants are from boost and python
 */
 
-use core::f64;
 use crate::math::consts::*;
+use core::f64;
 
 use super::{exp, floor, k_cos, k_sin, pow};
 
 const PI: f64 = 3.141_592_653_589_793_238_462_643_383_279_502_884;
 
 /* sin(pi x) with x > 0x1p-100, if sin(pi*x)==0 the sign is arbitrary */
-fn sinpi(mut x: f64) -> f64
-{
+fn sinpi(mut x: f64) -> f64 {
     let mut n: isize;
 
     /* argument reduction: x = |x| mod 2 */
@@ -42,22 +41,22 @@ fn sinpi(mut x: f64) -> f64
 
     /* reduce x into [-.25,.25] */
     n = (4. * x) as isize;
-    n = (n+1)/2;
+    n = (n + 1) / 2;
     x -= (n as f64) * 0.5;
 
     x *= PI;
     match n {
-        1   => k_cos(x, 0.),
-        2   => k_sin(-x, 0., 0),
-        3   => -k_cos(x, 0.),
-        0|_ => k_sin(x, 0., 0),
+        1 => k_cos(x, 0.),
+        2 => k_sin(-x, 0., 0),
+        3 => -k_cos(x, 0.),
+        0 | _ => k_sin(x, 0., 0),
     }
 }
 
 const N: usize = 12;
 //static const double g = 6.024_680_040_776_729_583_740_234_375;
 const GMHALF: f64 = 5.524_680_040_776_729_583_740_234_375;
-const SNUM: [f64; N+1] = [
+const SNUM: [f64; N + 1] = [
     23_531_376_880.410_759_688_572_007_674_451_636_754_734_846_804_940,
     42_919_803_642.649_098_768_957_899_047_001_988_850_926_355_848_959,
     35_711_959_237.355_668_049_440_185_451_547_166_705_960_488_635_843,
@@ -72,21 +71,50 @@ const SNUM: [f64; N+1] = [
     210.824_277_751_579_345_872_509_733_920_713_362_711_669_695_802_91,
     2.506_628_274_631_000_270_164_908_177_133_837_338_626_431_079_340_8,
 ];
-const SDEN: [f64; N+1] = [
-    0., 39_916_800., 120_543_840., 150_917_976., 105_258_076.,
-    45_995_730., 13_339_535., 2_637_558., 357_423., 32_670., 1_925., 66., 1.,
+const SDEN: [f64; N + 1] = [
+    0.,
+    39_916_800.,
+    120_543_840.,
+    150_917_976.,
+    105_258_076.,
+    45_995_730.,
+    13_339_535.,
+    2_637_558.,
+    357_423.,
+    32_670.,
+    1_925.,
+    66.,
+    1.,
 ];
 /* n! for small integer n */
 const FACT: [f64; 23] = [
-    1., 1., 2., 6., 24., 120., 720., 5040., 40_320., 362_880., 3_628_800.,
-    39_916_800., 479_001_600., 6_227_020_800., 87_178_291_200., 1_307_674_368_000.,
-    20_922_789_888_000., 355_687_428_096_000., 6_402_373_705_728_000., 121_645_100_408_832_000.,
-    2_432_902_008_176_640_000., 51_090_942_171_709_440_000., 1_124_000_727_777_607_680_000.,
+    1.,
+    1.,
+    2.,
+    6.,
+    24.,
+    120.,
+    720.,
+    5040.,
+    40_320.,
+    362_880.,
+    3_628_800.,
+    39_916_800.,
+    479_001_600.,
+    6_227_020_800.,
+    87_178_291_200.,
+    1_307_674_368_000.,
+    20_922_789_888_000.,
+    355_687_428_096_000.,
+    6_402_373_705_728_000.,
+    121_645_100_408_832_000.,
+    2_432_902_008_176_640_000.,
+    51_090_942_171_709_440_000.,
+    1_124_000_727_777_607_680_000.,
 ];
 
 /* S(x) rational function for positive x */
-fn s(x: f64) -> f64
-{
+fn s(x: f64) -> f64 {
     let mut num: f64 = 0.;
     let mut den: f64 = 0.;
 
@@ -102,11 +130,10 @@ fn s(x: f64) -> f64
             den = den / x + SDEN[i];
         }
     }
-    num/den
+    num / den
 }
 
-pub fn tgamma(mut x: f64) -> f64
-{
+pub fn tgamma(mut x: f64) -> f64 {
     let u: u64 = x.to_bits();
     let absx: f64;
     let y: f64;
@@ -114,16 +141,16 @@ pub fn tgamma(mut x: f64) -> f64
     let mut z: f64;
     let mut r: f64;
     let ix: u32 = ((u >> 32) as u32) & UF_ABS;
-    let sign: bool = (u>>63) != 0;
+    let sign: bool = (u >> 63) != 0;
 
     /* special cases */
     if ix >= 0x_7ff0_0000 {
         /* tgamma(nan)=nan, tgamma(inf)=inf, tgamma(-inf)=nan with invalid */
         return x + f64::INFINITY;
     }
-    if ix < ((0x3ff-54)<<20) {
+    if ix < ((0x3ff - 54) << 20) {
         /* |x| < 2^-54: tgamma(x) ~ 1/x, +-0 raises div-by-zero */
-        return 1./x;
+        return 1. / x;
     }
 
     /* integer arguments */
@@ -139,10 +166,11 @@ pub fn tgamma(mut x: f64) -> f64
 
     /* x >= 172: tgamma(x)=inf with overflow */
     /* x =< -184: tgamma(x)=+-0 with underflow */
-    if ix >= 0x_4067_0000 { /* |x| >= 184 */
+    if ix >= 0x_4067_0000 {
+        /* |x| >= 184 */
         if sign {
             let x1p_126 = f64::from_bits(0x_3810_0000_0000_0000); // 0x1p-126 == 2^-126
-            force_eval!((x1p_126/x) as f32);
+            force_eval!((x1p_126 / x) as f32);
             if floor(x) * 0.5 == floor(x * 0.5) {
                 return 0.;
             } else {
@@ -175,7 +203,7 @@ pub fn tgamma(mut x: f64) -> f64
         dy = -dy;
         z = -z;
     }
-    r += dy * (GMHALF+0.5) * r / y;
-    z = pow(y, 0.5*z);
+    r += dy * (GMHALF + 0.5) * r / y;
+    z = pow(y, 0.5 * z);
     r * z * z
 }

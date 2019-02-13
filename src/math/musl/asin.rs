@@ -39,10 +39,10 @@
  *
  */
 
-use core::f64;
 use super::{fabs, sqrt};
-use crate::math::{get_high_word, get_low_word, with_set_low_word};
 use crate::math::consts::*;
+use crate::math::{get_high_word, get_low_word, with_set_low_word};
+use core::f64;
 
 const PIO2_HI: f64 = f64::consts::FRAC_PI_2; /* 0x_3FF9_21FB, 0x_5444_2D18 */
 const PIO2_LO: f64 = 6.123_233_995_736_766_035_87_e-17; /* 0x_3C91_A626, 0x_3314_5C07 */
@@ -65,6 +65,11 @@ fn comp_r(z: f64) -> f64 {
     p / q
 }
 
+/// Arcsine (f64)
+///
+/// Computes the inverse sine (arc sine) of the argument `x`.
+/// Arguments to asin must be in the range -1 to 1.
+/// Returns values in radians, in the range of -pi/2 to pi/2.
 #[inline]
 pub fn asin(mut x: f64) -> f64 {
     let z: f64;

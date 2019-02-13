@@ -13,9 +13,9 @@
  * ====================================================
  */
 
-use core::f32;
 use crate::math::consts::*;
-use crate::math::{fabsf,sqrtf};
+use crate::math::{fabsf, sqrtf};
+use core::f32;
 
 const ONE: f32 = 1.; /* 0x_3F80_0000 */
 const HUGE: f32 = 1_e+30;

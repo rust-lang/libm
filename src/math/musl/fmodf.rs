@@ -1,7 +1,12 @@
+use crate::math::consts::*;
 use core::f32;
 use core::u32;
-use crate::math::consts::*;
 
+/// Floating-point remainder (modulo) (f32)
+///
+/// Computes the floating-point remainder of `x/y` (`x` modulo `y`).
+/// Returns the value `x-i*y`, for the largest integer `i` such that,
+/// if `y` is nonzero, the result has the same sign as `x` and magnitude less than the magnitude of `y`.
 #[inline]
 pub fn fmodf(x: f32, y: f32) -> f32 {
     let mut uxi = x.to_bits();

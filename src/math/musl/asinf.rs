@@ -36,6 +36,11 @@ fn r(z: f32) -> f32 {
     p / q
 }
 
+/// Arcsine (f32)
+///
+/// Computes the inverse sine (arc sine) of the argument `x`.
+/// Arguments to asin must be in the range -1 to 1.
+/// Returns values in radians, in the range of -pi/2 to pi/2.
 #[inline]
 pub fn asinf(mut x: f32) -> f32 {
     let x1p_120 = f64::from_bits(0x_3870_0000_0000_0000); // 0x1p-120 === 2 ^ (-120)

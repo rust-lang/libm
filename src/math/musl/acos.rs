@@ -33,9 +33,9 @@
  * Function needed: sqrt
  */
 
-use core::f64;
 use super::sqrt;
 use crate::math::consts::*;
+use core::f64;
 
 const PIO2_HI: f64 = f64::consts::FRAC_PI_2; /* 0x_3FF9_21FB, 0x_5444_2D18 */
 const PIO2_LO: f64 = 6.123_233_995_736_766_035_87_e-17; /* 0x_3C91_A626, 0x_3314_5C07 */
@@ -57,6 +57,11 @@ fn r(z: f64) -> f64 {
     p / q
 }
 
+/// Arccosine (f64)
+///
+/// Computes the inverse cosine (arc cosine) of the input value.
+/// Arguments must be in the range -1 to 1.
+/// Returns values in radians, in the range of 0 to pi.
 #[inline]
 pub fn acos(x: f64) -> f64 {
     let x1p_120f = f64::from_bits(0x_3870_0000_0000_0000); // 0x1p-120 === 2 ^ -120

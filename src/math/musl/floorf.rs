@@ -1,5 +1,8 @@
 use core::f32;
 
+/// Floor (f64)
+///
+/// Finds the nearest integer less than or equal to `x`.
 #[inline]
 pub fn floorf(x: f32) -> f32 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized

@@ -27,6 +27,13 @@ const INV_LN2: f32 = 1.442_695_021_6; /* 0x_3fb8_aa3b */
 const Q1: f32 = -3.333_321_213_7_e-2; /* -0x_88_8868.0p-28 */
 const Q2: f32 = 1.580_717_042_1_e-3; /*  0x_cf_3010.0p-33 */
 
+/// Exponential, base *e*, of x-1 (f32)
+///
+/// Calculates the exponential of `x` and subtract 1, that is, *e* raised
+/// to the power `x` minus 1 (where *e* is the base of the natural
+/// system of logarithms, approximately 2.71828).
+/// The result is accurate even for small values of `x`,
+/// where using `exp(x)-1` would lose many significant digits.
 #[inline]
 pub fn expm1f(mut x: f32) -> f32 {
     let x1p127 = f32::from_bits(0x_7f00_0000); // 0x1p127f === 2 ^ 127

@@ -13,9 +13,9 @@
  * ====================================================
  */
 
-use core::f32;
 use super::{fabsf, scalbnf, sqrtf};
 use crate::math::consts::*;
+use core::f32;
 
 const BP: [f32; 2] = [1., 1.5];
 const DP_H: [f32; 2] = [0., 5.849_609_38_e-01]; /* 0x_3f15_c000 */

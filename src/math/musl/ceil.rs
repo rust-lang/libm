@@ -2,6 +2,9 @@ use core::f64;
 
 const TOINT: f64 = 1. / f64::EPSILON;
 
+/// Ceil (f64)
+///
+/// Finds the nearest integer greater than or equal to `x`.
 #[inline]
 pub fn ceil(x: f64) -> f64 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized

@@ -14,11 +14,11 @@
  *
  */
 
-use core::f32;
 use super::k_rem_pio2f;
 use super::Precision;
-use crate::math::fabsf;
 use crate::math::consts::*;
+use crate::math::fabsf;
+use core::f32;
 
 /* Table of constants for 2/pi, 396 Hex digits (476 decimal) of 2/pi */
 const TWO_OVER_PI: [u8; 198] = [

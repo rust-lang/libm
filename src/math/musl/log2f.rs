@@ -13,8 +13,8 @@
  * See comments in log2.c.
  */
 
-use core::f32;
 use crate::math::consts::*;
+use core::f32;
 
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;

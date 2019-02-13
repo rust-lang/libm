@@ -72,6 +72,10 @@ const LG5: f64 = 1.818_357_216_161_805_012_e-01; /* 3FC74664 96CB03DE */
 const LG6: f64 = 1.531_383_769_920_937_332_e-01; /* 3FC39A09 D078C69F */
 const LG7: f64 = 1.479_819_860_511_658_591_e-01; /* 3FC2F112 DF3E5244 */
 
+/// Natural logarithm (f64)
+///
+/// Returns the natural logarithm of `x`, that is, its logarithm base *e*
+/// (where *e* is the base of the natural system of logarithms, 2.71828…).
 #[inline]
 pub fn log(mut x: f64) -> f64 {
     let x1p54 = f64::from_bits(0x_4350_0000_0000_0000); // 0x1p54 === 2 ^ 54

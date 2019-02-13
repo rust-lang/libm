@@ -1,6 +1,6 @@
-use core::f32;
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
+use core::f32;
 
 #[inline]
 pub fn truncf(x: f32) -> f32 {

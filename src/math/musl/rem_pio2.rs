@@ -10,10 +10,9 @@
 // ====================================================
 //
 // Optimized by Bruce D. Evans. */
-
-use core::f64;
 use super::rem_pio2_large;
 use crate::math::consts::*;
+use core::f64;
 
 // #if FLT_EVAL_METHOD==0 || FLT_EVAL_METHOD==1
 // #define EPS DBL_EPSILON

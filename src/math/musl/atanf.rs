@@ -20,7 +20,7 @@ const ATAN_HI: [f32; 4] = [
     4.636_476_039_9_e-01, /* atan(0.5)hi 0x_3eed_6338 */
     7.853_981_256_5_e-01, /* atan(1.0)hi 0x_3f49_0fda */
     9.827_936_887_7_e-01, /* atan(1.5)hi 0x_3f7b_985e */
-    1.570_796_251_3, /* atan(inf)hi 0x_3fc9_0fda */
+    1.570_796_251_3,      /* atan(inf)hi 0x_3fc9_0fda */
 ];
 
 const ATAN_LO: [f32; 4] = [
@@ -38,6 +38,10 @@ const A_T: [f32; 5] = [
     6.168_760_731_8_e-02,
 ];
 
+/// Arctangent (f32)
+///
+/// Computes the inverse tangent (arc tangent) of the input value.
+/// Returns a value in radians, in the range of -pi/2 to pi/2.
 #[inline]
 pub fn atanf(mut x: f32) -> f32 {
     let x1p_120 = f32::from_bits(0x_0380_0000); // 0x1p-120 === 2 ^ (-120)

@@ -29,6 +29,10 @@ const INV_LN2: f32 = 1.442_695_021_6; /* 0x_3fb8_aa3b */
 const P1: f32 = 1.666_662_544_e-1; /*  0x_aa_aa8f.0p-26 */
 const P2: f32 = -2.766_733_290_6_e-3; /* -0x_b5_5215.0p-32 */
 
+/// Exponential, base *e* (f32)
+///
+/// Calculate the exponential of `x`, that is, *e* raised to the power `x`
+/// (where *e* is the base of the natural system of logarithms, approximately 2.71828).
 #[inline]
 pub fn expf(mut x: f32) -> f32 {
     let x1p127 = f32::from_bits(0x_7f00_0000); // 0x1p127f === 2 ^ 127

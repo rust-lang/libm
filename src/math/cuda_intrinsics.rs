@@ -1,4 +1,4 @@
-extern {
+extern "C" {
     #[link_name = "llvm.nvvm.fabs.d"]
     pub fn abs(v: f64) -> f64;
     #[link_name = "llvm.nvvm.fabs.f"]

@@ -13,12 +13,11 @@
  * ====================================================
  */
 
-use core::f32;
 use super::{fabsf, j0f, j1f, logf, y0f, y1f};
 use crate::math::consts::*;
+use core::f32;
 
-pub fn jnf(n: isize, mut x: f32) -> f32
-{
+pub fn jnf(n: isize, mut x: f32) -> f32 {
     let mut ix: u32;
     let mut nm1: isize;
     let mut sign: bool;
@@ -28,9 +27,10 @@ pub fn jnf(n: isize, mut x: f32) -> f32
     let mut temp: f32;
 
     ix = x.to_bits();
-    sign = (ix>>31) != 0;
+    sign = (ix >> 31) != 0;
     ix &= UF_ABS;
-    if ix > UF_INF { /* nan */
+    if ix > UF_INF {
+        /* nan */
         return x;
     }
 
@@ -39,19 +39,20 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         return j0f(x);
     }
     if n < 0 {
-        nm1 = -(n+1);
+        nm1 = -(n + 1);
         x = -x;
         sign = !sign;
     } else {
-        nm1 = n-1;
+        nm1 = n - 1;
     }
     if nm1 == 0 {
         return j1f(x);
     }
 
-    sign &= (n&1) != 0;  /* even n: 0, odd n: signbit(x) */
+    sign &= (n & 1) != 0; /* even n: 0, odd n: signbit(x) */
     x = fabsf(x);
-    if ix == 0 || ix == UF_INF {  /* if x is 0 or inf */
+    if ix == 0 || ix == UF_INF {
+        /* if x is 0 or inf */
         b = 0.;
     } else if (nm1 as f32) < x {
         /* Safe to use J(n+1,x)=2n/x *J(n,x)-J(n-1,x) */
@@ -61,14 +62,16 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         while i < nm1 {
             i += 1;
             temp = b;
-            b = b*(2.*(i as f32)/x) - a;
+            b = b * (2. * (i as f32) / x) - a;
             a = temp;
         }
-    } else if ix < 0x_3580_0000 { /* x < 2**-20 */
+    } else if ix < 0x_3580_0000 {
+        /* x < 2**-20 */
         /* x is tiny, return the first Taylor expansion of J(n,x)
          * J(n,x) = 1/n!*(x/2)^n  - ...
          */
-        if nm1 > 8 {  /* underflow */
+        if nm1 > 8 {
+            /* underflow */
             nm1 = 8;
         }
         temp = 0.5 * x;
@@ -76,8 +79,8 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         a = 1.;
         i = 2;
         while i <= nm1 + 1 {
-            a *= i as f32;    /* a = n! */
-            b *= temp;        /* b = (x/2)^n */
+            a *= i as f32; /* a = n! */
+            b *= temp; /* b = (x/2)^n */
             i += 1;
         }
         b /= a;
@@ -121,24 +124,24 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         let nf: f32;
         let mut k: isize;
 
-        nf = (nm1 as f32)+1.;
-        w = 2.*(nf as f32)/x;
-        h = 2./x;
-        z = w+h;
+        nf = (nm1 as f32) + 1.;
+        w = 2. * (nf as f32) / x;
+        h = 2. / x;
+        z = w + h;
         q0 = w;
-        q1 = w*z - 1.;
+        q1 = w * z - 1.;
         k = 1;
         while q1 < 1e4 {
             k += 1;
             z += h;
-            tmp = z*q1 - q0;
+            tmp = z * q1 - q0;
             q0 = q1;
             q1 = tmp;
         }
         t = 0.;
         i = k;
         while i >= 0 {
-            t = 1./(2.*((i as f32)+nf)/x-t);
+            t = 1. / (2. * ((i as f32) + nf) / x - t);
             i -= 1;
         }
         a = t;
@@ -151,12 +154,12 @@ pub fn jnf(n: isize, mut x: f32) -> f32
          *  then recurrent value may overflow and the result is
          *  likely underflow to zero
          */
-        tmp = nf*logf(fabsf(w));
+        tmp = nf * logf(fabsf(w));
         if tmp < 88.721_679_688 {
             i = nm1;
             while i > 0 {
                 temp = b;
-                b = 2.*(i as f32)*b/x - a;
+                b = 2. * (i as f32) * b / x - a;
                 a = temp;
                 i -= 1;
             }
@@ -164,7 +167,7 @@ pub fn jnf(n: isize, mut x: f32) -> f32
             i = nm1;
             while i > 0 {
                 temp = b;
-                b = 2.*(i as f32)*b/x - a;
+                b = 2. * (i as f32) * b / x - a;
                 a = temp;
                 /* scale b to avoid spurious overflow */
                 let x1p60 = f32::from_bits(0x_5d80_0000); // 0x1p60 == 2^60
@@ -179,9 +182,9 @@ pub fn jnf(n: isize, mut x: f32) -> f32
         z = j0f(x);
         w = j1f(x);
         if fabsf(z) >= fabsf(w) {
-            b = t*z/b;
+            b = t * z / b;
         } else {
-            b = t*w/a;
+            b = t * w / a;
         }
     }
 
@@ -192,8 +195,7 @@ pub fn jnf(n: isize, mut x: f32) -> f32
     }
 }
 
-pub fn ynf(n: isize, x: f32) -> f32
-{
+pub fn ynf(n: isize, x: f32) -> f32 {
     let mut ix: u32;
     let mut ib: u32;
     let nm1: isize;
@@ -204,12 +206,14 @@ pub fn ynf(n: isize, x: f32) -> f32
     let mut temp: f32;
 
     ix = x.to_bits();
-    sign = (ix>>31) != 0;
+    sign = (ix >> 31) != 0;
     ix &= UF_ABS;
-    if ix > UF_INF { /* nan */
+    if ix > UF_INF {
+        /* nan */
         return x;
     }
-    if sign && ix != 0 { /* x < 0 */
+    if sign && ix != 0 {
+        /* x < 0 */
         return f32::NAN;
     }
     if ix == UF_INF {
@@ -220,10 +224,10 @@ pub fn ynf(n: isize, x: f32) -> f32
         return y0f(x);
     }
     if n < 0 {
-        nm1 = -(n+1);
-        sign = (n&1) != 0;
+        nm1 = -(n + 1);
+        sign = (n & 1) != 0;
     } else {
-        nm1 = n-1;
+        nm1 = n - 1;
         sign = false;
     }
     if nm1 == 0 {
@@ -242,7 +246,7 @@ pub fn ynf(n: isize, x: f32) -> f32
     while i < nm1 && ib != 0x_ff80_0000 {
         i += 1;
         temp = b;
-        b = (2.0*(i as f32)/x)*b - a;
+        b = (2.0 * (i as f32) / x) * b - a;
         ib = b.to_bits();
         a = temp;
     }

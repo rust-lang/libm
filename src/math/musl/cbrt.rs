@@ -15,8 +15,8 @@
  * Return cube root of x
  */
 
-use core::f64;
 use crate::math::consts::*;
+use core::f64;
 
 const B1: u32 = 715_094_163; /* B1 = (1023-1023/3-0.033_062_35651)*2**20 */
 const B2: u32 = 696_219_795; /* B2 = (1023-1023/3-54/3-0.033_062_35651)*2**20 */
@@ -28,6 +28,9 @@ const P2: f64 = 1.621_429_720_105_354_466_140; /* 0x_3ff9_f160, 0x_4a49_d6c2 */
 const P3: f64 = -0.758_397_934_778_766_047_437; /* 0x_bfe8_44cb, 0x_bee7_51d9 */
 const P4: f64 = 0.145_996_192_886_612_446_982; /* 0x_3fc2_b000, 0x_d4e4_edd7 */
 
+/// Cube root (f64)
+///
+/// Computes the cube root of the argument.
 #[inline]
 pub fn cbrt(x: f64) -> f64 {
     let x1p54 = f64::from_bits(0x_4350_0000_0000_0000); // 0x1p54 === 2 ^ 54

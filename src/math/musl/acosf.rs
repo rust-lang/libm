@@ -13,9 +13,9 @@
  * ====================================================
  */
 
-use core::f32;
 use crate::math::consts::*;
 use crate::math::sqrtf;
+use core::f32;
 
 const PIO2_HI: f32 = 1.570_796_251_3_e+00; /* 0x_3fc9_0fda */
 const PIO2_LO: f32 = 7.549_789_415_9_e-08; /* 0x_33a2_2168 */
@@ -33,6 +33,11 @@ fn r(z: f32) -> f32 {
     p / q
 }
 
+/// Arccosine (f32)
+///
+/// Computes the inverse cosine (arc cosine) of the input value.
+/// Arguments must be in the range -1 to 1.
+/// Returns values in radians, in the range of 0 to pi.
 #[inline]
 pub fn acosf(x: f32) -> f32 {
     let x1p_120 = f32::from_bits(0x_0380_0000); // 0x1p-120 === 2 ^ (-120)

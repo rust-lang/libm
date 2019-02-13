@@ -3,6 +3,9 @@ use crate::math::consts::*;
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
 
+/// Absolute value (magnitude) (f32)
+/// Calculates the absolute value (magnitude) of the argument `x`,
+/// by direct manipulation of the bit representation of `x`.
 #[inline]
 pub fn fabsf(x: f32) -> f32 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized

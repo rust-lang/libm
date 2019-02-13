@@ -20,6 +20,11 @@ use crate::math::consts::*;
 const PI: f32 = 3.141_592_741_0; /* 0x_4049_0fdb */
 const PI_LO: f32 = -8.742_277_657_3_e-08; /* 0x_b3bb_bd2e */
 
+/// Arctangent of y/x (f32)
+///
+/// Computes the inverse tangent (arc tangent) of `y/x`.
+/// Produces the correct result even for angles near pi/2 or -pi/2 (that is, when `x` is near 0).
+/// Returns a value in radians, in the range of -pi to pi.
 #[inline]
 pub fn atan2f(y: f32, x: f32) -> f32 {
     if x.is_nan() || y.is_nan() {

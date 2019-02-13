@@ -1,5 +1,8 @@
 use core::f32;
 
+/// Ceil (f32)
+///
+/// Finds the nearest integer greater than or equal to `x`.
 #[inline]
 pub fn ceilf(x: f32) -> f32 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized

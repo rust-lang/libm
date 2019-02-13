@@ -65,9 +65,9 @@
  *          if x < -745.133_219_101_941_108_420 then exp(x) underflows
  */
 
-use core::f64;
 use super::scalbn;
 use crate::math::consts::*;
+use core::f64;
 
 const HALF: [f64; 2] = [0.5, -0.5];
 const LN2HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */
@@ -79,6 +79,10 @@ const P3: f64 = 6.613_756_321_437_934_361_17_e-05; /* 0x_3F11_566A, 0x_AF25_DE2C
 const P4: f64 = -1.653_390_220_546_525_153_90_e-06; /* 0x_BEBB_BD41, 0x_C5D2_6BF1 */
 const P5: f64 = 4.138_136_797_057_238_460_39_e-08; /* 0x_3E66_3769, 0x_72BE_A4D0 */
 
+/// Exponential, base *e* (f64)
+///
+/// Calculate the exponential of `x`, that is, *e* raised to the power `x`
+/// (where *e* is the base of the natural system of logarithms, approximately 2.71828).
 #[inline]
 pub fn exp(mut x: f64) -> f64 {
     let x1p1023 = f64::from_bits(0x_7fe0_0000_0000_0000); // 0x1p1023 === 2 ^ 1023

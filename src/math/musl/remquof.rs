@@ -1,29 +1,28 @@
-use core::f32;
 use crate::math::consts::*;
+use core::f32;
 
-pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
-{
+pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize) {
     let ux: u32 = x.to_bits();
     let mut uy: u32 = y.to_bits();
-    let mut ex = ((ux>>23) & 0xff) as isize;
-    let mut ey = ((uy>>23) & 0xff) as isize;
-    let sx = (ux>>31) != 0;
-    let sy = (uy>>31) != 0;
+    let mut ex = ((ux >> 23) & 0xff) as isize;
+    let mut ey = ((uy >> 23) & 0xff) as isize;
+    let sx = (ux >> 31) != 0;
+    let sy = (uy >> 31) != 0;
     let mut q: u32;
     let mut i: u32;
     let mut uxi: u32 = ux;
 
-    if (uy<<1) == 0 || y.is_nan() || ex == 0xff {
+    if (uy << 1) == 0 || y.is_nan() || ex == 0xff {
         return (f32::NAN, 0);
     }
-    if (ux<<1) == 0 {
+    if (ux << 1) == 0 {
         return (x, 0);
     }
 
     /* normalize x and y */
     if ex == 0 {
-        i = uxi<<9;
-        while (i>>31) == 0 {
+        i = uxi << 9;
+        while (i >> 31) == 0 {
             ex -= 1;
             i <<= 1;
         }
@@ -33,8 +32,8 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
         uxi |= 1 << 23;
     }
     if ey == 0 {
-        i = uy<<9;
-        while (i>>31) == 0 {
+        i = uy << 9;
+        while (i >> 31) == 0 {
             ey -= 1;
             i <<= 1;
         }
@@ -45,14 +44,14 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
     }
 
     q = 0;
-    if ex+1 != ey {
+    if ex + 1 != ey {
         if ex < ey {
             return (x, 0);
         }
         /* x mod y */
         while ex > ey {
             i = uxi - uy;
-            if (i>>31) == 0 {
+            if (i >> 31) == 0 {
                 uxi = i;
                 q += 1;
             }
@@ -61,14 +60,14 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
             ex -= 1;
         }
         i = uxi - uy;
-        if (i>>31) == 0 {
+        if (i >> 31) == 0 {
             uxi = i;
             q += 1;
         }
         if uxi == 0 {
             ex = -30;
         } else {
-            while (uxi>>23) == 0 {
+            while (uxi >> 23) == 0 {
                 uxi <<= 1;
                 ex -= 1;
             }
@@ -86,12 +85,12 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, isize)
     if sy {
         y = -y;
     }
-    if ex == ey || (ex+1 == ey && (2.*x > y || (2.*x == y && (q%2) != 0))) {
+    if ex == ey || (ex + 1 == ey && (2. * x > y || (2. * x == y && (q % 2) != 0))) {
         x -= y;
         q += 1;
     }
     q &= UF_ABS;
-    let quo = if sx^sy { -(q as isize) } else { q as isize };
+    let quo = if sx ^ sy { -(q as isize) } else { q as isize };
     if sx {
         (-x, quo)
     } else {

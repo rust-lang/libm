@@ -322,6 +322,10 @@ static TBL: [u64; TBLSIZE * 2] = [
 //
 //      Gal, S. and Bachelis, B.  An Accurate Elementary Mathematical Library
 //      for the IEEE Floating Point Standard.  TOMS 17(1), 26-46 (1991).
+
+/// Exponential, base 2 (f64)
+///
+/// Calculate `2^x`, that is, 2 raised to the power `x`.
 #[inline]
 pub fn exp2(mut x: f64) -> f64 {
     llvm_intrinsically_optimized! {

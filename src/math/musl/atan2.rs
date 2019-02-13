@@ -39,11 +39,7 @@
 
 use core::f64::{
     self,
-    consts::{
-        PI, /* 0x_4009_21FB, 0x_5444_2D18 */
-        FRAC_PI_2,
-        FRAC_PI_4,
-    },
+    consts::{FRAC_PI_2, FRAC_PI_4, PI /* 0x_4009_21FB, 0x_5444_2D18 */},
 };
 
 const PI_LO: f64 = 1.224_646_799_147_353_177_2_e-16; /* 0x_3CA1_A626, 0x_3314_5C07 */
@@ -51,6 +47,11 @@ const PI_LO: f64 = 1.224_646_799_147_353_177_2_e-16; /* 0x_3CA1_A626, 0x_3314_5C
 use super::{atan, fabs};
 use crate::math::consts::*;
 
+/// Arctangent of y/x (f64)
+///
+/// Computes the inverse tangent (arc tangent) of `y/x`.
+/// Produces the correct result even for angles near pi/2 or -pi/2 (that is, when `x` is near 0).
+/// Returns a value in radians, in the range of -pi to pi.
 #[inline]
 pub fn atan2(y: f64, x: f64) -> f64 {
     if x.is_nan() || y.is_nan() {

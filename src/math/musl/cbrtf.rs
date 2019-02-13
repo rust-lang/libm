@@ -17,12 +17,15 @@
  * Return cube root of x
  */
 
-use core::f32;
 use crate::math::consts::*;
+use core::f32;
 
 const B1: u32 = 709_958_130; /* B1 = (127-127.0/3-0.03306235651)*2**23 */
 const B2: u32 = 642_849_266; /* B2 = (127-127.0/3-24/3-0.03306235651)*2**23 */
 
+/// Cube root (f32)
+///
+/// Computes the cube root of the argument.
 #[inline]
 pub fn cbrtf(x: f32) -> f32 {
     let x1p24 = f32::from_bits(0x_4b80_0000); // 0x1p24f === 2 ^ 24

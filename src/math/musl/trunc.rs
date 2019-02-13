@@ -1,6 +1,6 @@
-use core::f64;
 #[cfg(all(target_os = "cuda", not(feature = "stable")))]
 use super::cuda_intrinsics;
+use core::f64;
 
 #[inline]
 pub fn trunc(x: f64) -> f64 {
