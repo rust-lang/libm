@@ -31,7 +31,7 @@ main() {
     cross test --tests --features checked --target $TARGET --release
 
     # TODO need to fix overflow issues (cf. issue #4)
-    # cross test --target $TARGET
+    cross test --target $TARGET
 }
 
 main
