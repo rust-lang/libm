@@ -6,20 +6,14 @@ macro_rules! f32 {
             fs::create_dir_all("math/src")?;
 
             let main = format!("
-#![feature(int_to_from_bytes)]
-
 #![no_main]
 #![no_std]
 
-#[macro_use]
-extern crate qemu_arm_rt as rt;
+extern crate panic_halt;
+use cortex_m::asm;
+use cortex_m_rt::entry;
 
-use core::u32;
-
-use rt::{{io, process}};
-
-entry!(main);
-
+#[entry]
 fn main() {{
     run().unwrap_or_else(|e| {{
         eprintln!(\"error: {{}}\", e);
@@ -54,19 +48,23 @@ pub fn __errno() -> *mut i32 {{
             File::create("math/src/main.rs")?.write_all(main.as_bytes())?;
 
             assert!(
-                Command::new("cross")
+                Command::new("cargo")
                     .args(&["build", "--target", "thumbv7em-none-eabi", "--release"])
                     .current_dir("math")
                     .status()?
                 .success()
             );
 
-            let mut qemu = Command::new("qemu-arm")
+            let mut qemu = Command::new("qemu-system-arm")
+                .arg("-cpu")
+                .arg("cortex-m3")
+                .arg("-nographic")
+                .arg("-kernel")
                 .arg("math/target/thumbv7em-none-eabi/release/math")
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
                 .spawn()
-                .map_err(|_| "missing qemu-arm!")?;
+                .map_err(|_| "missing qemu-system-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 
@@ -86,20 +84,16 @@ macro_rules! f32f32 {
             fs::create_dir_all("math/src")?;
 
             let main = format!("
-#![feature(int_to_from_bytes)]
-
 #![no_main]
 #![no_std]
 
-#[macro_use]
-extern crate qemu_arm_rt as rt;
-
 use core::u32;
 
-use rt::{{io, process}};
+extern crate panic_halt;
+use cortex_m::asm;
+use cortex_m_rt::entry;
 
-entry!(main);
-
+#[entry]
 fn main() {{
     run().unwrap_or_else(|e| {{
         eprintln!(\"error: {{}}\", e);
@@ -140,19 +134,23 @@ pub fn __errno() -> *mut i32 {{
             File::create("math/src/main.rs")?.write_all(main.as_bytes())?;
 
             assert!(
-                Command::new("cross")
+                Command::new("cargo")
                     .args(&["build", "--target", "thumbv7em-none-eabi", "--release"])
                     .current_dir("math")
                     .status()?
                 .success()
             );
 
-            let mut qemu = Command::new("qemu-arm")
+            let mut qemu = Command::new("qemu-system-arm")
+                .arg("-cpu")
+                .arg("cortex-m3")
+                .arg("-nographic")
+                .arg("-kernel")
                 .arg("math/target/thumbv7em-none-eabi/release/math")
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
                 .spawn()
-                .map_err(|_| "missing qemu-arm!")?;
+                .map_err(|_| "missing qemu-system-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 
@@ -172,20 +170,15 @@ macro_rules! f32f32f32 {
             fs::create_dir_all("math/src")?;
 
             let main = format!("
-#![feature(int_to_from_bytes)]
-
 #![no_main]
 #![no_std]
 
-#[macro_use]
-extern crate qemu_arm_rt as rt;
-
 use core::u32;
+extern crate panic_halt;
+use cortex_m::asm;
+use cortex_m_rt::entry;
 
-use rt::{{io, process}};
-
-entry!(main);
-
+#[entry]
 fn main() {{
     run().unwrap_or_else(|e| {{
         eprintln!(\"error: {{}}\", e);
@@ -229,19 +222,23 @@ pub fn __errno() -> *mut i32 {{
             File::create("math/src/main.rs")?.write_all(main.as_bytes())?;
 
             assert!(
-                Command::new("cross")
+                Command::new("cargo")
                     .args(&["build", "--target", "thumbv7em-none-eabi", "--release"])
                     .current_dir("math")
                     .status()?
                 .success()
             );
 
-            let mut qemu = Command::new("qemu-arm")
+            let mut qemu = Command::new("qemu-system-arm")
+                .arg("-cpu")
+                .arg("cortex-m3")
+                .arg("-nographic")
+                .arg("-kernel")
                 .arg("math/target/thumbv7em-none-eabi/release/math")
                 .stdin(Stdio::piped())
                 .stdout(Stdio::piped())
                 .spawn()
-                .map_err(|_| "missing qemu-arm!")?;
+                .map_err(|_| "missing qemu-system-arm!")?;
 
             qemu.stdin.as_mut().take().unwrap().write_all(F32)?;
 

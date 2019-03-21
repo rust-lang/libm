@@ -2,6 +2,11 @@ language: rust
 services: docker
 sudo: required
 
+addons:
+  apt:
+    packages:
+      - qemu-system-arm
+
 matrix:
   include:
     - env: TARGET=aarch64-unknown-linux-gnu

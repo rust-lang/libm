@@ -2,6 +2,11 @@
 name = "newlib-generator"
 version = "0.1.0"
 authors = ["Jorge Aparicio <jorge@japaric.io>"]
+edition = "2018"
 
 [dependencies]
 shared = { path = "../shared" }
+cortex-m = "0.5.8"
+cortex-m-rt = "0.6.5"
+cortex-m-semihosting = "0.3.2"
+panic-halt = "0.2.0"
