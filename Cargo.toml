@@ -26,3 +26,4 @@ members = [
 
 [dev-dependencies]
 shared = { path = "shared" }
+libc = { version = "0.2.14", default-features = false }

@@ -5,3 +5,4 @@ authors = ["Jorge Aparicio <jorge@japaric.io>"]
 
 [dependencies]
 shared = { path = "../shared" }
+libm = { path = ".." }

@@ -2,7 +2,13 @@
 name = "math"
 version = "0.0.0"
 
+[build-dependencies]
+cc = "1.0.18"
+
 [dependencies]
-qemu-arm-rt = { git = "https://github.com/japaric/qemu-arm-rt" }
+cortex-m = "0.6.0"
+cortex-m-rt = "0.6.8"
+cortex-m-semihosting = "0.3.2"
+panic-halt = "0.2.0"
 
 [workspace]
