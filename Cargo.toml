@@ -12,8 +12,9 @@ edition = "2018"
 
 [features]
 # only used to run our test suite
-default = ['stable']
+default = ['stable', 'musl']
 stable = []
+musl = []
 
 # Generate tests which are random inputs and the outputs are calculated with
 # musl libc.

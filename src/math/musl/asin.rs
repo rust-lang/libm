@@ -39,7 +39,8 @@
  *
  */
 
-use super::{fabs, get_high_word, get_low_word, sqrt, with_set_low_word};
+use crate::math::{get_high_word, get_low_word, with_set_low_word};
+use super::{fabs, sqrt};
 
 const PIO2_HI: f64 = 1.57079632679489655800e+00; /* 0x3FF921FB, 0x54442D18 */
 const PIO2_LO: f64 = 6.12323399573676603587e-17; /* 0x3C91A626, 0x33145C07 */

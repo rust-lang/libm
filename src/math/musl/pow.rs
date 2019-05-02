@@ -57,7 +57,8 @@
 // compiler will convert from decimal to binary accurately enough
 // to produce the hexadecimal values shown.
 //
-use super::{fabs, get_high_word, scalbn, sqrt, with_set_high_word, with_set_low_word};
+use crate::math::{get_high_word, with_set_high_word, with_set_low_word};
+use super::{fabs, scalbn, sqrt};
 
 const BP: [f64; 2] = [1.0, 1.5];
 const DP_H: [f64; 2] = [0.0, 5.84962487220764160156e-01]; /* 0x3fe2b803_40000000 */
