@@ -63,7 +63,7 @@ mod musl_reference_tests {
     }
 
     pub fn generate() {
-        let files = fs::read_dir("src/math")
+        let files = fs::read_dir("src/math/musl")
             .unwrap()
             .map(|f| f.unwrap().path())
             .collect::<Vec<_>>();
