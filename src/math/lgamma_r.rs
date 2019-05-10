@@ -78,8 +78,8 @@
  *
  */
 
+use super::consts::*;
 use super::{floor, k_cos, k_sin, log};
-use crate::math::consts::*;
 use core::f64;
 
 const PI: f64 = f64::consts::PI; /* 0x_4009_21FB, 0x_5444_2D18 */

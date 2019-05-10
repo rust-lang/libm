@@ -10,7 +10,7 @@
  * ====================================================
  */
 
-use crate::math::consts::*;
+use super::consts::*;
 use core::f64;
 
 const O_THRESHOLD: f64 = 7.097_827_128_933_839_730_96_e+02; /* 0x_4086_2E42, 0x_FEFA_39EF */

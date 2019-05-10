@@ -10,8 +10,8 @@
 // ====================================================
 //
 // Optimized by Bruce D. Evans. */
+use super::consts::*;
 use super::rem_pio2_large;
-use crate::math::consts::*;
 use core::f64;
 
 // #if FLT_EVAL_METHOD==0 || FLT_EVAL_METHOD==1

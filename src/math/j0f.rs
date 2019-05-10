@@ -13,7 +13,7 @@
  * ====================================================
  */
 
-use crate::math::consts::*;
+use super::consts::*;
 
 use super::{cosf, fabsf, logf, sinf, sqrtf};
 use core::f32;

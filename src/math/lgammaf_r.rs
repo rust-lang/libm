@@ -13,8 +13,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{floorf, k_cosf, k_sinf, logf};
-use crate::math::consts::*;
 use core::f32;
 
 const PI: f32 = 3.141_592_741; /* 0x_4049_0fdb */

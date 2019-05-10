@@ -14,8 +14,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{k_tanf, rem_pio2f};
-use crate::math::consts::*;
 
 use core::f32;
 use core::f64::consts::FRAC_PI_2;

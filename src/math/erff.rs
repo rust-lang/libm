@@ -13,8 +13,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{expf, fabsf};
-use crate::math::consts::*;
 
 const ERX: f32 = 8.450_629_115_1_e-01; /* 0x_3f58_560b */
 /*

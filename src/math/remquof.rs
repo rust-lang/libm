@@ -1,4 +1,4 @@
-use crate::math::consts::*;
+use super::consts::*;
 use core::f32;
 
 pub fn remquof(mut x: f32, mut y: f32) -> (f32, i32) {

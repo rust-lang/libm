@@ -1,4 +1,4 @@
-use crate::math::consts::*;
+use super::consts::*;
 
 /// Absolute value (magnitude) (f32)
 /// Calculates the absolute value (magnitude) of the argument `x`,

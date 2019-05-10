@@ -1,4 +1,4 @@
-use crate::math::consts::*;
+use super::consts::*;
 
 /// Sign of Y, magnitude of X (f32)
 ///

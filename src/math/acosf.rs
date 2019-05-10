@@ -13,8 +13,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::sqrtf::sqrtf;
-use crate::math::consts::*;
 use core::f32;
 
 const PIO2_HI: f32 = 1.570_796_251_3_e+00; /* 0x_3fc9_0fda */

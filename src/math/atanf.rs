@@ -13,8 +13,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::fabsf;
-use crate::math::consts::*;
 
 const ATAN_HI: [f32; 4] = [
     4.636_476_039_9_e-01, /* atan(0.5)hi 0x_3eed_6338 */

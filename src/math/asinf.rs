@@ -13,8 +13,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{fabsf, sqrt};
-use crate::math::consts::*;
 use core::f32;
 use core::f64;
 

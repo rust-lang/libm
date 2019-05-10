@@ -13,7 +13,7 @@
  * See comments in log2.c.
  */
 
-use crate::math::consts::*;
+use super::consts::*;
 use core::f32;
 
 const IVLN2HI: f32 = 1.442_871_093_8; /* 0x_3fb8_b000 */

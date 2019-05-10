@@ -1,4 +1,4 @@
-use crate::math::consts::*;
+use super::consts::*;
 use core::f64;
 
 pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {

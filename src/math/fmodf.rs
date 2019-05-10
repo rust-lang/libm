@@ -1,4 +1,4 @@
-use crate::math::consts::*;
+use super::consts::*;
 use core::f32;
 use core::u32;
 

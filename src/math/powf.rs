@@ -13,8 +13,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{fabsf, scalbnf, sqrtf};
-use crate::math::consts::*;
 use core::f32;
 
 pub const IF_1: i32 = UF_1 as i32;

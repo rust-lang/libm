@@ -65,8 +65,8 @@
  *          if x < -745.133219101941108420 then exp(x) underflows
  */
 
+use super::consts::*;
 use super::scalbn;
-use crate::math::consts::*;
 use core::f64;
 
 const HALF: [f64; 2] = [0.5, -0.5];

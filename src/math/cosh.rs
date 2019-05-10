@@ -1,7 +1,7 @@
+use super::consts::*;
 use super::exp;
 use super::expm1;
 use super::k_expo2;
-use crate::math::consts::*;
 
 /// Hyperbolic cosine (f64)
 ///

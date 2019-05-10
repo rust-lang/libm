@@ -1,5 +1,5 @@
+use super::consts::*;
 use super::{log1pf, logf, sqrtf};
-use crate::math::consts::*;
 
 const LN2: f32 = 0.693_147_180_559_945_309_417_232_121_458_176_568;
 

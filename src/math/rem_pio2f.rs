@@ -14,8 +14,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::rem_pio2_large;
-use crate::math::consts::*;
 
 use core::f64;
 

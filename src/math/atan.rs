@@ -29,8 +29,8 @@
  * to produce the hexadecimal values shown.
  */
 
+use super::consts::*;
 use super::fabs;
-use crate::math::consts::*;
 use core::f64;
 
 const ATANHI: [f64; 4] = [

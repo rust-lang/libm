@@ -14,8 +14,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{k_cosf, k_sinf, rem_pio2f};
-use crate::math::consts::*;
 use core::f32;
 
 /* Small multiples of pi/2 rounded to double precision. */

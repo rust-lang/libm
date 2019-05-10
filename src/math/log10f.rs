@@ -13,7 +13,7 @@
  * See comments in log10.c.
  */
 
-use crate::math::consts::*;
+use super::consts::*;
 use core::f32;
 
 const IVLN10HI: f32 = 4.343_261_718_8_e-01; /* 0x_3ede_6000 */

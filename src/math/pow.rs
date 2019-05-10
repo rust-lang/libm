@@ -57,8 +57,8 @@
 // compiler will convert from decimal to binary accurately enough
 // to produce the hexadecimal values shown.
 
+use super::consts::*;
 use super::{fabs, get_high_word, scalbn, sqrt, with_set_high_word, with_set_low_word};
-use crate::math::consts::*;
 use core::f64;
 
 pub const IF_ABS: i32 = UF_ABS as i32;

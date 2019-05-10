@@ -17,7 +17,7 @@
  * Return cube root of x
  */
 
-use crate::math::consts::*;
+use super::consts::*;
 use core::f32;
 
 const B1: u32 = 709_958_130; /* B1 = (127-127.0/3-0.03306235651)*2**23 */

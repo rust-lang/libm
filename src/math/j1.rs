@@ -54,8 +54,8 @@
  *         by method mentioned above.
  */
 
+use super::consts::*;
 use super::{cos, fabs, get_high_word, get_low_word, log, sin, sqrt};
-use crate::math::consts::*;
 use core::f64;
 
 const INVSQRTPI: f64 = 5.641_895_835_477_562_792_80_e-01; /* 0x_3FE2_0DD7, 0x_5042_9B6D */

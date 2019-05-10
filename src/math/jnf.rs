@@ -13,8 +13,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{fabsf, j0f, j1f, logf, y0f, y1f};
-use crate::math::consts::*;
 use core::f32;
 
 pub fn jnf(n: i32, mut x: f32) -> f32 {

@@ -76,7 +76,7 @@
  *      sqrt(NaN) = NaN         ... with invalid signal for signaling NaN
  */
 
-use crate::math::consts::*;
+use super::consts::*;
 use core::f64;
 use core::num::Wrapping;
 

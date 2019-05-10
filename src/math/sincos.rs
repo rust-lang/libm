@@ -10,8 +10,8 @@
  * ====================================================
  */
 
+use super::consts::*;
 use super::{get_high_word, k_cos, k_sin, rem_pio2};
-use crate::math::consts::*;
 use core::f64;
 
 pub fn sincos(x: f64) -> (f64, f64) {

@@ -15,7 +15,7 @@
 
 use core::f32;
 const TINY: f32 = 1_e-30;
-use crate::math::consts::*;
+use super::consts::*;
 
 pub const IF_MIN: i32 = UF_MIN as i32;
 

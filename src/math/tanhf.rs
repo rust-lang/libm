@@ -1,5 +1,5 @@
+use super::consts::*;
 use super::expm1f;
-use crate::math::consts::*;
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]

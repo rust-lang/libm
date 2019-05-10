@@ -41,7 +41,7 @@
 //              tan(x) = tan(pi/4-y) = (1-tan(y))/(1+tan(y))
 //                     = 1 - 2*(tan(y) - (tan(y)^2)/(1+tan(y)))
 
-use crate::math::consts::*;
+use super::consts::*;
 
 static T: [f64; 13] = [
     3.333_333_333_333_340_919_86_e-01,  /* 3FD55555, 55555563 */

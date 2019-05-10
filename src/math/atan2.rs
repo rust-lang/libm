@@ -37,8 +37,8 @@
  * to produce the hexadecimal values shown.
  */
 
+use super::consts::*;
 use super::{atan, fabs};
-use crate::math::consts::*;
 use core::f64::{
     self,
     consts::{FRAC_PI_2, FRAC_PI_4, PI}, /* 0x_4009_21FB, 0x_5444_2D18 */

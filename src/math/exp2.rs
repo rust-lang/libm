@@ -24,8 +24,8 @@
 // OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
+use super::consts::*;
 use super::scalbn;
-use crate::math::consts::*;
 
 const TBLSIZE: usize = 256;
 

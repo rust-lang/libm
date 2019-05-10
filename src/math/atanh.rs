@@ -1,5 +1,5 @@
+use super::consts::*;
 use super::log1p;
-use crate::math::consts::*;
 
 /* atanh(x) = log((1+x)/(1-x))/2 = log1p(2x/(1-x))/2 ~= x + x^3/3 + o(x^5) */
 /// Inverse hyperbolic tangent (f64)

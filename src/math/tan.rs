@@ -9,8 +9,8 @@
 // is preserved.
 // ====================================================
 
+use super::consts::*;
 use super::{k_tan, rem_pio2};
-use crate::math::consts::*;
 use core::f64;
 
 // tan(x)

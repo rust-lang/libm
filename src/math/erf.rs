@@ -104,7 +104,7 @@ use super::{exp, fabs, get_high_word, with_set_low_word};
  *              erfc/erf(NaN) is NaN
  */
 
-use crate::math::consts::*;
+use super::consts::*;
 
 const ERX: f64 = 8.450_629_115_104_675_292_97_e-01; /* 0x_3FEB_0AC1, 0x_6000_0000 */
 /*
