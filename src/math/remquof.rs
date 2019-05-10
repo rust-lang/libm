@@ -1,3 +1,6 @@
+use crate::math::consts::*;
+use core::f32;
+
 pub fn remquof(mut x: f32, mut y: f32) -> (f32, i32) {
     let ux: u32 = x.to_bits();
     let mut uy: u32 = y.to_bits();
@@ -82,11 +85,11 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, i32) {
     if sy {
         y = -y;
     }
-    if ex == ey || (ex + 1 == ey && (2.0 * x > y || (2.0 * x == y && (q % 2) != 0))) {
+    if ex == ey || (ex + 1 == ey && (2. * x > y || (2. * x == y && (q % 2) != 0))) {
         x -= y;
         q += 1;
     }
-    q &= 0x7fffffff;
+    q &= UF_ABS;
     let quo = if sx ^ sy { -(q as i32) } else { q as i32 };
     if sx {
         (-x, quo)

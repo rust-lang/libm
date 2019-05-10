@@ -2,11 +2,15 @@ use core::f32;
 
 use super::sqrtf;
 
+/// Distance from origin (f64)
+///
+/// Calculates the Euclidean distance `sqrt(x*x + y*y)` between the origin (0,0)
+/// and a point represented by the Cartesian coordinates (`x`,`y`).
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn hypotf(mut x: f32, mut y: f32) -> f32 {
-    let x1p90 = f32::from_bits(0x6c800000); // 0x1p90f === 2 ^ 90
-    let x1p_90 = f32::from_bits(0x12800000); // 0x1p-90f === 2 ^ -90
+    let x1p90 = f32::from_bits(0x_6c80_0000); // 0x1p90f === 2 ^ 90
+    let x1p_90 = f32::from_bits(0x_1280_0000); // 0x1p-90f === 2 ^ -90
 
     let mut uxi = x.to_bits();
     let mut uyi = y.to_bits();

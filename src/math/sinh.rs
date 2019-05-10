@@ -29,22 +29,22 @@ pub fn sinh(x: f64) -> f64 {
     w = (ui >> 32) as u32;
 
     /* |x| < log(DBL_MAX) */
-    if w < 0x40862e42 {
+    if w < 0x_4086_2e42 {
         t = expm1(absx);
-        if w < 0x3ff00000 {
-            if w < 0x3ff00000 - (26 << 20) {
+        if w < 0x_3ff0_0000 {
+            if w < 0x_3ff0_0000 - (26 << 20) {
                 /* note: inexact and underflow are raised by expm1 */
                 /* note: this branch avoids spurious underflow */
                 return x;
             }
-            return h * (2.0 * t - t * t / (t + 1.0));
+            return h * (2. * t - t * t / (t + 1.));
         }
         /* note: |x|>log(0x1p26)+eps could be just h*exp(x) */
-        return h * (t + t / (t + 1.0));
+        return h * (t + t / (t + 1.));
     }
 
     /* |x| > log(DBL_MAX) or nan */
     /* note: the result is stored to handle overflow */
-    t = 2.0 * h * expo2(absx);
+    t = 2. * h * expo2(absx);
     t
 }

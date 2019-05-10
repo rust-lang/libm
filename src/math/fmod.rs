@@ -1,5 +1,11 @@
+use core::f64;
 use core::u64;
 
+/// Floating-point remainder (modulo) (f64)
+///
+/// Computes the floating-point remainder of `x/y` (`x` modulo `y`).
+/// Returns the value `x-i*y`, for the largest integer `i` such that,
+/// if `y` is nonzero, the result has the same sign as `x` and magnitude less than the magnitude of `y`.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fmod(x: f64, y: f64) -> f64 {
@@ -15,7 +21,7 @@ pub fn fmod(x: f64, y: f64) -> f64 {
     }
     if uxi << 1 <= uyi << 1 {
         if uxi << 1 == uyi << 1 {
-            return 0.0 * x;
+            return 0. * x;
         }
         return x;
     }
@@ -49,7 +55,7 @@ pub fn fmod(x: f64, y: f64) -> f64 {
         i = uxi.wrapping_sub(uyi);
         if i >> 63 == 0 {
             if i == 0 {
-                return 0.0 * x;
+                return 0. * x;
             }
             uxi = i;
         }
@@ -59,7 +65,7 @@ pub fn fmod(x: f64, y: f64) -> f64 {
     i = uxi.wrapping_sub(uyi);
     if i >> 63 == 0 {
         if i == 0 {
-            return 0.0 * x;
+            return 0. * x;
         }
         uxi = i;
     }

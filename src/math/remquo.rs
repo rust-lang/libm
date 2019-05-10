@@ -1,3 +1,6 @@
+use crate::math::consts::*;
+use core::f64;
+
 pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
     let ux: u64 = x.to_bits();
     let mut uy: u64 = y.to_bits();
@@ -83,11 +86,11 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
     if sy {
         y = -y;
     }
-    if ex == ey || (ex + 1 == ey && (2.0 * x > y || (2.0 * x == y && (q % 2) != 0))) {
+    if ex == ey || (ex + 1 == ey && (2. * x > y || (2. * x == y && (q % 2) != 0))) {
         x -= y;
         q += 1;
     }
-    q &= 0x7fffffff;
+    q &= UF_ABS;
     let quo = if sx ^ sy { -(q as i32) } else { q as i32 };
     if sx {
         (-x, quo)

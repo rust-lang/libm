@@ -69,6 +69,8 @@ macro_rules! llvm_intrinsically_optimized {
     };
 }
 
+mod consts;
+
 // Public modules
 mod acos;
 mod acosf;
@@ -168,110 +170,113 @@ mod trunc;
 mod truncf;
 
 // Use separated imports instead of {}-grouped imports for easier merging.
-pub use self::acos::acos;
-pub use self::acosf::acosf;
-pub use self::acosh::acosh;
-pub use self::acoshf::acoshf;
-pub use self::asin::asin;
-pub use self::asinf::asinf;
-pub use self::asinh::asinh;
-pub use self::asinhf::asinhf;
-pub use self::atan::atan;
-pub use self::atan2::atan2;
-pub use self::atan2f::atan2f;
-pub use self::atanf::atanf;
-pub use self::atanh::atanh;
-pub use self::atanhf::atanhf;
-pub use self::cbrt::cbrt;
-pub use self::cbrtf::cbrtf;
-pub use self::ceil::ceil;
-pub use self::ceilf::ceilf;
-pub use self::copysign::copysign;
-pub use self::copysignf::copysignf;
-pub use self::cos::cos;
-pub use self::cosf::cosf;
-pub use self::cosh::cosh;
-pub use self::coshf::coshf;
-pub use self::erf::erf;
-pub use self::erf::erfc;
-pub use self::erff::erfcf;
-pub use self::erff::erff;
-pub use self::exp::exp;
-pub use self::exp10::exp10;
-pub use self::exp10f::exp10f;
-pub use self::exp2::exp2;
-pub use self::exp2f::exp2f;
-pub use self::expf::expf;
-pub use self::expm1::expm1;
-pub use self::expm1f::expm1f;
-pub use self::fabs::fabs;
-pub use self::fabsf::fabsf;
-pub use self::fdim::fdim;
-pub use self::fdimf::fdimf;
-pub use self::floor::floor;
-pub use self::floorf::floorf;
-pub use self::fma::fma;
-pub use self::fmaf::fmaf;
-pub use self::fmod::fmod;
-pub use self::fmodf::fmodf;
-pub use self::frexp::frexp;
-pub use self::frexpf::frexpf;
-pub use self::hypot::hypot;
-pub use self::hypotf::hypotf;
-pub use self::ilogb::ilogb;
-pub use self::ilogbf::ilogbf;
-pub use self::j0::j0;
-pub use self::j0::y0;
-pub use self::j0f::j0f;
-pub use self::j0f::y0f;
-pub use self::j1::j1;
-pub use self::j1::y1;
-pub use self::j1f::j1f;
-pub use self::j1f::y1f;
-pub use self::jn::jn;
-pub use self::jn::yn;
-pub use self::jnf::jnf;
-pub use self::jnf::ynf;
-pub use self::ldexp::ldexp;
-pub use self::ldexpf::ldexpf;
-pub use self::lgamma::lgamma;
-pub use self::lgamma_r::lgamma_r;
-pub use self::lgammaf::lgammaf;
-pub use self::lgammaf_r::lgammaf_r;
-pub use self::log::log;
-pub use self::log10::log10;
-pub use self::log10f::log10f;
-pub use self::log1p::log1p;
-pub use self::log1pf::log1pf;
-pub use self::log2::log2;
-pub use self::log2f::log2f;
-pub use self::logf::logf;
-pub use self::modf::modf;
-pub use self::modff::modff;
-pub use self::pow::pow;
-pub use self::powf::powf;
-pub use self::remquo::remquo;
-pub use self::remquof::remquof;
-pub use self::round::round;
-pub use self::roundf::roundf;
-pub use self::scalbn::scalbn;
-pub use self::scalbnf::scalbnf;
-pub use self::sin::sin;
-pub use self::sincos::sincos;
-pub use self::sincosf::sincosf;
-pub use self::sinf::sinf;
-pub use self::sinh::sinh;
-pub use self::sinhf::sinhf;
-pub use self::sqrt::sqrt;
-pub use self::sqrtf::sqrtf;
-pub use self::tan::tan;
-pub use self::tanf::tanf;
-pub use self::tanh::tanh;
-pub use self::tanhf::tanhf;
-pub use self::tgamma::tgamma;
-pub use self::tgammaf::tgammaf;
-pub use self::trunc::trunc;
-pub use self::truncf::truncf;
+#[rustfmt::skip]
+pub use self::{
+    acos::acos,
+    acosf::acosf,
+    acosh::acosh,
+    acoshf::acoshf,
+    asin::asin,
+    asinf::asinf,
+    asinh::asinh,
+    asinhf::asinhf,
+    atan::atan,
+    atan2::atan2,
+    atan2f::atan2f,
+    atanf::atanf,
+    atanh::atanh,
+    atanhf::atanhf,
+    cbrt::cbrt,
+    cbrtf::cbrtf,
+    ceil::ceil,
+    ceilf::ceilf,
+    copysign::copysign,
+    copysignf::copysignf,
+    cos::cos,
+    cosf::cosf,
+    cosh::cosh,
+    coshf::coshf,
+    erf::erf,
+    erf::erfc,
+    erff::erfcf,
+    erff::erff,
+    exp::exp,
+    exp10::exp10,
+    exp10f::exp10f,
+    exp2::exp2,
+    exp2f::exp2f,
+    expf::expf,
+    expm1::expm1,
+    expm1f::expm1f,
+    fabs::fabs,
+    fabsf::fabsf,
+    fdim::fdim,
+    fdimf::fdimf,
+    floor::floor,
+    floorf::floorf,
+    fma::fma,
+    fmaf::fmaf,
+    fmod::fmod,
+    fmodf::fmodf,
+    frexp::frexp,
+    frexpf::frexpf,
+    hypot::hypot,
+    hypotf::hypotf,
+    ilogb::ilogb,
+    ilogbf::ilogbf,
+    j0::j0,
+    j0::y0,
+    j0f::j0f,
+    j0f::y0f,
+    j1::j1,
+    j1::y1,
+    j1f::j1f,
+    j1f::y1f,
+    jn::jn,
+    jn::yn,
+    jnf::jnf,
+    jnf::ynf,
+    ldexp::ldexp,
+    ldexpf::ldexpf,
+    lgamma::lgamma,
+    lgamma_r::lgamma_r,
+    lgammaf::lgammaf,
+    lgammaf_r::lgammaf_r,
+    log::log,
+    log10::log10,
+    log10f::log10f,
+    log1p::log1p,
+    log1pf::log1pf,
+    log2::log2,
+    log2f::log2f,
+    logf::logf,
+    modf::modf,
+    modff::modff,
+    pow::pow,
+    powf::powf,
+    remquo::remquo,
+    remquof::remquof,
+    round::round,
+    roundf::roundf,
+    scalbn::scalbn,
+    scalbnf::scalbnf,
+    sin::sin,
+    sincos::sincos,
+    sincosf::sincosf,
+    sinf::sinf,
+    sinh::sinh,
+    sinhf::sinhf,
+    sqrt::sqrt,
+    sqrtf::sqrtf,
+    tan::tan,
+    tanf::tanf,
+    tanh::tanh,
+    tanhf::tanhf,
+    tgamma::tgamma,
+    tgammaf::tgammaf,
+    trunc::trunc,
+    truncf::truncf,
+};
 
 // Private modules
 mod expo2;
@@ -289,18 +294,21 @@ mod rem_pio2_large;
 mod rem_pio2f;
 
 // Private re-imports
-use self::expo2::expo2;
-use self::k_cos::k_cos;
-use self::k_cosf::k_cosf;
-use self::k_expo2::k_expo2;
-use self::k_expo2f::k_expo2f;
-use self::k_sin::k_sin;
-use self::k_sinf::k_sinf;
-use self::k_tan::k_tan;
-use self::k_tanf::k_tanf;
-use self::rem_pio2::rem_pio2;
-use self::rem_pio2_large::rem_pio2_large;
-use self::rem_pio2f::rem_pio2f;
+#[rustfmt::skip]
+use self::{
+    expo2::expo2,
+    k_cos::k_cos,
+    k_cosf::k_cosf,
+    k_expo2::k_expo2,
+    k_expo2f::k_expo2f,
+    k_sin::k_sin,
+    k_sinf::k_sinf,
+    k_tan::k_tan,
+    k_tanf::k_tanf,
+    rem_pio2::rem_pio2,
+    rem_pio2_large::rem_pio2_large,
+    rem_pio2f::rem_pio2f,
+};
 
 #[inline]
 fn get_high_word(x: f64) -> u32 {

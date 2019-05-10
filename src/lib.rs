@@ -15,6 +15,10 @@
     all(target_arch = "wasm32", not(feature = "stable")),
     feature(core_intrinsics)
 )]
+#![allow(clippy::many_single_char_names)]
+#![allow(clippy::excessive_precision)]
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::float_cmp)]
 
 mod math;
 
@@ -182,8 +186,8 @@ impl F32Ext for f32 {
     #[inline]
     fn div_euc(self, rhs: Self) -> Self {
         let q = (self / rhs).trunc();
-        if self % rhs < 0.0 {
-            return if rhs > 0.0 { q - 1.0 } else { q + 1.0 };
+        if self % rhs < 0. {
+            return if rhs > 0. { q - 1. } else { q + 1. };
         }
         q
     }
@@ -191,7 +195,7 @@ impl F32Ext for f32 {
     #[inline]
     fn mod_euc(self, rhs: f32) -> f32 {
         let r = self % rhs;
-        if r < 0.0 {
+        if r < 0. {
             r + rhs.abs()
         } else {
             r
@@ -456,8 +460,8 @@ impl F64Ext for f64 {
     #[inline]
     fn div_euc(self, rhs: Self) -> Self {
         let q = (self / rhs).trunc();
-        if self % rhs < 0.0 {
-            return if rhs > 0.0 { q - 1.0 } else { q + 1.0 };
+        if self % rhs < 0. {
+            return if rhs > 0. { q - 1. } else { q + 1. };
         }
         q
     }
@@ -465,7 +469,7 @@ impl F64Ext for f64 {
     #[inline]
     fn mod_euc(self, rhs: f64) -> f64 {
         let r = self % rhs;
-        if r < 0.0 {
+        if r < 0. {
             r + rhs.abs()
         } else {
             r

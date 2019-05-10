@@ -2,6 +2,9 @@ use core::f64;
 
 const TOINT: f64 = 1. / f64::EPSILON;
 
+/// Ceil (f64)
+///
+/// Finds the nearest integer greater than or equal to `x`.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn ceil(x: f64) -> f64 {
@@ -27,7 +30,7 @@ pub fn ceil(x: f64) -> f64 {
         x + TOINT - TOINT - x
     };
     // special case because of non-nearest rounding modes
-    if e < 0x3ff {
+    if e <= (0x3ff - 1) {
         force_eval!(y);
         return if (u >> 63) != 0 { -0. } else { 1. };
     }
@@ -42,7 +45,7 @@ pub fn ceil(x: f64) -> f64 {
 mod tests {
     #[test]
     fn sanity_check() {
-        assert_eq!(super::ceil(1.1), 2.0);
-        assert_eq!(super::ceil(2.9), 3.0);
+        assert_eq!(super::ceil(1.1), 2.);
+        assert_eq!(super::ceil(2.9), 3.);
     }
 }

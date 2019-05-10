@@ -1,6 +1,6 @@
 use core::f32;
 
-const TOINT: f32 = 1.0 / f32::EPSILON;
+const TOINT: f32 = 1. / f32::EPSILON;
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
@@ -17,16 +17,16 @@ pub fn roundf(mut x: f32) -> f32 {
     }
     if e < 0x7f - 1 {
         force_eval!(x + TOINT);
-        return 0.0 * x;
+        return 0. * x;
     }
     y = x + TOINT - TOINT - x;
-    if y > 0.5f32 {
-        y = y + x - 1.0;
-    } else if y <= -0.5f32 {
-        y = y + x + 1.0;
+    y += if y > 0.5 {
+        x - 1.
+    } else if y <= -0.5 {
+        x + 1.
     } else {
-        y = y + x;
-    }
+        x
+    };
     if i >> 31 != 0 {
         -y
     } else {

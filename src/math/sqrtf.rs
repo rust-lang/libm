@@ -13,7 +13,11 @@
  * ====================================================
  */
 
-const TINY: f32 = 1.0e-30;
+use core::f32;
+const TINY: f32 = 1_e-30;
+use crate::math::consts::*;
+
+pub const IF_MIN: i32 = UF_MIN as i32;
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
@@ -23,33 +27,24 @@ pub fn sqrtf(x: f32) -> f32 {
     // and speed.
     llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
-            return if x < 0.0 {
+            return if x < 0. {
                 ::core::f32::NAN
             } else {
                 unsafe { ::core::intrinsics::sqrtf32(x) }
             }
         }
     }
-    let mut z: f32;
-    let sign: i32 = 0x80000000u32 as i32;
-    let mut ix: i32;
-    let mut s: i32;
-    let mut q: i32;
-    let mut m: i32;
-    let mut t: i32;
-    let mut i: i32;
-    let mut r: u32;
 
-    ix = x.to_bits() as i32;
+    let mut ix = x.to_bits() as i32;
 
     /* take care of Inf and NaN */
-    if (ix as u32 & 0x7f800000) == 0x7f800000 {
+    if (ix as u32 & UF_INF) == UF_INF {
         return x * x + x; /* sqrt(NaN)=NaN, sqrt(+inf)=+inf, sqrt(-inf)=sNaN */
     }
 
     /* take care of zero */
     if ix <= 0 {
-        if (ix & !sign) == 0 {
+        if (ix & !(UF_SIGN as i32)) == 0 {
             return x; /* sqrt(+-0) = +-0 */
         }
         if ix < 0 {
@@ -58,18 +53,18 @@ pub fn sqrtf(x: f32) -> f32 {
     }
 
     /* normalize x */
-    m = ix >> 23;
+    let mut m = ix >> 23;
     if m == 0 {
         /* subnormal x */
-        i = 0;
-        while ix & 0x00800000 == 0 {
+        let mut i = 0_i32;
+        while ix & IF_MIN == 0 {
             ix <<= 1;
-            i = i + 1;
+            i += 1;
         }
         m -= i - 1;
     }
     m -= 127; /* unbias exponent */
-    ix = (ix & 0x007fffff) | 0x00800000;
+    ix = (ix & 0x_007f_ffff) | IF_MIN;
     if m & 1 == 1 {
         /* odd m, double x to make it even */
         ix += ix;
@@ -78,10 +73,11 @@ pub fn sqrtf(x: f32) -> f32 {
 
     /* generate sqrt(x) bit by bit */
     ix += ix;
-    q = 0;
-    s = 0;
-    r = 0x01000000; /* r = moving bit from right to left */
+    let mut q = 0_i32;
+    let mut s = 0_i32;
+    let mut r = 0x_0100_0000_u32; /* r = moving bit from right to left */
 
+    let mut t: i32;
     while r != 0 {
         t = s + r as i32;
         if t <= ix {
@@ -95,10 +91,10 @@ pub fn sqrtf(x: f32) -> f32 {
 
     /* use floating add to find out rounding direction */
     if ix != 0 {
-        z = 1.0 - TINY; /* raise inexact flag */
-        if z >= 1.0 {
-            z = 1.0 + TINY;
-            if z > 1.0 {
+        let mut z = 1. - TINY; /* raise inexact flag */
+        if z >= 1. {
+            z = 1. + TINY;
+            if z > 1. {
                 q += 2;
             } else {
                 q += q & 1;
@@ -106,7 +102,7 @@ pub fn sqrtf(x: f32) -> f32 {
         }
     }
 
-    ix = (q >> 1) + 0x3f000000;
+    ix = (q >> 1) + 0x_3f00_0000;
     ix += m << 23;
     f32::from_bits(ix as u32)
 }

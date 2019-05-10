@@ -40,6 +40,12 @@ use super::fenv::{
  * direct double-precision arithmetic suffices, except where double
  * rounding occurs.
  */
+
+/// Floating multiply add (f32)
+///
+/// Computes `(x*y)+z`, rounded as one ternary operation:
+/// Computes the value (as if) to infinite precision and rounds once to the result format,
+/// according to the rounding mode characterized by the value of FLT_ROUNDS.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fmaf(x: f32, y: f32, mut z: f32) -> f32 {
@@ -55,7 +61,7 @@ pub fn fmaf(x: f32, y: f32, mut z: f32) -> f32 {
     /* Common case: The double precision result is fine. */
     if (
         /* not a halfway case */
-        ui & 0x1fffffff) != 0x10000000 ||
+        ui & 0x_1fff_ffff) != 0x_1000_0000 ||
         /* NaN */
         e == 0x7ff ||
         /* exact */

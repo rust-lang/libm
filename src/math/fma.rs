@@ -12,7 +12,7 @@ struct Num {
 
 #[inline]
 fn normalize(x: f64) -> Num {
-    let x1p63: f64 = f64::from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
+    let x1p63: f64 = f64::from_bits(0x_43e0_0000_0000_0000); // 0x1p63 === 2 ^ 63
 
     let mut ix: u64 = x.to_bits();
     let mut e: i32 = (ix >> 52) as i32;
@@ -48,11 +48,16 @@ fn mul(x: u64, y: u64) -> (u64, u64) {
     (hi, lo)
 }
 
+/// Floating multiply add (f64)
+///
+/// Computes `(x*y)+z`, rounded as one ternary operation:
+/// Computes the value (as if) to infinite precision and rounds once to the result format,
+/// according to the rounding mode characterized by the value of FLT_ROUNDS.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fma(x: f64, y: f64, z: f64) -> f64 {
-    let x1p63: f64 = f64::from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
-    let x0_ffffff8p_63 = f64::from_bits(0x3bfffffff0000000); // 0x0.ffffff8p-63
+    let x1p63: f64 = f64::from_bits(0x_43e0_0000_0000_0000); // 0x1p63 === 2 ^ 63
+    let x0_ffffff8p_63 = f64::from_bits(0x_3bff_ffff_f000_0000); // 0x0.ffffff8p-63
 
     /* normalize so top 10bits and last bit are 0 */
     let nx = normalize(x);
@@ -91,8 +96,8 @@ pub fn fma(x: f64, y: f64, z: f64) -> f64 {
             d -= 64;
             if d == 0 {
             } else if d < 64 {
-                rlo = rhi << (64 - d) | rlo >> d | ((rlo << (64 - d)) != 0) as u64;
-                rhi = rhi >> d;
+                rlo = (rhi << (64 - d)) | (rlo >> d) | ((rlo << (64 - d)) != 0) as u64;
+                rhi >>= d;
             } else {
                 rlo = 1;
                 rhi = 0;
@@ -136,7 +141,7 @@ pub fn fma(x: f64, y: f64, z: f64) -> f64 {
         e += 64;
         d = rhi.leading_zeros() as i32 - 1;
         /* note: d > 0 */
-        rhi = rhi << d | rlo >> (64 - d) | ((rlo << d) != 0) as u64;
+        rhi = (rhi << d) | (rlo >> (64 - d)) | ((rlo << d) != 0) as u64;
     } else if rlo != 0 {
         d = rlo.leading_zeros() as i32 - 1;
         if d < 0 {
@@ -183,6 +188,7 @@ pub fn fma(x: f64, y: f64, z: f64) -> f64 {
 
                 /* raise underflow portably, such that it
                 cannot be optimized away */
+                #[allow(clippy::eq_op)]
                 {
                     let tiny: f64 = f64::MIN_POSITIVE / f32::MIN_POSITIVE as f64 * r;
                     r += (tiny * tiny) * (r - r);

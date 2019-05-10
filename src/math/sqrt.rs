@@ -76,10 +76,11 @@
  *      sqrt(NaN) = NaN         ... with invalid signal for signaling NaN
  */
 
+use crate::math::consts::*;
 use core::f64;
 use core::num::Wrapping;
 
-const TINY: f64 = 1.0e-300;
+const TINY: f64 = 1_e-300;
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
@@ -89,32 +90,20 @@ pub fn sqrt(x: f64) -> f64 {
     // and speed.
     llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
-            return if x < 0.0 {
+            return if x < 0. {
                 f64::NAN
             } else {
                 unsafe { ::core::intrinsics::sqrtf64(x) }
             }
         }
     }
-    let mut z: f64;
-    let sign: Wrapping<u32> = Wrapping(0x80000000);
-    let mut ix0: i32;
-    let mut s0: i32;
-    let mut q: i32;
-    let mut m: i32;
-    let mut t: i32;
-    let mut i: i32;
-    let mut r: Wrapping<u32>;
-    let mut t1: Wrapping<u32>;
-    let mut s1: Wrapping<u32>;
-    let mut ix1: Wrapping<u32>;
-    let mut q1: Wrapping<u32>;
+    let sign: Wrapping<u32> = Wrapping(UF_SIGN);
 
-    ix0 = (x.to_bits() >> 32) as i32;
-    ix1 = Wrapping(x.to_bits() as u32);
+    let mut ix0 = (x.to_bits() >> 32) as i32;
+    let mut ix1 = Wrapping(x.to_bits() as u32);
 
     /* take care of Inf and NaN */
-    if (ix0 & 0x7ff00000) == 0x7ff00000 {
+    if (ix0 & 0x_7ff0_0000) == 0x_7ff0_0000 {
         return x * x + x; /* sqrt(NaN)=NaN, sqrt(+inf)=+inf, sqrt(-inf)=sNaN */
     }
     /* take care of zero */
@@ -127,7 +116,7 @@ pub fn sqrt(x: f64) -> f64 {
         }
     }
     /* normalize x */
-    m = ix0 >> 20;
+    let mut m = ix0 >> 20;
     if m == 0 {
         /* subnormal x */
         while ix0 == 0 {
@@ -135,8 +124,8 @@ pub fn sqrt(x: f64) -> f64 {
             ix0 |= (ix1 >> 11).0 as i32;
             ix1 <<= 21;
         }
-        i = 0;
-        while (ix0 & 0x00100000) == 0 {
+        let mut i = 0_i32;
+        while (ix0 & 0x_0010_0000) == 0 {
             i += 1;
             ix0 <<= 1;
         }
@@ -156,12 +145,13 @@ pub fn sqrt(x: f64) -> f64 {
     /* generate sqrt(x) bit by bit */
     ix0 += ix0 + ((ix1 & sign) >> 31).0 as i32;
     ix1 += ix1;
-    q = 0; /* [q,q1] = sqrt(x) */
-    q1 = Wrapping(0);
-    s0 = 0;
-    s1 = Wrapping(0);
-    r = Wrapping(0x00200000); /* r = moving bit from right to left */
 
+    let mut q = 0_i32; /* [q,q1] = sqrt(x) */
+    let mut q1 = Wrapping(0_u32);
+
+    let mut s0 = 0_i32;
+    let mut r = Wrapping(0x_0020_0000_u32); /* r = moving bit from right to left */
+    let mut t;
     while r != Wrapping(0) {
         t = s0 + r.0 as i32;
         if t <= ix0 {
@@ -175,6 +165,8 @@ pub fn sqrt(x: f64) -> f64 {
     }
 
     r = sign;
+    let mut s1 = Wrapping(0_u32);
+    let mut t1;
     while r != Wrapping(0) {
         t1 = s1 + r;
         t = s0;
@@ -196,15 +188,16 @@ pub fn sqrt(x: f64) -> f64 {
     }
 
     /* use floating add to find out rounding direction */
+    let mut z;
     if (ix0 as u32 | ix1.0) != 0 {
-        z = 1.0 - TINY; /* raise inexact flag */
-        if z >= 1.0 {
-            z = 1.0 + TINY;
-            if q1.0 == 0xffffffff {
+        z = 1. - TINY; /* raise inexact flag */
+        if z >= 1. {
+            z = 1. + TINY;
+            if q1.0 == 0x_ffff_ffff {
                 q1 = Wrapping(0);
                 q += 1;
-            } else if z > 1.0 {
-                if q1.0 == 0xfffffffe {
+            } else if z > 1. {
+                if q1.0 == 0x_ffff_fffe {
                     q += 1;
                 }
                 q1 += Wrapping(2);
@@ -213,7 +206,7 @@ pub fn sqrt(x: f64) -> f64 {
             }
         }
     }
-    ix0 = (q >> 1) + 0x3fe00000;
+    ix0 = (q >> 1) + 0x_3fe0_0000;
     ix1 = q1 >> 1;
     if (q & 1) == 1 {
         ix1 |= sign;

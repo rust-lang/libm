@@ -1,6 +1,6 @@
 use core::f64;
 
-const TOINT: f64 = 1.0 / f64::EPSILON;
+const TOINT: f64 = 1. / f64::EPSILON;
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
@@ -18,16 +18,16 @@ pub fn round(mut x: f64) -> f64 {
     if e < 0x3ff - 1 {
         // raise inexact if x!=0
         force_eval!(x + TOINT);
-        return 0.0 * f;
+        return 0. * f;
     }
     y = x + TOINT - TOINT - x;
-    if y > 0.5 {
-        y = y + x - 1.0;
+    y += if y > 0.5 {
+        x - 1.
     } else if y <= -0.5 {
-        y = y + x + 1.0;
+        x + 1.
     } else {
-        y = y + x;
-    }
+        x
+    };
 
     if i >> 63 != 0 {
         -y

@@ -1,5 +1,8 @@
 use core::f32;
 
+/// Ceil (f32)
+///
+/// Finds the nearest integer greater than or equal to `x`.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn ceilf(x: f32) -> f32 {
@@ -18,21 +21,21 @@ pub fn ceilf(x: f32) -> f32 {
         return x;
     }
     if e >= 0 {
-        let m = 0x007fffff >> e;
+        let m = 0x_007f_ffff >> e;
         if (ui & m) == 0 {
             return x;
         }
-        force_eval!(x + f32::from_bits(0x7b800000));
+        force_eval!(x + f32::from_bits(0x_7b80_0000));
         if ui >> 31 == 0 {
             ui += m;
         }
         ui &= !m;
     } else {
-        force_eval!(x + f32::from_bits(0x7b800000));
+        force_eval!(x + f32::from_bits(0x_7b80_0000));
         if ui >> 31 != 0 {
-            return -0.0;
+            return -0.;
         } else if ui << 1 != 0 {
-            return 1.0;
+            return 1.;
         }
     }
     f32::from_bits(ui)

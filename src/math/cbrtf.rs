@@ -17,39 +17,43 @@
  * Return cube root of x
  */
 
+use crate::math::consts::*;
 use core::f32;
 
-const B1: u32 = 709958130; /* B1 = (127-127.0/3-0.03306235651)*2**23 */
-const B2: u32 = 642849266; /* B2 = (127-127.0/3-24/3-0.03306235651)*2**23 */
+const B1: u32 = 709_958_130; /* B1 = (127-127.0/3-0.03306235651)*2**23 */
+const B2: u32 = 642_849_266; /* B2 = (127-127.0/3-24/3-0.03306235651)*2**23 */
 
+/// Cube root (f32)
+///
+/// Computes the cube root of the argument.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn cbrtf(x: f32) -> f32 {
-    let x1p24 = f32::from_bits(0x4b800000); // 0x1p24f === 2 ^ 24
+    let x1p24 = f32::from_bits(0x_4b80_0000); // 0x1p24f === 2 ^ 24
 
     let mut r: f64;
     let mut t: f64;
     let mut ui: u32 = x.to_bits();
-    let mut hx: u32 = ui & 0x7fffffff;
+    let mut hx: u32 = ui & UF_ABS;
 
-    if hx >= 0x7f800000 {
+    if hx >= UF_INF {
         /* cbrt(NaN,INF) is itself */
         return x + x;
     }
 
     /* rough cbrt to 5 bits */
-    if hx < 0x00800000 {
+    if hx < UF_MIN {
         /* zero or subnormal? */
         if hx == 0 {
             return x; /* cbrt(+-0) is itself */
         }
         ui = (x * x1p24).to_bits();
-        hx = ui & 0x7fffffff;
+        hx = ui & UF_ABS;
         hx = hx / 3 + B2;
     } else {
         hx = hx / 3 + B1;
     }
-    ui &= 0x80000000;
+    ui &= UF_SIGN;
     ui |= hx;
 
     /*

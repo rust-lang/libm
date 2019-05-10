@@ -2,7 +2,7 @@ use core::f64;
 
 use super::sqrt;
 
-const SPLIT: f64 = 134217728. + 1.; // 0x1p27 + 1 === (2 ^ 27) + 1
+const SPLIT: f64 = 134_217_728. + 1.; // 0x1p27 + 1 === (2 ^ 27) + 1
 
 #[inline]
 fn sq(x: f64) -> (f64, f64) {
@@ -18,11 +18,15 @@ fn sq(x: f64) -> (f64, f64) {
     (hi, lo)
 }
 
+/// Distance from origin (f64)
+///
+/// Calculates the Euclidean distance `sqrt(x*x + y*y)` between the origin (0,0)
+/// and a point represented by the Cartesian coordinates (`x`,`y`).
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn hypot(mut x: f64, mut y: f64) -> f64 {
-    let x1p700 = f64::from_bits(0x6bb0000000000000); // 0x1p700 === 2 ^ 700
-    let x1p_700 = f64::from_bits(0x1430000000000000); // 0x1p-700 === 2 ^ -700
+    let x1p700 = f64::from_bits(0x_6bb0_0000_0000_0000); // 0x1p700 === 2 ^ 700
+    let x1p_700 = f64::from_bits(0x_1430_0000_0000_0000); // 0x1p-700 === 2 ^ -700
 
     let mut uxi = x.to_bits();
     let mut uyi = y.to_bits();

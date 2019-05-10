@@ -37,12 +37,20 @@
  * to produce the hexadecimal values shown.
  */
 
-use super::atan;
-use super::fabs;
+use super::{atan, fabs};
+use crate::math::consts::*;
+use core::f64::{
+    self,
+    consts::{FRAC_PI_2, FRAC_PI_4, PI}, /* 0x_4009_21FB, 0x_5444_2D18 */
+};
 
-const PI: f64 = 3.1415926535897931160E+00; /* 0x400921FB, 0x54442D18 */
-const PI_LO: f64 = 1.2246467991473531772E-16; /* 0x3CA1A626, 0x33145C07 */
+const PI_LO: f64 = 1.224_646_799_147_353_177_2_e-16; /* 0x_3CA1_A626, 0x_3314_5C07 */
 
+/// Arctangent of y/x (f64)
+///
+/// Computes the inverse tangent (arc tangent) of `y/x`.
+/// Produces the correct result even for angles near pi/2 or -pi/2 (that is, when `x` is near 0).
+/// Returns a value in radians, in the range of -pi to pi.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn atan2(y: f64, x: f64) -> f64 {
@@ -53,13 +61,13 @@ pub fn atan2(y: f64, x: f64) -> f64 {
     let lx = x.to_bits() as u32;
     let mut iy = (y.to_bits() >> 32) as u32;
     let ly = y.to_bits() as u32;
-    if ((ix.wrapping_sub(0x3ff00000)) | lx) == 0 {
-        /* x = 1.0 */
+    if ((ix.wrapping_sub(0x_3ff0_0000)) | lx) == 0 {
+        /* x = 1. */
         return atan(y);
     }
     let m = ((iy >> 31) & 1) | ((ix >> 30) & 2); /* 2*sign(x)+sign(y) */
-    ix &= 0x7fffffff;
-    iy &= 0x7fffffff;
+    ix &= UF_ABS;
+    iy &= UF_ABS;
 
     /* when y = 0 */
     if (iy | ly) == 0 {
@@ -71,35 +79,35 @@ pub fn atan2(y: f64, x: f64) -> f64 {
     }
     /* when x = 0 */
     if (ix | lx) == 0 {
-        return if m & 1 != 0 { -PI / 2.0 } else { PI / 2.0 };
+        return if m & 1 != 0 { -FRAC_PI_2 } else { FRAC_PI_2 };
     }
     /* when x is INF */
-    if ix == 0x7ff00000 {
-        if iy == 0x7ff00000 {
+    if ix == 0x_7ff0_0000 {
+        if iy == 0x_7ff0_0000 {
             return match m {
-                0 => PI / 4.0,        /* atan(+INF,+INF) */
-                1 => -PI / 4.0,       /* atan(-INF,+INF) */
-                2 => 3.0 * PI / 4.0,  /* atan(+INF,-INF) */
-                _ => -3.0 * PI / 4.0, /* atan(-INF,-INF) */
+                0 => FRAC_PI_4,       /* atan(+INF,+INF) */
+                1 => -FRAC_PI_4,      /* atan(-INF,+INF) */
+                2 => 3. * FRAC_PI_4,  /* atan(+INF,-INF) */
+                _ => -3. * FRAC_PI_4, /* atan(-INF,-INF) */
             };
         } else {
             return match m {
-                0 => 0.0,  /* atan(+...,+INF) */
-                1 => -0.0, /* atan(-...,+INF) */
-                2 => PI,   /* atan(+...,-INF) */
-                _ => -PI,  /* atan(-...,-INF) */
+                0 => 0.,  /* atan(+...,+INF) */
+                1 => -0., /* atan(-...,+INF) */
+                2 => PI,  /* atan(+...,-INF) */
+                _ => -PI, /* atan(-...,-INF) */
             };
         }
     }
     /* |y/x| > 0x1p64 */
-    if ix.wrapping_add(64 << 20) < iy || iy == 0x7ff00000 {
-        return if m & 1 != 0 { -PI / 2.0 } else { PI / 2.0 };
+    if ix.wrapping_add(64 << 20) < iy || iy == 0x_7ff0_0000 {
+        return if m & 1 != 0 { -FRAC_PI_2 } else { FRAC_PI_2 };
     }
 
     /* z = atan(|y/x|) without spurious underflow */
     let z = if (m & 2 != 0) && iy.wrapping_add(64 << 20) < ix {
         /* |y/x| < 0x1p-64, x<0 */
-        0.0
+        0.
     } else {
         atan(fabs(y / x))
     };
@@ -113,10 +121,10 @@ pub fn atan2(y: f64, x: f64) -> f64 {
 
 #[test]
 fn sanity_check() {
-    assert_eq!(atan2(0.0, 1.0), 0.0);
-    assert_eq!(atan2(0.0, -1.0), PI);
-    assert_eq!(atan2(-0.0, -1.0), -PI);
-    assert_eq!(atan2(3.0, 2.0), atan(3.0 / 2.0));
-    assert_eq!(atan2(2.0, -1.0), atan(2.0 / -1.0) + PI);
-    assert_eq!(atan2(-2.0, -1.0), atan(-2.0 / -1.0) - PI);
+    assert_eq!(atan2(0., 1.), 0.);
+    assert_eq!(atan2(0., -1.), PI);
+    assert_eq!(atan2(-0., -1.), -PI);
+    assert_eq!(atan2(3., 2.), atan(3. / 2.));
+    assert_eq!(atan2(2., -1.), atan(2. / -1.) + PI);
+    assert_eq!(atan2(-2., -1.), atan(-2. / -1.) - PI);
 }

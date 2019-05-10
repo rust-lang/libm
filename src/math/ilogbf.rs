@@ -1,6 +1,10 @@
 const FP_ILOGBNAN: i32 = -1 - 0x7fffffff;
 const FP_ILOGB0: i32 = FP_ILOGBNAN;
 
+/// Get exponent (f32)
+///
+/// All nonzero, normal numbers can be described as `m*2^p`.
+/// Examines the argument `x`, and returns *p*.
 pub fn ilogbf(x: f32) -> i32 {
     let mut i = x.to_bits();
     let e = ((i >> 23) & 0xff) as i32;

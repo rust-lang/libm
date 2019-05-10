@@ -1,5 +1,13 @@
 use core::f32;
 
+/// Positive difference (f32)
+///
+/// Determines the positive difference between arguments, returning:
+/// * x - y	if x > y, or
+/// * +0	if x <= y, or
+/// * NAN	if either argument is NAN.
+///
+/// A range error may occur.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fdimf(x: f32, y: f32) -> f32 {
@@ -10,6 +18,6 @@ pub fn fdimf(x: f32, y: f32) -> f32 {
     } else if x > y {
         x - y
     } else {
-        0.0
+        0.
     }
 }

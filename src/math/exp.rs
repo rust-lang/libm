@@ -66,22 +66,28 @@
  */
 
 use super::scalbn;
+use crate::math::consts::*;
+use core::f64;
 
 const HALF: [f64; 2] = [0.5, -0.5];
-const LN2HI: f64 = 6.93147180369123816490e-01; /* 0x3fe62e42, 0xfee00000 */
-const LN2LO: f64 = 1.90821492927058770002e-10; /* 0x3dea39ef, 0x35793c76 */
-const INVLN2: f64 = 1.44269504088896338700e+00; /* 0x3ff71547, 0x652b82fe */
-const P1: f64 = 1.66666666666666019037e-01; /* 0x3FC55555, 0x5555553E */
-const P2: f64 = -2.77777777770155933842e-03; /* 0xBF66C16C, 0x16BEBD93 */
-const P3: f64 = 6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
-const P4: f64 = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
-const P5: f64 = 4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
+const LN2HI: f64 = 6.931_471_803_691_238_164_90_e-01; /* 0x_3fe6_2e42, 0x_fee0_0000 */
+const LN2LO: f64 = 1.908_214_929_270_587_700_02_e-10; /* 0x_3dea_39ef, 0x_3579_3c76 */
+const INVLN2: f64 = f64::consts::LOG2_E; /* 0x_3ff7_1547, 0x_652b_82fe */
+const P1: f64 = 1.666_666_666_666_660_190_37_e-01; /* 0x_3FC5_5555, 0x_5555_553E */
+const P2: f64 = -2.777_777_777_701_559_338_42_e-03; /* 0x_BF66_C16C, 0x_16BE_BD93 */
+const P3: f64 = 6.613_756_321_437_934_361_17_e-05; /* 0x_3F11_566A, 0x_AF25_DE2C */
+const P4: f64 = -1.653_390_220_546_525_153_90_e-06; /* 0x_BEBB_BD41, 0x_C5D2_6BF1 */
+const P5: f64 = 4.138_136_797_057_238_460_39_e-08; /* 0x_3E66_3769, 0x_72BE_A4D0 */
 
+/// Exponential, base *e* (f64)
+///
+/// Calculate the exponential of `x`, that is, *e* raised to the power `x`
+/// (where *e* is the base of the natural system of logarithms, approximately 2.71828).
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn exp(mut x: f64) -> f64 {
-    let x1p1023 = f64::from_bits(0x7fe0000000000000); // 0x1p1023 === 2 ^ 1023
-    let x1p_149 = f64::from_bits(0x36a0000000000000); // 0x1p-149 === 2 ^ -149
+    let x1p1023 = f64::from_bits(0x_7fe0_0000_0000_0000); // 0x1p1023 === 2 ^ 1023
+    let x1p_149 = f64::from_bits(0x_36a0_0000_0000_0000); // 0x1p-149 === 2 ^ -149
 
     let hi: f64;
     let lo: f64;
@@ -94,32 +100,32 @@ pub fn exp(mut x: f64) -> f64 {
 
     hx = (x.to_bits() >> 32) as u32;
     sign = (hx >> 31) as i32;
-    hx &= 0x7fffffff; /* high word of |x| */
+    hx &= UF_ABS; /* high word of |x| */
 
     /* special cases */
-    if hx >= 0x4086232b {
+    if hx >= 0x_4086_232b {
         /* if |x| >= 708.39... */
         if x.is_nan() {
             return x;
         }
-        if x > 709.782712893383973096 {
+        if x > 709.782_712_893_383_973_096 {
             /* overflow if x!=inf */
             x *= x1p1023;
             return x;
         }
-        if x < -708.39641853226410622 {
+        if x < -708.396_418_532_264_106_22 {
             /* underflow if x!=-inf */
             force_eval!((-x1p_149 / x) as f32);
-            if x < -745.13321910194110842 {
+            if x < -745.133_219_101_941_108_42 {
                 return 0.;
             }
         }
     }
 
     /* argument reduction */
-    if hx > 0x3fd62e42 {
+    if hx > 0x_3fd6_2e42 {
         /* if |x| > 0.5 ln2 */
-        if hx >= 0x3ff0a2b2 {
+        if hx >= 0x_3ff0_a2b2 {
             /* if |x| >= 1.5 ln2 */
             k = (INVLN2 * x + HALF[sign as usize]) as i32;
         } else {
@@ -128,7 +134,7 @@ pub fn exp(mut x: f64) -> f64 {
         hi = x - k as f64 * LN2HI; /* k*ln2hi is exact here */
         lo = k as f64 * LN2LO;
         x = hi - lo;
-    } else if hx > 0x3e300000 {
+    } else if hx > 0x_3e30_0000 {
         /* if |x| > 2**-28 */
         k = 0;
         hi = x;

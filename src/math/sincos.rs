@@ -11,6 +11,8 @@
  */
 
 use super::{get_high_word, k_cos, k_sin, rem_pio2};
+use crate::math::consts::*;
+use core::f64;
 
 pub fn sincos(x: f64) -> (f64, f64) {
     let s: f64;
@@ -18,26 +20,26 @@ pub fn sincos(x: f64) -> (f64, f64) {
     let mut ix: u32;
 
     ix = get_high_word(x);
-    ix &= 0x7fffffff;
+    ix &= UF_ABS;
 
     /* |x| ~< pi/4 */
-    if ix <= 0x3fe921fb {
+    if ix <= 0x_3fe9_21fb {
         /* if |x| < 2**-27 * sqrt(2) */
-        if ix < 0x3e46a09e {
+        if ix < 0x_3e46_a09e {
             /* raise inexact if x!=0 and underflow if subnormal */
-            let x1p120 = f64::from_bits(0x4770000000000000); // 0x1p120 == 2^120
-            if ix < 0x00100000 {
+            let x1p120 = f64::from_bits(0x_4770_0000_0000_0000); // 0x1p120 == 2^120
+            if ix < 0x_0010_0000 {
                 force_eval!(x / x1p120);
             } else {
                 force_eval!(x + x1p120);
             }
-            return (x, 1.0);
+            return (x, 1.);
         }
-        return (k_sin(x, 0.0, 0), k_cos(x, 0.0));
+        return (k_sin(x, 0., 0), k_cos(x, 0.));
     }
 
     /* sincos(Inf or NaN) is NaN */
-    if ix >= 0x7ff00000 {
+    if ix >= 0x_7ff0_0000 {
         let rv = x - x;
         return (rv, rv);
     }
@@ -54,6 +56,6 @@ pub fn sincos(x: f64) -> (f64, f64) {
         #[cfg(feature = "checked")]
         _ => unreachable!(),
         #[cfg(not(feature = "checked"))]
-        _ => (0.0, 1.0),
+        _ => (0., 1.),
     }
 }

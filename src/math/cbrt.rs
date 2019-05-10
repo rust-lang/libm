@@ -15,31 +15,35 @@
  * Return cube root of x
  */
 
+use crate::math::consts::*;
 use core::f64;
 
-const B1: u32 = 715094163; /* B1 = (1023-1023/3-0.03306235651)*2**20 */
-const B2: u32 = 696219795; /* B2 = (1023-1023/3-54/3-0.03306235651)*2**20 */
+const B1: u32 = 715_094_163; /* B1 = (1023-1023/3-0.033_062_35651)*2**20 */
+const B2: u32 = 696_219_795; /* B2 = (1023-1023/3-54/3-0.033_062_35651)*2**20 */
 
 /* |1/cbrt(x) - p(x)| < 2**-23.5 (~[-7.93e-8, 7.929e-8]). */
-const P0: f64 = 1.87595182427177009643; /* 0x3ffe03e6, 0x0f61e692 */
-const P1: f64 = -1.88497979543377169875; /* 0xbffe28e0, 0x92f02420 */
-const P2: f64 = 1.621429720105354466140; /* 0x3ff9f160, 0x4a49d6c2 */
-const P3: f64 = -0.758397934778766047437; /* 0xbfe844cb, 0xbee751d9 */
-const P4: f64 = 0.145996192886612446982; /* 0x3fc2b000, 0xd4e4edd7 */
+const P0: f64 = 1.875_951_824_271_770_096_43; /* 0x_3ffe_03e6, 0x_0f61_e692 */
+const P1: f64 = -1.884_979_795_433_771_698_75; /* 0x_bffe_28e0, 0x_92f0_2420 */
+const P2: f64 = 1.621_429_720_105_354_466_140; /* 0x_3ff9_f160, 0x_4a49_d6c2 */
+const P3: f64 = -0.758_397_934_778_766_047_437; /* 0x_bfe8_44cb, 0x_bee7_51d9 */
+const P4: f64 = 0.145_996_192_886_612_446_982; /* 0x_3fc2_b000, 0x_d4e4_edd7 */
 
+/// Cube root (f64)
+///
+/// Computes the cube root of the argument.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn cbrt(x: f64) -> f64 {
-    let x1p54 = f64::from_bits(0x4350000000000000); // 0x1p54 === 2 ^ 54
+    let x1p54 = f64::from_bits(0x_4350_0000_0000_0000); // 0x1p54 === 2 ^ 54
 
     let mut ui: u64 = x.to_bits();
     let mut r: f64;
     let s: f64;
     let mut t: f64;
     let w: f64;
-    let mut hx: u32 = (ui >> 32) as u32 & 0x7fffffff;
+    let mut hx: u32 = (ui >> 32) as u32 & UF_ABS;
 
-    if hx >= 0x7ff00000 {
+    if hx >= 0x_7ff0_0000 {
         /* cbrt(NaN,INF) is itself */
         return x + x;
     }
@@ -59,10 +63,10 @@ pub fn cbrt(x: f64) -> f64 {
      * subtraction virtually to keep e >= 0 so that ordinary integer
      * division rounds towards minus infinity; this is also efficient.
      */
-    if hx < 0x00100000 {
+    if hx < 0x_0010_0000 {
         /* zero or subnormal? */
         ui = (x * x1p54).to_bits();
-        hx = (ui >> 32) as u32 & 0x7fffffff;
+        hx = (ui >> 32) as u32 & UF_ABS;
         if hx == 0 {
             return x; /* cbrt(0) is itself */
         }
@@ -85,7 +89,7 @@ pub fn cbrt(x: f64) -> f64 {
      * Try to optimize for parallel evaluation as in __tanf.c.
      */
     r = (t * t) * (t / x);
-    t = t * ((P0 + r * (P1 + r * P2)) + ((r * r) * r) * (P3 + r * P4));
+    t *= (P0 + r * (P1 + r * P2)) + ((r * r) * r) * (P3 + r * P4);
 
     /*
      * Round t away from zero to 23 bits (sloppily except for ensuring that
@@ -98,7 +102,7 @@ pub fn cbrt(x: f64) -> f64 {
      * before the final error is larger than 0.667 ulps.
      */
     ui = t.to_bits();
-    ui = (ui + 0x80000000) & 0xffffffffc0000000;
+    ui = (ui + 0x_8000_0000) & 0x_ffff_ffff_c000_0000;
     t = f64::from_bits(ui);
 
     /* one step Newton iteration to 53 bits with error < 0.667 ulps */

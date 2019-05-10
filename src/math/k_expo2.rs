@@ -7,7 +7,7 @@ const K: i32 = 2043;
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub(crate) fn k_expo2(x: f64) -> f64 {
-    let k_ln2 = f64::from_bits(0x40962066151add8b);
+    let k_ln2 = f64::from_bits(0x_4096_2066_151a_dd8b);
     /* note that k is odd and scale*scale overflows */
     let scale = f64::from_bits(((((0x3ff + K / 2) as u32) << 20) as u64) << 32);
     /* exp(x - k ln2) * 2**(k-1) */

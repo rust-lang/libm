@@ -14,41 +14,46 @@
  */
 
 use super::fabsf;
+use crate::math::consts::*;
 
 const ATAN_HI: [f32; 4] = [
-    4.6364760399e-01, /* atan(0.5)hi 0x3eed6338 */
-    7.8539812565e-01, /* atan(1.0)hi 0x3f490fda */
-    9.8279368877e-01, /* atan(1.5)hi 0x3f7b985e */
-    1.5707962513e+00, /* atan(inf)hi 0x3fc90fda */
+    4.636_476_039_9_e-01, /* atan(0.5)hi 0x_3eed_6338 */
+    7.853_981_256_5_e-01, /* atan(1.0)hi 0x_3f49_0fda */
+    9.827_936_887_7_e-01, /* atan(1.5)hi 0x_3f7b_985e */
+    1.570_796_251_3,      /* atan(inf)hi 0x_3fc9_0fda */
 ];
 
 const ATAN_LO: [f32; 4] = [
-    5.0121582440e-09, /* atan(0.5)lo 0x31ac3769 */
-    3.7748947079e-08, /* atan(1.0)lo 0x33222168 */
-    3.4473217170e-08, /* atan(1.5)lo 0x33140fb4 */
-    7.5497894159e-08, /* atan(inf)lo 0x33a22168 */
+    5.012_158_244_e-09,   /* atan(0.5)lo 0x_31ac_3769 */
+    3.774_894_707_9_e-08, /* atan(1.0)lo 0x_3322_2168 */
+    3.447_321_717_e-08,   /* atan(1.5)lo 0x_3314_0fb4 */
+    7.549_789_415_9_e-08, /* atan(inf)lo 0x_33a2_2168 */
 ];
 
 const A_T: [f32; 5] = [
-    3.3333328366e-01,
-    -1.9999158382e-01,
-    1.4253635705e-01,
-    -1.0648017377e-01,
-    6.1687607318e-02,
+    3.333_332_836_6_e-01,
+    -1.999_915_838_2_e-01,
+    1.425_363_570_5_e-01,
+    -1.064_801_737_7_e-01,
+    6.168_760_731_8_e-02,
 ];
 
+/// Arctangent (f32)
+///
+/// Computes the inverse tangent (arc tangent) of the input value.
+/// Returns a value in radians, in the range of -pi/2 to pi/2.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn atanf(mut x: f32) -> f32 {
-    let x1p_120 = f32::from_bits(0x03800000); // 0x1p-120 === 2 ^ (-120)
+    let x1p_120 = f32::from_bits(0x_0380_0000); // 0x1p-120 === 2 ^ (-120)
 
     let z: f32;
 
     let mut ix = x.to_bits();
     let sign = (ix >> 31) != 0;
-    ix &= 0x7fffffff;
+    ix &= UF_ABS;
 
-    if ix >= 0x4c800000 {
+    if ix >= 0x_4c80_0000 {
         /* if |x| >= 2**26 */
         if x.is_nan() {
             return x;
@@ -56,11 +61,11 @@ pub fn atanf(mut x: f32) -> f32 {
         z = ATAN_HI[3] + x1p_120;
         return if sign { -z } else { z };
     }
-    let id = if ix < 0x3ee00000 {
+    let id = if ix < 0x_3ee0_0000 {
         /* |x| < 0.4375 */
-        if ix < 0x39800000 {
+        if ix < 0x_3980_0000 {
             /* |x| < 2**-12 */
-            if ix < 0x00800000 {
+            if ix < UF_MIN {
                 /* raise underflow for subnormal x */
                 force_eval!(x * x);
             }
@@ -69,9 +74,9 @@ pub fn atanf(mut x: f32) -> f32 {
         -1
     } else {
         x = fabsf(x);
-        if ix < 0x3f980000 {
+        if ix < 0x_3f98_0000 {
             /* |x| < 1.1875 */
-            if ix < 0x3f300000 {
+            if ix < 0x_3f30_0000 {
                 /*  7/16 <= |x| < 11/16 */
                 x = (2. * x - 1.) / (2. + x);
                 0
@@ -80,7 +85,7 @@ pub fn atanf(mut x: f32) -> f32 {
                 x = (x - 1.) / (x + 1.);
                 1
             }
-        } else if ix < 0x401c0000 {
+        } else if ix < 0x_401c_0000 {
             /* |x| < 2.4375 */
             x = (x - 1.5) / (1. + 1.5 * x);
             2
