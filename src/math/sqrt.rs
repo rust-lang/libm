@@ -82,6 +82,7 @@ use core::num::Wrapping;
 
 const TINY: f64 = 1_e-300;
 
+#[allow(clippy::misrefactored_assign_op)]
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn sqrt(x: f64) -> f64 {
@@ -137,13 +138,13 @@ pub fn sqrt(x: f64) -> f64 {
     ix0 = (ix0 & 0x_000f_ffff) | 0x_0010_0000;
     if (m & 1) == 1 {
         /* odd m, double x to make it even */
-        ix0 = ix0 + ix0 + ((ix1 & sign) >> 31).0 as i32;
+        ix0 += ix0 + ((ix1 & sign) >> 31).0 as i32;
         ix1 += ix1;
     }
     m >>= 1; /* m = [m/2] */
 
     /* generate sqrt(x) bit by bit */
-    ix0 = ix0 + ix0 + ((ix1 & sign) >> 31).0 as i32;
+    ix0 += ix0 + ((ix1 & sign) >> 31).0 as i32;
     ix1 += ix1;
 
     let mut q = 0_i32; /* [q,q1] = sqrt(x) */
@@ -159,7 +160,7 @@ pub fn sqrt(x: f64) -> f64 {
             ix0 -= t;
             q += r.0 as i32;
         }
-        ix0 = ix0 + ix0 + ((ix1 & sign) >> 31).0 as i32;
+        ix0 += ix0 + ((ix1 & sign) >> 31).0 as i32;
         ix1 += ix1;
         r >>= 1;
     }
@@ -182,7 +183,7 @@ pub fn sqrt(x: f64) -> f64 {
             ix1 -= t1;
             q1 += r;
         }
-        ix0 = ix0 + ix0 + ((ix1 & sign) >> 31).0 as i32;
+        ix0 += ix0 + ((ix1 & sign) >> 31).0 as i32;
         ix1 += ix1;
         r >>= 1;
     }
