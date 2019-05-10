@@ -1,5 +1,6 @@
-const FP_ILOGBNAN: i32 = -1 - 0x7fffffff;
+const FP_ILOGBNAN: i32 = -1 - 0x_7fff_ffff;
 const FP_ILOGB0: i32 = FP_ILOGBNAN;
+use core::f64;
 
 /// Get exponent (f32)
 ///
@@ -12,7 +13,7 @@ pub fn ilogbf(x: f32) -> i32 {
     if e == 0 {
         i <<= 9;
         if i == 0 {
-            force_eval!(0.0 / 0.0);
+            force_eval!(f64::NAN);
             return FP_ILOGB0;
         }
         /* subnormal x */
@@ -23,7 +24,7 @@ pub fn ilogbf(x: f32) -> i32 {
         }
         e
     } else if e == 0xff {
-        force_eval!(0.0 / 0.0);
+        force_eval!(f64::NAN);
         if (i << 9) != 0 {
             FP_ILOGBNAN
         } else {

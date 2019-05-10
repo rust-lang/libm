@@ -56,7 +56,8 @@ fn high_low(x: f32) -> (f32, f32) {
     (high, x - high)
 }
 
-#[allow(clippy::cyclomatic_complexity)]
+#[allow(clippy::cognitive_complexity)]
+#[allow(clippy::if_same_then_else)]
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn powf(x: f32, y: f32) -> f32 {
@@ -277,7 +278,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         /* z < -150 */
         // FIXME: check should be  (uint32_t)j > 0x_c316_0000
         return sn * TINY * TINY; /* underflow */
-    } else if j as u32 == 0x_c316_0000 && p_l <= z - p_h {
+    } else if (j as u32 == 0x_c316_0000) && (p_l <= z - p_h) {
         /* z == -150 */
         return sn * TINY * TINY; /* underflow */
     }

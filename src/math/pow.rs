@@ -93,7 +93,7 @@ const IVLN2: f64 = f64::consts::LOG2_E; /* 0x_3ff7_1547_652b_82fe =1/ln2 */
 const IVLN2_H: f64 = 1.442_695_021_629_333_496_09; /* 0x_3ff7_1547_6000_0000 =24b 1/ln2*/
 const IVLN2_L: f64 = 1.925_962_991_126_617_468_87_e-08; /* 0x_3e54_ae0b_f85d_df44 =1/ln2 tail*/
 
-#[allow(clippy::cyclomatic_complexity)]
+#[allow(clippy::cognitive_complexity)]
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn pow(x: f64, y: f64) -> f64 {

@@ -330,7 +330,7 @@ const PIO2: [f64; 8] = [
 /// more accurately, = 0 mod 8 ). Thus the number of operations are
 /// independent of the exponent of the input.
 
-#[allow(clippy::cyclomatic_complexity)]
+#[allow(clippy::cognitive_complexity)]
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub(crate) fn rem_pio2_large(x: &[f64], e0: i32, prec: usize) -> (i32, [f64; 3]) {

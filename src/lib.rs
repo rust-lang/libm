@@ -19,6 +19,7 @@
 #![allow(clippy::excessive_precision)]
 #![allow(clippy::cast_lossless)]
 #![allow(clippy::float_cmp)]
+#![allow(clippy::eq_op)]
 
 mod math;
 
