@@ -70,7 +70,7 @@ pub fn asinf(mut x: f32) -> f32 {
     let z = (1. - fabsf(x)) * 0.5;
     let s = sqrt(z as f64);
     x = (PIO2 - 2. * (s + s * (r(z) as f64))) as f32;
-    if (hx >> 31) != 0 {
+    if (hx & UF_SIGN) != 0 {
         -x
     } else {
         x

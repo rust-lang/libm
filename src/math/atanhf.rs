@@ -8,7 +8,7 @@ use super::log1pf;
 /// Is defined as `log((1+x)/(1-x))/2 = log1p(2x/(1-x))/2`.
 pub fn atanhf(mut x: f32) -> f32 {
     let mut u = x.to_bits();
-    let sign = (u >> 31) != 0;
+    let sign = (u & UF_SIGN) != 0;
 
     /* |x| */
     u &= UF_ABS;

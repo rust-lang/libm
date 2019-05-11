@@ -123,7 +123,7 @@ pub fn j1(x: f64) -> f64 {
     let sign: bool;
 
     ix = get_high_word(x);
-    sign = (ix >> 31) != 0;
+    sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
     if ix >= 0x_7ff0_0000 {
         return 1. / (x * x);
@@ -174,7 +174,7 @@ pub fn y1(x: f64) -> f64 {
     if (ix << 1 | lx) == 0 {
         return f64::NEG_INFINITY;
     }
-    if (ix >> 31) != 0 {
+    if (ix & UF_SIGN) != 0 {
         return f64::NAN;
     }
     if ix >= 0x_7ff0_0000 {

@@ -178,7 +178,7 @@ pub fn y0(x: f64) -> f64 {
     /* y0(nan)=nan, y0(<0)=nan, y0(0)=-inf, y0(inf)=0 */
     if ((ix << 1) | lx) == 0 {
         f64::NEG_INFINITY
-    } else if (ix >> 31) != 0 {
+    } else if (ix & UF_SIGN) != 0 {
         f64::NAN
     } else if ix >= 0x_7ff0_0000 {
         1. / x

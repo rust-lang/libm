@@ -1,3 +1,4 @@
+use super::consts::*;
 use core::f64;
 
 const TOINT: f64 = 1. / f64::EPSILON;
@@ -24,7 +25,7 @@ pub fn ceil(x: f64) -> f64 {
         return x;
     }
     // y = int(x) - x, where int(x) is an integer neighbor of x
-    y = if (u >> 63) != 0 {
+    y = if (u & UD_SIGN) != 0 {
         x - TOINT + TOINT - x
     } else {
         x + TOINT - TOINT - x
@@ -32,7 +33,7 @@ pub fn ceil(x: f64) -> f64 {
     // special case because of non-nearest rounding modes
     if e <= (0x3ff - 1) {
         force_eval!(y);
-        return if (u >> 63) != 0 { -0. } else { 1. };
+        return if (u & UD_SIGN) != 0 { -0. } else { 1. };
     }
     if y < 0. {
         x + y + 1.

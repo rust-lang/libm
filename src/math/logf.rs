@@ -36,12 +36,12 @@ pub fn logf(mut x: f32) -> f32 {
     let mut ix = x.to_bits();
     let mut k = 0_i32;
 
-    if (ix < UF_MIN) || ((ix >> 31) != 0) {
+    if (ix < UF_MIN) || ((ix & UF_SIGN) != 0) {
         /* x < 2**-126  */
         if ix << 1 == 0 {
             return -1. / (x * x); /* log(+-0)=-inf */
         }
-        if (ix >> 31) != 0 {
+        if (ix & UF_SIGN) != 0 {
             return (x - x) / 0.; /* log(-#) = NaN */
         }
         /* subnormal number, scale up x */

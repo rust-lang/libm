@@ -82,7 +82,7 @@ pub fn acos(x: f64) -> f64 {
 
         if ((ix - 0x_3ff0_0000) | lx) == 0 {
             /* acos(1)=0, acos(-1)=pi */
-            if (hx >> 31) != 0 {
+            if (hx & UF_SIGN) != 0 {
                 return 2. * PIO2_HI + x1p_120f;
             }
             return 0.;
@@ -98,7 +98,7 @@ pub fn acos(x: f64) -> f64 {
         return PIO2_HI - (x - (PIO2_LO - x * r(x * x)));
     }
     /* x < -0.5 */
-    if (hx >> 31) != 0 {
+    if (hx & UF_SIGN) != 0 {
         z = (1. + x) * 0.5;
         s = sqrt(z);
         w = r(z) * s - PIO2_LO;

@@ -7,7 +7,7 @@ use super::k_expo2f;
 pub fn sinhf(x: f32) -> f32 {
     let mut h = 0.5_f32;
     let mut ix = x.to_bits();
-    if (ix >> 31) != 0 {
+    if (ix & UF_SIGN) != 0 {
         h = -h;
     }
     /* |x| */

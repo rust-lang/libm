@@ -50,7 +50,7 @@ pub fn atanf(mut x: f32) -> f32 {
     let z: f32;
 
     let mut ix = x.to_bits();
-    let sign = (ix >> 31) != 0;
+    let sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
 
     if ix >= 0x_4c80_0000 {

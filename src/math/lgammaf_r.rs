@@ -108,7 +108,7 @@ pub fn lgammaf_r(mut x: f32) -> (f32, i32) {
 
     /* purge off +-inf, NaN, +-0, tiny and negative arguments */
     let mut signgam = 1_i32;
-    let sign = (u >> 31) != 0;
+    let sign = (u & UF_SIGN) != 0;
     let ix = u & UF_ABS;
     if ix >= UF_INF {
         return (x * x, signgam);

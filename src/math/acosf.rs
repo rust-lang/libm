@@ -48,7 +48,7 @@ pub fn acosf(x: f32) -> f32 {
     let s: f32;
 
     let mut hx = x.to_bits();
-    let sign = (hx >> 31) != 0;
+    let sign = (hx & UF_SIGN) != 0;
     let ix = hx & UF_ABS;
     /* |x| >= 1 or nan */
     if ix >= UF_1 {

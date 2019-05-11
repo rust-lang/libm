@@ -1,3 +1,4 @@
+use super::consts::*;
 use core::{f32, f64};
 
 use super::scalbn;
@@ -128,7 +129,7 @@ pub fn fma(x: f64, y: f64, z: f64) -> f64 {
         let t = rlo;
         rlo -= zlo;
         rhi = rhi - zhi - (t < rlo) as u64;
-        if (rhi >> 63) != 0 {
+        if (rhi & UD_SIGN) != 0 {
             rlo = (-(rlo as i64)) as u64;
             rhi = (-(rhi as i64)) as u64 - (rlo != 0) as u64;
             sign = (sign == 0) as i32;

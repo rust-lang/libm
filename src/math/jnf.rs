@@ -27,7 +27,7 @@ pub fn jnf(n: i32, mut x: f32) -> f32 {
     let mut temp: f32;
 
     ix = x.to_bits();
-    sign = (ix >> 31) != 0;
+    sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
     if ix > UF_INF {
         /* nan */
@@ -206,7 +206,7 @@ pub fn ynf(n: i32, x: f32) -> f32 {
     let mut temp: f32;
 
     ix = x.to_bits();
-    sign = (ix >> 31) != 0;
+    sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
     if ix > UF_INF {
         /* nan */

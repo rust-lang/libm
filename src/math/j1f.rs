@@ -73,7 +73,7 @@ pub fn j1f(x: f32) -> f32 {
     let sign: bool;
 
     ix = x.to_bits();
-    sign = (ix >> 31) != 0;
+    sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
     if ix >= UF_INF {
         return 1. / (x * x);
@@ -119,7 +119,7 @@ pub fn y1f(x: f32) -> f32 {
     if ix.trailing_zeros() >= 31 {
         return f32::NEG_INFINITY;
     }
-    if (ix >> 31) != 0 {
+    if (ix & UF_SIGN) != 0 {
         return f32::NAN;
     }
     if ix >= UF_INF {

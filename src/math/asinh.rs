@@ -1,3 +1,4 @@
+use super::consts::*;
 use super::{log, log1p, sqrt};
 
 const LN2: f64 = 0.693_147_180_559_945_309_417_232_121_458_176_568; /* 0x_3fe6_2e42,  0x_fefa_39ef*/
@@ -10,7 +11,7 @@ const LN2: f64 = 0.693_147_180_559_945_309_417_232_121_458_176_568; /* 0x_3fe6_2
 pub fn asinh(mut x: f64) -> f64 {
     let mut u = x.to_bits();
     let e = ((u >> 52) as usize) & 0x7ff;
-    let sign = (u >> 63) != 0;
+    let sign = (u & UD_SIGN) != 0;
 
     /* |x| */
     u &= (!0) >> 1;

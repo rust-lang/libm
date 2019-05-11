@@ -141,7 +141,7 @@ pub fn tgamma(mut x: f64) -> f64 {
     let mut z: f64;
     let mut r: f64;
     let ix: u32 = ((u >> 32) as u32) & UF_ABS;
-    let sign: bool = (u >> 63) != 0;
+    let sign: bool = (u & UD_SIGN) != 0;
 
     /* special cases */
     if ix >= 0x_7ff0_0000 {

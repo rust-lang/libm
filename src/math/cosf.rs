@@ -40,7 +40,7 @@ pub fn cosf(x: f32) -> f32 {
     let x1p120 = f32::from_bits(0x_7b80_0000); // 0x1p120f === 2 ^ 120
 
     let mut ix = x.to_bits();
-    let sign = (ix >> 31) != 0;
+    let sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
 
     if ix < UF_1_PI_4 {

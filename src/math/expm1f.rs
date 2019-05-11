@@ -40,7 +40,7 @@ pub fn expm1f(mut x: f32) -> f32 {
     let x1p127 = f32::from_bits(0x_7f00_0000); // 0x1p127f === 2 ^ 127
 
     let mut hx = x.to_bits();
-    let sign = (hx >> 31) != 0;
+    let sign = (hx & UF_SIGN) != 0;
     hx &= UF_ABS;
 
     /* filter out huge and non-finite argument */

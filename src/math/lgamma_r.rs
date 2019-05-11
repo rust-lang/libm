@@ -174,7 +174,7 @@ pub fn lgamma_r(mut x: f64) -> (f64, i32) {
 
     /* purge off +-inf, NaN, +-0, tiny and negative arguments */
     let mut signgam = 1;
-    let sign = (u >> 63) != 0;
+    let sign = (u & UD_SIGN) != 0;
     let ix = ((u >> 32) as u32) & UF_ABS;
     if ix >= 0x_7ff0_0000 {
         return (x * x, signgam);

@@ -11,7 +11,7 @@ const LN2: f32 = 0.693_147_180_559_945_309_417_232_121_458_176_568;
 pub fn asinhf(mut x: f32) -> f32 {
     let u = x.to_bits();
     let i = u & UF_ABS;
-    let sign = (u >> 31) != 0;
+    let sign = (u & UF_SIGN) != 0;
 
     /* |x| */
     x = f32::from_bits(i);

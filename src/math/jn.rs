@@ -58,7 +58,7 @@ pub fn jn(n: i32, mut x: f64) -> f64 {
 
     ix = get_high_word(x);
     lx = get_low_word(x);
-    sign = (ix >> 31) != 0;
+    sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
 
     // -lx == !lx + 1
@@ -271,7 +271,7 @@ pub fn yn(n: i32, x: f64) -> f64 {
 
     ix = get_high_word(x);
     lx = get_low_word(x);
-    sign = (ix >> 31) != 0;
+    sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
 
     // -lx == !lx + 1

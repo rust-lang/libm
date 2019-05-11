@@ -6,8 +6,8 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
     let mut uy: u64 = y.to_bits();
     let mut ex = ((ux >> 52) & 0x7ff) as i32;
     let mut ey = ((uy >> 52) & 0x7ff) as i32;
-    let sx = (ux >> 63) != 0;
-    let sy = (uy >> 63) != 0;
+    let sx = (ux & UD_SIGN) != 0;
+    let sy = (uy & UD_SIGN) != 0;
     let mut q: u32;
     let mut i: u64;
     let mut uxi: u64 = ux;

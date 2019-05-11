@@ -32,7 +32,7 @@ pub fn sincosf(x: f32) -> (f32, f32) {
     let sign: bool;
 
     ix = x.to_bits();
-    sign = (ix >> 31) != 0;
+    sign = (ix & UF_SIGN) != 0;
     ix &= UF_ABS;
 
     /* |x| ~<= pi/4 */

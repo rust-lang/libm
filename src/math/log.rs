@@ -60,6 +60,7 @@
  * to produce the hexadecimal values shown.
  */
 
+use super::consts::*;
 use core::f64;
 
 const LN2_HI: f64 = 6.931_471_803_691_238_164_9_e-01; /* 3fe62e42 fee00000 */
@@ -85,7 +86,7 @@ pub fn log(mut x: f64) -> f64 {
     let mut hx: u32 = (ui >> 32) as u32;
     let mut k: i32 = 0;
 
-    if (hx < 0x_0010_0000) || ((hx >> 31) != 0) {
+    if (hx < 0x_0010_0000) || ((hx & UF_SIGN) != 0) {
         /* x < 2**-126  */
         if ui << 1 == 0 {
             return f64::NEG_INFINITY; /* log(+-0)=-inf */

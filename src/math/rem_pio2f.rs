@@ -40,7 +40,7 @@ pub(crate) fn rem_pio2f(x: f32) -> (i32, f64) {
     let mut tx: [f64; 1] = [0.];
 
     let hx = x.to_bits();
-    let sign = (hx >> 31) != 0;
+    let sign = (hx & UF_SIGN) != 0;
     let ix = hx & UF_ABS;
     /* 25+53 bit pi is good enough for medium size */
     if ix < 0x_4dc9_0fdb {

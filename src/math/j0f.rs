@@ -119,7 +119,7 @@ pub fn y0f(x: f32) -> f32 {
     ix = x.to_bits();
     if ix.trailing_zeros() >= 31 {
         f32::NEG_INFINITY
-    } else if (ix >> 31) != 0 {
+    } else if (ix & UF_SIGN) != 0 {
         f32::NAN
     } else if ix >= UF_INF {
         1. / x

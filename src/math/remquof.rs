@@ -6,8 +6,8 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, i32) {
     let mut uy: u32 = y.to_bits();
     let mut ex = ((ux >> 23) & 0xff) as i32;
     let mut ey = ((uy >> 23) & 0xff) as i32;
-    let sx = (ux >> 31) != 0;
-    let sy = (uy >> 31) != 0;
+    let sx = (ux & UF_SIGN) != 0;
+    let sy = (uy & UF_SIGN) != 0;
     let mut q: u32;
     let mut i: u32;
     let mut uxi: u32 = ux;

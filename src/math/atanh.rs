@@ -9,7 +9,7 @@ use super::log1p;
 pub fn atanh(x: f64) -> f64 {
     let u = x.to_bits();
     let e = ((u >> 52) as usize) & 0x7ff;
-    let sign = (u >> 63) != 0;
+    let sign = (u & UD_SIGN) != 0;
 
     /* |x| */
     let mut y = f64::from_bits(u & UD_ABS);
