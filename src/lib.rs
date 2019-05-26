@@ -7,6 +7,7 @@
 )]
 
 mod math;
+mod musl;
 
 use core::{f32, f64};
 

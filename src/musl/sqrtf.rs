@@ -12,6 +12,7 @@
  * is preserved.
  * ====================================================
  */
+#![allow(dead_code)] // not deadcode, just for debug and warnings
 
 const TINY: f32 = 1.0e-30;
 
