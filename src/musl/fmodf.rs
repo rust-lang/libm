@@ -1,3 +1,4 @@
+#![allow(warnings)]
 use core::f32;
 use core::u32;
 
