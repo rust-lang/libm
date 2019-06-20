@@ -1,0 +1,14 @@
+[package]
+name = "libm-test"
+version = "0.1.0"
+authors = ["Benjamin Schultzer <benjamin@schultzer.com>"]
+
+[dependencies]
+libm = { version = "0.*", path = "../../" }
+paste = "0.1.5"
+rand = "0.6.5"
+
+[features]
+# Used checked array indexing instead of unchecked array indexing in this
+# library.
+checked = []

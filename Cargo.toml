@@ -15,10 +15,6 @@ edition = "2018"
 default = ['stable']
 stable = []
 
-# Generate tests which are random inputs and the outputs are calculated with
-# musl libc.
-musl-reference-tests = ['rand']
-
 # Used checked array indexing instead of unchecked array indexing in this
 # library.
 checked = []

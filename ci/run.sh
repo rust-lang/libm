@@ -11,5 +11,5 @@ $CMD --release
 $CMD --features 'stable'
 $CMD --release --features 'stable'
 
-$CMD --features 'stable checked musl-reference-tests'
-$CMD --release --features  'stable checked musl-reference-tests'
+cargo test -p libm-test --features 'stable checked'
+cargo test -p libm-test --release --features  'stable checked'
