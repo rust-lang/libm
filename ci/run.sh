@@ -13,3 +13,11 @@ $CMD --release --features 'stable'
 
 $CMD --features 'stable checked musl-reference-tests'
 $CMD --release --features  'stable checked musl-reference-tests'
+
+if [ "$TARGET" = "x86_64-unknown-linux-gnu" ] || [ "${TARGET}" = "x86_64-apple-darwin" ]; then
+    (
+        cd crates/libm-cdylib
+        cargo test
+        cargo test --release
+    )
+fi
