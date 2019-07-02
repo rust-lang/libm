@@ -1,7 +1,11 @@
 #!/usr/bin/env sh
 
 set -ex
+
 TARGET=$1
+
+export RUST_BACKTRACE=1
+export RUST_TEST_THREADS=1
 
 CMD="cargo test --all --no-default-features --target $TARGET"
 

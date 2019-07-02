@@ -25,7 +25,16 @@ pub(crate) fn compile_cdylib() {
 /// Compiles the test C program with source at `src_path` into
 /// an executable at `bin_path`.
 pub(crate) fn compile_file(src_path: &Path, bin_path: &Path) {
-    let mut cmd = process::Command::new("CC");
+    let cc = if std::env::var("CC").is_ok() {
+        std::env::var("CC").unwrap().to_string()
+    } else if cfg!(target_os = "linux") {
+        "gcc".to_string()
+    } else if cfg!(target_os = "macos") {
+        "clang".to_string()
+    } else {
+        panic!("unknown platform - Ccompiler not found")
+    };
+    let mut cmd = process::Command::new(&cc);
     // We disable the usage of builtin functions, e.g., from libm.
     // This should ideally produce a link failure if libm is not dynamically
     // linked.
@@ -51,27 +60,23 @@ where
     let mut cmd = process::Command::new(path);
 
     // Find the cdylib - we just support standard locations for now.
-    let libm_path = format!(
-        "../../target/{}/liblibm",
-        if cfg!(release_profile) {
-            "release"
-        } else {
-            "debug"
-        },
-    );
+    let libm_path = target_dir().join(if cfg!(release_profile) {
+        "release"
+    } else {
+        "debug"
+    });
 
     // Replace libm at runtime
     if cfg!(target_os = "macos") {
+        let lib_path = libm_path.join("liblibm.dylib");
         // for debugging:
         // cmd.env("DYLD_PRINT_LIBRARIES", "1");
         // cmd.env("X", "1");
         cmd.env("DYLD_FORCE_FLAT_NAMESPACE", "1");
-        cmd.env(
-            "DYLD_INSERT_LIBRARIES",
-            format!("{}.{}", libm_path, "dylib"),
-        );
+        cmd.env("DYLD_INSERT_LIBRARIES", lib_path.display().to_string());
     } else if cfg!(target_os = "linux") {
-        cmd.env("LD_PRELOAD", format!("{}.{}", libm_path, "so"));
+        let lib_path = libm_path.join("liblibm.so");
+        cmd.env("LD_PRELOAD", lib_path.display().to_string());
     }
     // Run the binary:
     let output = cmd.output().unwrap();
@@ -135,5 +140,13 @@ pub(crate) fn ctype_and_printf_format_specifier(x: &str) -> (&str, &str) {
         "f64" => ("double", "%f"),
         "i32" => ("int32_t", "%d"),
         _ => panic!("unknown type: {}", x),
+    }
+}
+
+pub(crate) fn target_dir() -> std::path::PathBuf {
+    if let Ok(dir) = std::env::var("CARGO_TARGET_DIR") {
+        std::path::PathBuf::from(&dir)
+    } else {
+        Path::new("../../target").into()
     }
 }

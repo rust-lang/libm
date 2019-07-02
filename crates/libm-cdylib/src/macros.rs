@@ -47,10 +47,10 @@ macro_rules! export {
                     c_format_s = c_format_s
                 );
 
-                let src = &format!("../../target/{}.c", stringify!($id));
-                let bin = &format!("../../target/{}", stringify!($id));
-                let src_path = std::path::Path::new(src);
-                let bin_path = std::path::Path::new(bin);
+                let target_dir = target_dir();
+                eprintln!("target dir: {}", target_dir.display());
+                let src_path = target_dir.clone().join(format!("{}.c", stringify!($id)));
+                let bin_path = target_dir.clone().join(format!("{}", stringify!($id)));
                 write_to_file(&src_path, &ctest);
 
                 // We now compile the C program into an executable, make sure
