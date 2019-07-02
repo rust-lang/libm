@@ -122,6 +122,15 @@ pub(crate) fn format_output(
 /// as well as the printf format specifier used to print values of that type.
 pub(crate) fn ctype_and_printf_format_specifier(x: &str) -> (&str, &str) {
     match x {
+        // Note: fprintf has no format specifier for floats, `%f`, converts
+        // floats into a double, and prints that.
+        //
+        // For the linking tests, precision doesn't really matter. The only
+        // thing that's tested is whether our implementation was properly called
+        // or not. This is done by making our functions return an incorrect
+        // magic value, different from the correct result. So as long as this is
+        // precise enough for us to be able to parse `42.0` from stdout as
+        // 42_f32/f64, everything works.
         "f32" => ("float", "%f"),
         "f64" => ("double", "%f"),
         "i32" => ("int32_t", "%d"),
