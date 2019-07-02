@@ -1,0 +1,20 @@
+[package]
+name = "libm-cdylib"
+version = "0.1.0"
+authors = ["Gonzalo Brito Gadeschi <gonzalobg88@gmail.com>"]
+edition = "2018"
+
+[features]
+default = ['stable']
+stable = []
+
+# Used checked array indexing instead of unchecked array indexing in this
+# library.
+checked = []
+
+[lib]
+name = "libm"
+crate-type = ["cdylib"]
+
+[dev-dependencies]
+paste = "0.1.5"
