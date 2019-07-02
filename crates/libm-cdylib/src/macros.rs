@@ -3,21 +3,33 @@ macro_rules! export {
        ($($test_arg:expr),*) -> $test_ret:expr;) => {
         #[no_mangle]
         pub extern "C" fn $id($($arg: $arg_ty),*) -> $ret_ty {
-            #[cfg(link_test)] {
-                let _ = libm::$id($($arg),*);
-                $test_ret as _
-            }
+            // This just forwards the call to the appropriate function of the
+            // libm crate.
             #[cfg(not(link_test))] {
                 libm::$id($($arg),*)
+            }
+            // When generating the linking tests, we return a specific incorrect
+            // value. This lets us tell this libm from the system's one appart:
+            #[cfg(link_test)] {
+                // TODO: as part of the rountrip, we probably want to verify
+                // that the argument values are the unique ones provided.
+                let _ = libm::$id($($arg),*);
+                $test_ret as _
             }
         }
 
         #[cfg(test)]
         paste::item! {
+            // These tests check that the library links properly.
             #[test]
-            fn [<$id _test>]() {
+            fn [<$id _link_test>]() {
                 use crate::test_utils::*;
-                let (cret_t, c_format_s) = ctype_and_cformat(stringify!($ret_ty));
+
+                // Generate a small C program that calls the C API from
+                // <math.h>. This program prints the result into an appropriate
+                // type, that is then printed to stdout.
+                let (cret_t, c_format_s)
+                    = ctype_and_printf_format_specifier(stringify!($ret_ty));
                 let ctest = format!(
                     r#"
                         #include <math.h>
@@ -40,8 +52,13 @@ macro_rules! export {
                 let src_path = std::path::Path::new(src);
                 let bin_path = std::path::Path::new(bin);
                 write_to_file(&src_path, &ctest);
+
+                // We now compile the C program into an executable, make sure
+                // that the libm-cdylib has been generated (and generate it if
+                // it isn't), and then we run the program, override the libm
+                // dynamically, and verify the result.
                 compile_file(&src_path, &bin_path);
-                compile_lib();
+                compile_cdylib();
                 check(&bin_path, $test_ret as $ret_ty)
             }
         }

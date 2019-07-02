@@ -62,7 +62,7 @@ fn r(z: f64) -> f64 {
 /// Returns values in radians, in the range of 0 to pi.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-extern "C" pub fn acos(x: f64) -> f64 {
+pub fn acos(x: f64) -> f64 {
     let x1p_120f = f64::from_bits(0x3870000000000000); // 0x1p-120 === 2 ^ -120
     let z: f64;
     let w: f64;
