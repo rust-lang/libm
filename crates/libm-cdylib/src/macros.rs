@@ -25,6 +25,9 @@ macro_rules! export {
             fn [<$id _link_test>]() {
                 use crate::test_utils::*;
 
+                // This re-compiles the dynamic library:
+                compile_cdylib();
+
                 // Generate a small C program that calls the C API from
                 // <math.h>. This program prints the result into an appropriate
                 // type, that is then printed to stdout.
@@ -55,10 +58,9 @@ macro_rules! export {
 
                 // We now compile the C program into an executable, make sure
                 // that the libm-cdylib has been generated (and generate it if
-                // it isn't), and then we run the program, override the libm
-                // dynamically, and verify the result.
+                // it isn't), and then we run the program, override the libm,
+                // and verify the result.
                 compile_file(&src_path, &bin_path);
-                compile_cdylib();
                 check(&bin_path, $test_ret as $ret_ty)
             }
         }

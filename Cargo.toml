@@ -26,8 +26,8 @@ checked = []
 [workspace]
 members = [
   "crates/compiler-builtins-smoke-test",
-  "crates/libm-cdylib",
   "crates/libm-bench",
+  "crates/libm-cdylib",
 ]
 
 [dev-dependencies]

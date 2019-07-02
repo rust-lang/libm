@@ -45,6 +45,21 @@ pub(crate) fn compile_file(src_path: &Path, bin_path: &Path) {
         .arg("-o")
         .arg(bin_path)
         .arg(src_path);
+
+    // Link our libm
+    let lib_path = cdylib_dir();
+    {
+        let mut ls = process::Command::new("ls");
+        ls.arg(lib_path.clone());
+        let output = ls.output().unwrap();
+        let output = String::from_utf8(output.stdout).unwrap();
+        println!("ls\n{}]n", output);
+    }
+    cmd.arg(format!("-L{}", lib_path.display()));
+    cmd.arg("-llibm");
+
+    eprintln!("compile cmd: {:?}", cmd);
+
     handle_err(
         &format!("compile file: {}", src_path.display()),
         &cmd.output().unwrap(),
@@ -59,25 +74,12 @@ where
 {
     let mut cmd = process::Command::new(path);
 
-    // Find the cdylib - we just support standard locations for now.
-    let libm_path = target_dir().join(if cfg!(release_profile) {
-        "release"
-    } else {
-        "debug"
-    });
-
-    // Replace libm at runtime
-    if cfg!(target_os = "macos") {
-        let lib_path = libm_path.join("liblibm.dylib");
-        // for debugging:
-        // cmd.env("DYLD_PRINT_LIBRARIES", "1");
-        // cmd.env("X", "1");
-        cmd.env("DYLD_FORCE_FLAT_NAMESPACE", "1");
-        cmd.env("DYLD_INSERT_LIBRARIES", lib_path.display().to_string());
-    } else if cfg!(target_os = "linux") {
-        let lib_path = libm_path.join("liblibm.so");
-        cmd.env("LD_PRELOAD", lib_path.display().to_string());
+    if cfg!(target_os = "linux") {
+        let ld_library_path = std::env::var("LD_LIBRARY_PATH").unwrap_or_default();
+        let ld_library_path = format!("{}:{}", cdylib_dir().display(), ld_library_path);
+        cmd.env("LD_LIBRARY_PATH", ld_library_path);
     }
+
     // Run the binary:
     let output = cmd.output().unwrap();
     handle_err(&format!("run file: {}", path.display()), &output);
@@ -148,5 +150,24 @@ pub(crate) fn target_dir() -> std::path::PathBuf {
         std::path::PathBuf::from(&dir)
     } else {
         Path::new("../../target").into()
+    }
+}
+
+pub(crate) fn cdylib_dir() -> std::path::PathBuf {
+    target_dir().join(if cfg!(release_profile) {
+        "release"
+    } else {
+        "debug"
+    })
+}
+
+pub(crate) fn cdylib_path() -> std::path::PathBuf {
+    let libm_path = cdylib_dir();
+    if cfg!(target_os = "macos") {
+        libm_path.join("liblibm.dylib")
+    } else if cfg!(target_os = "linux") {
+        libm_path.join("liblibm.so")
+    } else {
+        panic!("unsupported target_os")
     }
 }

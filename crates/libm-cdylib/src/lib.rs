@@ -1,3 +1,10 @@
+#![cfg(
+    // The tests are only enabled on x86 32/64-bit linux/macos:
+    all(unstable_rust,
+        any(target_os = "linux", target_os = "macos"),
+        any(target_arch = "x86", target_arch = "x86_64")
+    )
+)]
 #![allow(dead_code)]
 #![cfg_attr(not(test), feature(core_intrinsics, lang_items))]
 #![cfg_attr(not(test), no_std)]

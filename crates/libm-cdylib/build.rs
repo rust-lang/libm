@@ -5,4 +5,13 @@ fn main() {
     if profile == "release" {
         println!("cargo:rustc-cfg=release_profile");
     }
+    let nightly = {
+        let mut cmd = std::process::Command::new("rustc");
+        cmd.arg("--version");
+        let output = String::from_utf8(cmd.output().unwrap().stdout).unwrap();
+        output.contains("nightly")
+    };
+    if nightly {
+        println!("cargo:rustc-cfg=unstable_rust");
+    }
 }

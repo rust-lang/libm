@@ -24,10 +24,12 @@ fi
 $CMD --features "stable checked"
 $CMD --release --features  "stable checked ${TEST_MUSL}"
 
-if [ "$TARGET" = "x86_64-unknown-linux-gnu" ] || [ "${TARGET}" = "x86_64-apple-darwin" ]; then
-    (
-        cd crates/libm-cdylib
-        cargo test
-        cargo test --release
-    )
+if rustc --version | grep "nightly" ; then
+    if [ "$TARGET" = "x86_64-unknown-linux-gnu" ] || [ "${TARGET}" = "x86_64-apple-darwin" ]; then
+        (
+            cd crates/libm-cdylib
+            cargo test
+            cargo test --release
+        )
+    fi
 fi
