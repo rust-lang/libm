@@ -257,3 +257,14 @@ pub fn ynf(n: i32, x: f32) -> f32 {
         b
     }
 }
+
+#[cfg(test)]
+mod test {
+
+    #[test]
+    pub fn issue_170() {
+        let expected = f32::from_bits(86);
+        let result = super::jnf(29, f32::from_bits(1061546867));
+        assert_eq!(result, expected);
+    }
+}

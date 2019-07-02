@@ -341,3 +341,18 @@ pub fn yn(n: i32, x: f64) -> f64 {
         b
     }
 }
+
+#[cfg(test)]
+mod test {
+
+    #[test]
+    pub fn issue_170() {
+        let expected = f64::from_bits(1617394868955);
+        let result = super::jn(114, f64::from_bits(4594974205335009568));
+        assert_eq!(result, expected);
+
+        let expected = f64::from_bits(15924833);
+        let result = super::jn(136, f64::from_bits(4602429132083530282));
+        assert_eq!(result, expected);
+    }
+}
