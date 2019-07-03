@@ -48,17 +48,8 @@ pub(crate) fn compile_file(src_path: &Path, bin_path: &Path) {
 
     // Link our libm
     let lib_path = cdylib_dir();
-    {
-        let mut ls = process::Command::new("ls");
-        ls.arg(lib_path.clone());
-        let output = ls.output().unwrap();
-        let output = String::from_utf8(output.stdout).unwrap();
-        println!("ls\n{}]n", output);
-    }
     cmd.arg(format!("-L{}", lib_path.display()));
     cmd.arg("-llibm");
-
-    eprintln!("compile cmd: {:?}", cmd);
 
     handle_err(
         &format!("compile file: {}", src_path.display()),
@@ -98,8 +89,7 @@ where
 
 pub(crate) fn handle_err(step: &str, output: &process::Output) {
     if !output.status.success() {
-        eprintln!("{}", format_output(step, output));
-        panic!();
+        panic!("{}", format_output(step, output));
     }
 }
 

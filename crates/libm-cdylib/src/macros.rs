@@ -51,7 +51,6 @@ macro_rules! export {
                 );
 
                 let target_dir = target_dir();
-                eprintln!("target dir: {}", target_dir.display());
                 let src_path = target_dir.clone().join(format!("{}.c", stringify!($id)));
                 let bin_path = target_dir.clone().join(format!("{}", stringify!($id)));
                 write_to_file(&src_path, &ctest);
