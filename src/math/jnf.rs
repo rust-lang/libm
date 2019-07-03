@@ -169,10 +169,10 @@ pub fn jnf(n: i32, mut x: f32) -> f32 {
                     b = 2.0 * (i as f32) * b / x - a;
                     a = temp;
                     /* scale b to avoid spurious overflow */
-                    let x1p60 = f32::from_bits(0x5d800000); // 0x1p60 == 2^60
-                    if b > x1p60 {
+                    // let x1p60 = f32::from_bits(0x5d800000); // 0x1p60 == 2^60
+                    if b > 1.152922e+18 {
                         a /= b;
-                        t /= b;
+                        t = t / b;
                         b = 1.0;
                     }
                     i -= 1;
