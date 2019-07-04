@@ -1,5 +1,3 @@
-#![feature(proc_macro_diagnostic)]
-
 extern crate proc_macro;
 use self::proc_macro::TokenStream;
 use quote::quote;
