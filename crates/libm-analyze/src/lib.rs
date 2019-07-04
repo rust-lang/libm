@@ -153,8 +153,9 @@ fn get_functions(files: Vec<syn::File>) -> Vec<FnSig> {
                     err!("not `extern \"C\"`");
                     e = e2;
                 }
-                // Right now no functions are const fn - they could be, but that
-                // change should be explicit - so error if somebody tries.
+                // Right now there are no const fn functions. We might add them
+                // in the future, and at that point, we should tune this here.
+                // In the mean time, error if somebody tries.
                 if let Some(_) = constness {
                     err!("is const");
                 }
@@ -162,9 +163,11 @@ fn get_functions(files: Vec<syn::File>) -> Vec<FnSig> {
                 if let Some(_) = asyncness {
                     err!("is async");
                 }
-                // FIXME: Math functions shouldn't be unsafe. Some functions
-                // that should take pointers use repr(Rust) tuples. When we fix
-                // those, they should use references are not pointers.
+                // FIXME: Math functions are not unsafe. Some functions in the
+                // libm C API take pointers, but in our API take repr(Rust)
+                // tuples (for some reason). Once we fix those to have the same
+                // API as C libm, we should use references on their signature
+                // instead, and make them safe.
                 if let Some(_) = unsafety {
                     let e2 = e;
                     err!("is unsafe");
