@@ -5,10 +5,12 @@ authors = ["Gonzalo Brito Gadeschi <gonzalobg88@gmail.com>"]
 edition = "2018"
 
 [dev-dependencies]
-libm = { path = "../libm" }
-libm-analyze = { path = "../libm-analyze", no-default-features = true }
+libm = { path = "../libm", default-features = false }
+libm-analyze = { path = "../libm-analyze", default-features = true }
 rand = "0.7"
 
 [features]
 default = []
 checked = ["libm/checked"]
+stable = ["libm/stable"]
+system_libm = []

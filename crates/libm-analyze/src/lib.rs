@@ -5,6 +5,10 @@ use self::proc_macro::TokenStream;
 use quote::quote;
 use syn::parse_macro_input;
 
+/// `input` contains a single identifier, corresponding to a user-defined macro.
+/// This identifier is expanded for each libm public API.
+///
+/// See tests/analyze or below for the API.
 #[proc_macro]
 pub fn for_each_api(input: TokenStream) -> TokenStream {
     let files = get_libm_files();
@@ -30,7 +34,8 @@ pub fn for_each_api(input: TokenStream) -> TokenStream {
 }
 
 /// Traverses the libm crate directory, parsing all .rs files
-fn get_libm_files() -> Vec<(syn::File, String)> {
+fn get_libm_files() -> Vec<syn::File> {
+    // Find the directory of the libm crate:
     let root_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
     let libm_dir = root_dir
         .parent()
@@ -38,6 +43,7 @@ fn get_libm_files() -> Vec<(syn::File, String)> {
         .join("libm");
     let libm_src_dir = libm_dir.join("src");
 
+    // Traverse all Rust files, parsing them as `syn::File`
     let mut files = Vec::new();
     for entry in walkdir::WalkDir::new(libm_src_dir)
         .into_iter()
@@ -51,23 +57,25 @@ fn get_libm_files() -> Vec<(syn::File, String)> {
                 .expect("can't format file path")
                 .ends_with(".rs")
         {
+            // If the path is a directory or not a ".rs" file => skip it.
             continue;
         }
 
+        // Read the file into a string, and parse it into an AST using syn.
         let mut file_string = String::new();
         std::fs::File::open(&file_path)
             .unwrap_or_else(|_| panic!("can't open file at path: {}", file_path.display()))
             .read_to_string(&mut file_string)
             .expect("failed to read file to string");
         let file = syn::parse_file(&file_string).expect("failed to parse");
-        files.push((file, file_path.to_str().unwrap().to_string()));
+        files.push(file);
     }
     files
 }
 
+/// Function signature that will be expanded for the user macro.
 struct FnSig {
     ident: syn::Ident,
-    unsafety: bool,
     c_abi: bool,
     ret_ty: Option<syn::Type>,
     arg_tys: Vec<syn::Type>,
@@ -89,11 +97,13 @@ macro_rules! syn_to_str {
     }};
 }
 
-/// Extracts all public functions from the libm files.
-fn get_functions(files: Vec<(syn::File, String)>) -> Vec<FnSig> {
+/// Extracts all public functions from the libm files while
+/// doing some sanity checks on the function signatures.
+fn get_functions(files: Vec<syn::File>) -> Vec<FnSig> {
     let mut error = false;
     let mut functions = Vec::new();
-    for item in files.iter().flat_map(|f| f.0.items.iter()) {
+    // Traverse all files matching function items
+    for item in files.iter().flat_map(|f| f.items.iter()) {
         let mut e = false;
         match item {
             syn::Item::Fn(syn::ItemFn {
@@ -107,9 +117,9 @@ fn get_functions(files: Vec<(syn::File, String)>) -> Vec<FnSig> {
                 decl,
                 block: _,
             }) => {
+                // Build a function signature while doing some sanity checks
                 let mut fn_sig = FnSig {
                     ident: ident.clone(),
-                    unsafety: true,
                     c_abi: false,
                     arg_tys: Vec::new(),
                     ret_ty: None,
@@ -136,14 +146,31 @@ fn get_functions(files: Vec<(syn::File, String)>) -> Vec<FnSig> {
                         fn_sig.c_abi = true;
                     }
                 }
+                // If the function signature isn't extern "C", we aren't ABI compatible
+                // with libm.
+                if !fn_sig.c_abi {
+                    // FIXME: we should error here, but right that would break everything,
+                    // so we disable erroring.
+                    let e2 = e;
+                    err!("not `extern \"C\"`");
+                    e = e2;
+                }
+                // Right now no functions are const fn - they could be, but that
+                // change should be explicit - so error if somebody tries.
                 if let Some(_) = constness {
                     err!("is const");
                 }
+                // No functions should be async fn
                 if let Some(_) = asyncness {
                     err!("is async");
                 }
-                if &None == unsafety {
-                    fn_sig.unsafety = false;
+                // FIXME: Math functions shouldn't be unsafe. Some functions
+                // that should take pointers use repr(Rust) tuples. When we fix
+                // those, they should use references are not pointers.
+                if let Some(_) = unsafety {
+                    let e2 = e;
+                    err!("is unsafe");
+                    e = e2;
                 }
                 let syn::FnDecl {
                     fn_token: _,
@@ -154,6 +181,7 @@ fn get_functions(files: Vec<(syn::File, String)>) -> Vec<FnSig> {
                     output,
                 } = (**decl).clone();
 
+                // Forbid generic parameters, lifetimes, and consts in public APIs:
                 if variadic.is_some() {
                     err!(format!(
                         "contains variadic arguments \"{}\"",
@@ -178,7 +206,13 @@ fn get_functions(files: Vec<(syn::File, String)>) -> Vec<FnSig> {
                         syn_to_str!(generics.clone())
                     ));
                 }
+                // FIXME: we can do better here, but right now, we should
+                // error if inline and no_panic are not used, which is the
+                // case if the public API has no attributes.
+                //
+                // We might also want to check other attributes as well.
                 if attrs.is_empty() {
+                    let e2 = e;
                     err!(format!(
                         "missing `#[inline]` and `#[no_panic]` attributes {}",
                         attrs
@@ -187,13 +221,9 @@ fn get_functions(files: Vec<(syn::File, String)>) -> Vec<FnSig> {
                             .collect::<Vec<_>>()
                             .join(",")
                     ));
-                } // TODO: might want to check other attributes as well
-                if !fn_sig.c_abi {
-                    // FIXME: do not disable test if this fails - otherwise no test passes
-                    let e2 = e;
-                    err!("not `extern \"C\"`");
                     e = e2;
                 }
+                // Validate and parse output parameters and function arguments:
                 match output {
                     syn::ReturnType::Default => (),
                     syn::ReturnType::Type(_, ref b) if valid_ty(&b) => {
@@ -212,6 +242,7 @@ fn get_functions(files: Vec<(syn::File, String)>) -> Vec<FnSig> {
                         )),
                     }
                 }
+                // If there was an error, we skip the function:
                 if !e {
                     functions.push(fn_sig);
                 } else {
@@ -254,7 +285,8 @@ fn valid_ty(t: &syn::Type) -> bool {
                 .ident
                 .to_string();
             match s.as_str() {
-                "i8" | "i16" | "i32" | "i64" | "isize" | "u8" | "u16" | "u32" | "u64" | "usize"
+                | "i8" | "i16" | "i32" | "i64" | "isize"
+                | "u8" | "u16" | "u32" | "u64" | "usize"
                 | "f32" | "f64" => true,
                 _ => false,
             }
@@ -263,6 +295,7 @@ fn valid_ty(t: &syn::Type) -> bool {
     }
 }
 
+/// Returns a vector containing `len` identifiers.
 fn get_arg_ids(len: usize) -> Vec<syn::Ident> {
     let mut ids = Vec::new();
     for i in 0..len {

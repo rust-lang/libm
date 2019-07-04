@@ -1,13 +1,65 @@
 //! Compare the results of the `libm` implementation against the system's libm.
 #![cfg(test)]
-
+#![cfg(feature = "system_libm")]
 // Number of tests to generate for each function
 const NTESTS: usize = 500;
 
 // FIXME: should be 1
-const ULP_TOL: usize = 3;
+const ULP_TOL: usize = 4;
 
 macro_rules! system_libm {
+    // Skip those parts of the API that are not
+    // exposed by the system libm library:
+    (
+        id: j0f;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+    (
+        id: j1f;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+    (
+        id: jnf;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+    (
+        id: y0f;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+    (
+        id: y1f;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+    (
+        id: ynf;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+    (
+        id: exp10;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+    (
+        id: exp10f;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret: $ret_ty:ty;
+    ) =>  {};
+
+    // Generate random tests for all others:
     (
         id: $id:ident;
         arg_tys: $($arg_tys:ty),*;
@@ -20,17 +72,34 @@ macro_rules! system_libm {
             use crate::Call;
             let mut rng = rand::thread_rng();
             for _ in 0..NTESTS {
-                let args: ( $($arg_tys),+ ) = ( $(<$arg_tys as Rand>::gen(&mut rng)),+ );
-                extern "C" fn libm_fn($($arg_ids: $arg_tys),*) -> $ret_ty {
+                let mut args: ( $($arg_tys),+ ) = ( $(<$arg_tys as Rand>::gen(&mut rng)),+ );
+
+                match stringify!($id) {
+                    "j1" | "jn" => {
+                        // First argument to this function appears to be a number of
+                        // iterations, so passing in massive random numbers causes it to
+                        // take forever to execute, so make sure we're not running random
+                        // math code until the heat death of the universe.
+                        let p = &mut args as *mut _ as *mut i32;
+                        unsafe { p.write(p.read() & 0xffff) }
+                    },
+                    _ => (),
+                }
+
+                unsafe extern "C" fn libm_fn($($arg_ids: $arg_tys),*) -> $ret_ty {
                     libm::$id($($arg_ids),*)
                 }
-                let result = args.call(libm_fn);
+                let result = <($($arg_tys),*) as Call<
+                      unsafe extern "C" fn($($arg_tys),*) -> $ret_ty
+                    >>::call(args, libm_fn);
                 extern "C" {
                     fn $id($($arg_ids: $arg_tys),*) -> $ret_ty;
                 }
-                let expected = args.call($id);
+                let expected = <($($arg_tys),*) as Call<
+                    unsafe extern "C" fn($($arg_tys),*) -> $ret_ty
+                    >>::call(args, $id);
                 if !result.eq(expected) {
-                    eprintln!("result = {} != {} (expected)", result, expected);
+                    eprintln!("result = {:?} != {:?} (expected)", result, expected);
                     panic!();
                 }
             }
@@ -58,14 +127,19 @@ macro_rules! impl_call {
 }
 
 impl_call!((f32) -> f32: x: x);
-impl_call!((f32,f32) -> f32: x: x.0, x.1);
-impl_call!((f32,f32,f32) -> f32: x: x.0, x.1, x.2);
 impl_call!((f64) -> f64: x: x);
-impl_call!((f64,f64) -> f64: x: x.0, x.1);
-impl_call!((f64,f64,f64) -> f64: x: x.0, x.1, x.2);
+impl_call!((f64) -> i32: x: x);
+impl_call!((f32) -> i32: x: x);
 
+impl_call!((f32,f32) -> f32: x: x.0, x.1);
+impl_call!((f64,f64) -> f64: x: x.0, x.1);
 impl_call!((f64, i32) -> f64: x: x.0, x.1);
 impl_call!((f32, i32) -> f32: x: x.0, x.1);
+impl_call!((i32, f64) -> f64: x: x.0, x.1);
+impl_call!((i32, f32) -> f32: x: x.0, x.1);
+
+impl_call!((f32,f32,f32) -> f32: x: x.0, x.1, x.2);
+impl_call!((f64,f64,f64) -> f64: x: x.0, x.1, x.2);
 
 trait Rand {
     fn gen(rng: &mut rand::rngs::ThreadRng) -> Self;
