@@ -13,7 +13,7 @@ CMD_="cargo test \
   --manifest-path=crates/libm-test/Cargo.toml --all \
   --no-default-features "
 
-CMD="${CMD} --target ${TARGET}"
+CMD="${CMD_} --target ${TARGET}"
 
 $CMD
 $CMD --release
