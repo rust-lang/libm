@@ -186,10 +186,7 @@ macro_rules! impl_eq_f {
                     // one is inf but the other is not
                     return false;
                 }
-                if x.is_infinite() != y.is_infinite() {
-                    // one is inf but the other is not
-                    return false;
-                }
+
                 let xi: $i_ty = unsafe { core::intrinsics::transmute(x) };
                 let yi: $i_ty = unsafe { core::intrinsics::transmute(y) };
                 if (xi < 0) != (yi < 0) {
