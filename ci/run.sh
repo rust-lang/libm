@@ -27,4 +27,3 @@ if [ "$TARGET" = "x86_64-unknown-linux-gnu" ]; then
     $CMD_ --target $TARGET --features 'stable checked system_libm'
     $CMD_ --target $TARGET --release --features  'stable checked system_libm'
 fi
-

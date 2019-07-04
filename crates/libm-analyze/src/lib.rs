@@ -1,3 +1,7 @@
+//! A proc macro to analyze the libm APIs We want to exhaustively match all
+// fields here to create a compilation error if new fields are added.
+#![allow(clippy::unneeded_field_pattern)]
+
 extern crate proc_macro;
 use self::proc_macro::TokenStream;
 use quote::quote;
@@ -10,7 +14,7 @@ use syn::parse_macro_input;
 #[proc_macro]
 pub fn for_each_api(input: TokenStream) -> TokenStream {
     let files = get_libm_files();
-    let functions = get_functions(files);
+    let functions = get_functions(&files);
     let input = parse_macro_input!(input as syn::Ident);
     let mut tokens = proc_macro2::TokenStream::new();
     for function in functions {
@@ -45,7 +49,7 @@ fn get_libm_files() -> Vec<syn::File> {
     let mut files = Vec::new();
     for entry in walkdir::WalkDir::new(libm_src_dir)
         .into_iter()
-        .filter_map(|e| e.ok())
+        .filter_map(Result::ok)
     {
         use std::io::Read;
         let file_path = entry.path();
@@ -97,160 +101,158 @@ macro_rules! syn_to_str {
 
 /// Extracts all public functions from the libm files while
 /// doing some sanity checks on the function signatures.
-fn get_functions(files: Vec<syn::File>) -> Vec<FnSig> {
+fn get_functions(files: &[syn::File]) -> Vec<FnSig> {
     let mut error = false;
     let mut functions = Vec::new();
     // Traverse all files matching function items
     for item in files.iter().flat_map(|f| f.items.iter()) {
         let mut e = false;
-        match item {
-            syn::Item::Fn(syn::ItemFn {
-                vis: syn::Visibility::Public(_),
-                ident,
-                constness,
-                asyncness,
-                unsafety,
-                attrs,
-                abi,
-                decl,
-                block: _,
-            }) => {
-                // Build a function signature while doing some sanity checks
-                let mut fn_sig = FnSig {
-                    ident: ident.clone(),
-                    c_abi: false,
-                    arg_tys: Vec::new(),
-                    ret_ty: None,
-                };
-                macro_rules! err {
-                    ($msg:expr) => {{
-                        #[cfg(feature = "analyze")]
-                        {
-                            eprintln!("[error]: Function \"{}\" {}", fn_sig.name(), $msg);
-                        }
-                        #[allow(unused_assignments)]
-                        {
-                            e = true;
-                        }
-                        ()
-                    }};
-                }
-                if let Some(syn::Abi {
-                    name: Some(l),
-                    extern_token: _,
-                }) = abi
-                {
-                    if l.value() == "C" {
-                        fn_sig.c_abi = true;
+        if let syn::Item::Fn(syn::ItemFn {
+            vis: syn::Visibility::Public(_),
+            ident,
+            constness,
+            asyncness,
+            unsafety,
+            attrs,
+            abi,
+            decl,
+            block: _,
+        }) = item
+        {
+            // Build a function signature while doing some sanity checks
+            let mut fn_sig = FnSig {
+                ident: ident.clone(),
+                c_abi: false,
+                arg_tys: Vec::new(),
+                ret_ty: None,
+            };
+            macro_rules! err {
+                ($msg:expr) => {{
+                    #[cfg(feature = "analyze")]
+                    {
+                        eprintln!("[error]: Function \"{}\" {}", fn_sig.name(), $msg);
                     }
-                }
-                // If the function signature isn't extern "C", we aren't ABI compatible
-                // with libm.
-                if !fn_sig.c_abi {
-                    // FIXME: we should error here, but right that would break everything,
-                    // so we disable erroring.
-                    let e2 = e;
-                    err!("not `extern \"C\"`");
-                    e = e2;
-                }
-                // Right now there are no const fn functions. We might add them
-                // in the future, and at that point, we should tune this here.
-                // In the mean time, error if somebody tries.
-                if let Some(_) = constness {
-                    err!("is const");
-                }
-                // No functions should be async fn
-                if let Some(_) = asyncness {
-                    err!("is async");
-                }
-                // FIXME: Math functions are not unsafe. Some functions in the
-                // libm C API take pointers, but in our API take repr(Rust)
-                // tuples (for some reason). Once we fix those to have the same
-                // API as C libm, we should use references on their signature
-                // instead, and make them safe.
-                if let Some(_) = unsafety {
-                    let e2 = e;
-                    err!("is unsafe");
-                    e = e2;
-                }
-                let syn::FnDecl {
-                    fn_token: _,
-                    generics,
-                    paren_token: _,
-                    inputs,
-                    variadic,
-                    output,
-                } = (**decl).clone();
-
-                // Forbid generic parameters, lifetimes, and consts in public APIs:
-                if variadic.is_some() {
-                    err!(format!(
-                        "contains variadic arguments \"{}\"",
-                        syn_to_str!(variadic.unwrap())
-                    ));
-                }
-                if generics.type_params().into_iter().count() != 0 {
-                    err!(format!(
-                        "contains generic parameters \"{}\"",
-                        syn_to_str!(generics.clone())
-                    ));
-                }
-                if generics.lifetimes().into_iter().count() != 0 {
-                    err!(format!(
-                        "contains lifetime parameters \"{}\"",
-                        syn_to_str!(generics.clone())
-                    ));
-                }
-                if generics.const_params().into_iter().count() != 0 {
-                    err!(format!(
-                        "contains const parameters \"{}\"",
-                        syn_to_str!(generics.clone())
-                    ));
-                }
-                // FIXME: we can do better here, but right now, we should
-                // error if inline and no_panic are not used, which is the
-                // case if the public API has no attributes.
-                //
-                // We might also want to check other attributes as well.
-                if attrs.is_empty() {
-                    let e2 = e;
-                    err!(format!(
-                        "missing `#[inline]` and `#[no_panic]` attributes {}",
-                        attrs
-                            .iter()
-                            .map(|a| syn_to_str!(a))
-                            .collect::<Vec<_>>()
-                            .join(",")
-                    ));
-                    e = e2;
-                }
-                // Validate and parse output parameters and function arguments:
-                match output {
-                    syn::ReturnType::Default => (),
-                    syn::ReturnType::Type(_, ref b) if valid_ty(&b) => {
-                        fn_sig.ret_ty = Some(*b.clone())
+                    #[allow(unused_assignments)]
+                    {
+                        e = true;
                     }
-                    other => err!(format!("returns unsupported type {}", syn_to_str!(other))),
-                }
-                for input in inputs {
-                    match input {
-                        syn::FnArg::Captured(ref c) if valid_ty(&c.ty) => {
-                            fn_sig.arg_tys.push(c.ty.clone())
-                        }
-                        other => err!(format!(
-                            "takes unsupported argument type {}",
-                            syn_to_str!(other)
-                        )),
-                    }
-                }
-                // If there was an error, we skip the function:
-                if !e {
-                    functions.push(fn_sig);
-                } else {
-                    error = true;
+                    ()
+                }};
+            }
+            if let Some(syn::Abi {
+                name: Some(l),
+                extern_token: _,
+            }) = abi
+            {
+                if l.value() == "C" {
+                    fn_sig.c_abi = true;
                 }
             }
-            _ => (),
+            // If the function signature isn't extern "C", we aren't ABI compatible
+            // with libm.
+            if !fn_sig.c_abi {
+                // FIXME: we should error here, but right that would break everything,
+                // so we disable erroring.
+                let e2 = e;
+                err!("not `extern \"C\"`");
+                e = e2;
+            }
+            // Right now there are no const fn functions. We might add them
+            // in the future, and at that point, we should tune this here.
+            // In the mean time, error if somebody tries.
+            if constness.is_some() {
+                err!("is const");
+            }
+            // No functions should be async fn
+            if asyncness.is_some() {
+                err!("is async");
+            }
+            // FIXME: Math functions are not unsafe. Some functions in the
+            // libm C API take pointers, but in our API take repr(Rust)
+            // tuples (for some reason). Once we fix those to have the same
+            // API as C libm, we should use references on their signature
+            // instead, and make them safe.
+            if unsafety.is_some() {
+                let e2 = e;
+                err!("is unsafe");
+                e = e2;
+            }
+            let syn::FnDecl {
+                fn_token: _,
+                generics,
+                paren_token: _,
+                inputs,
+                variadic,
+                output,
+            } = (**decl).clone();
+
+            // Forbid generic parameters, lifetimes, and consts in public APIs:
+            if variadic.is_some() {
+                err!(format!(
+                    "contains variadic arguments \"{}\"",
+                    syn_to_str!(variadic.unwrap())
+                ));
+            }
+            if generics.type_params().count() != 0 {
+                err!(format!(
+                    "contains generic parameters \"{}\"",
+                    syn_to_str!(generics.clone())
+                ));
+            }
+            if generics.lifetimes().count() != 0 {
+                err!(format!(
+                    "contains lifetime parameters \"{}\"",
+                    syn_to_str!(generics.clone())
+                ));
+            }
+            if generics.const_params().count() != 0 {
+                err!(format!(
+                    "contains const parameters \"{}\"",
+                    syn_to_str!(generics.clone())
+                ));
+            }
+            // FIXME: we can do better here, but right now, we should
+            // error if inline and no_panic are not used, which is the
+            // case if the public API has no attributes.
+            //
+            // We might also want to check other attributes as well.
+            if attrs.is_empty() {
+                let e2 = e;
+                err!(format!(
+                    "missing `#[inline]` and `#[no_panic]` attributes {}",
+                    attrs
+                        .iter()
+                        .map(|a| syn_to_str!(a))
+                        .collect::<Vec<_>>()
+                        .join(",")
+                ));
+                e = e2;
+            }
+            // Validate and parse output parameters and function arguments:
+            match output {
+                syn::ReturnType::Default => (),
+                syn::ReturnType::Type(_, ref b) if valid_ty(&b) => fn_sig.ret_ty = Some(*b.clone()),
+                other => err!(format!("returns unsupported type {}", syn_to_str!(other))),
+            }
+            for input in inputs {
+                match input {
+                    syn::FnArg::Captured(ref c) if valid_ty(&c.ty) => {
+                        fn_sig.arg_tys.push(c.ty.clone())
+                    }
+                    other => err!(format!(
+                        "takes unsupported argument type {}",
+                        syn_to_str!(other)
+                    )),
+                }
+            }
+            // If there was an error, we skip the function.
+            // Otherwise, the user macro is expanded with
+            // the function:
+            if e {
+                error = true;
+            } else {
+                functions.push(fn_sig);
+            }
         }
     }
     if error {
