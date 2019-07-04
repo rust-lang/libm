@@ -47,9 +47,9 @@ jobs:
       - template: ci/azure-install-rust.yml
       - script: rustup target add wasm32-unknown-unknown
         displayName: "Install rust wasm target"
-      - script: cargo build --target wasm32-unknown-unknown
+      - script: cargo build -p libm --target wasm32-unknown-unknown
         displayName: "Build for wasm"
-      - script: cargo build --target wasm32-unknown-unknown --no-default-features
+      - script: cargo build -p libm --target wasm32-unknown-unknown --no-default-features
         displayName: "Build for wasm (no default features)"
     variables:
       TOOLCHAIN: nightly
