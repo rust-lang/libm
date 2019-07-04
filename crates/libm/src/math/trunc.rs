@@ -7,7 +7,7 @@ pub fn trunc(x: f64) -> f64 {
     // `f64.trunc` native instruction, so we can leverage this for both code size
     // and speed.
     llvm_intrinsically_optimized! {
-        #[cfg(target_arch = "wasm32")] {
+        #[cfg(all(target_arch = "wasm32", not(feature = "stable")))] {
             return unsafe { ::core::intrinsics::truncf64(x) }
         }
     }

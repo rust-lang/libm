@@ -22,7 +22,7 @@ pub fn sqrtf(x: f32) -> f32 {
     // `f32.sqrt` native instruction, so we can leverage this for both code size
     // and speed.
     llvm_intrinsically_optimized! {
-        #[cfg(target_arch = "wasm32")] {
+        #[cfg(all(target_arch = "wasm32", not(feature = "stable")))] {
             return if x < 0.0 {
                 ::core::f32::NAN
             } else {
