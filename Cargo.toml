@@ -2,7 +2,7 @@
 members = [
   "crates/libm",
   "crates/libm-analyze",
-  "crates/libm-verify",
+  "crates/libm-test",
   "crates/compiler-builtins-smoke-test",
   "crates/libm-bench",
 ]
