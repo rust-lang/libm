@@ -1,6 +1,6 @@
 //! Compare the results of the `libm` implementation against the system's libm.
 #![cfg(test)]
-//#![cfg(feature = "system_libm")]
+#![cfg(feature = "system_libm")]
 
 use libm_test::WithinUlps;
 
