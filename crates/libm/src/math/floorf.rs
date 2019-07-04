@@ -40,11 +40,3 @@ pub fn floorf(x: f32) -> f32 {
     }
     f32::from_bits(ui)
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn no_overflow() {
-        assert_eq!(super::floorf(0.5), 0.0);
-    }
-}

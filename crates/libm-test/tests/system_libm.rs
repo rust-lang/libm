@@ -45,7 +45,6 @@ trait Call<F> {
     fn call(self, f: F) -> Self::Ret;
 }
 
-
 macro_rules! impl_call {
     (($($arg_tys:ty),*) -> $ret_ty:ty: $self_:ident: $($xs:expr),*)  => {
         impl Call<unsafe extern"C" fn($($arg_tys),*) -> $ret_ty> for ($($arg_tys),+) {
@@ -127,7 +126,7 @@ macro_rules! impl_eq_f {
                 ulps <= ULP_TOL as _
             }
         }
-    }
+    };
 }
 
 impl_eq_f!(f32, i32);

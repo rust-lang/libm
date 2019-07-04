@@ -135,11 +135,3 @@ pub fn expm1(mut x: f64) -> f64 {
     }
     y
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn sanity_check() {
-        assert_eq!(super::expm1(1.1), 2.0041660239464334);
-    }
-}

@@ -33,13 +33,3 @@ pub fn roundf(mut x: f32) -> f32 {
         y
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::roundf;
-
-    #[test]
-    fn negative_zero() {
-        assert_eq!(roundf(-0.0_f32).to_bits(), (-0.0_f32).to_bits());
-    }
-}

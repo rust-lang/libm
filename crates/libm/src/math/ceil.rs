@@ -40,12 +40,3 @@ pub fn ceil(x: f64) -> f64 {
         x + y
     }
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn sanity_check() {
-        assert_eq!(super::ceil(1.1), 2.0);
-        assert_eq!(super::ceil(2.9), 3.0);
-    }
-}
