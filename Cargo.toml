@@ -1,36 +1,6 @@
-[package]
-authors = ["Jorge Aparicio <jorge@japaric.io>"]
-categories = ["no-std"]
-description = "libm in pure Rust"
-documentation = "https://docs.rs/libm"
-keywords = ["libm", "math"]
-license = "MIT OR Apache-2.0"
-name = "libm"
-repository = "https://github.com/rust-lang-nursery/libm"
-version = "0.2.0"
-edition = "2018"
-
-[features]
-# only used to run our test suite
-default = ['stable']
-stable = []
-
-# Generate tests which are random inputs and the outputs are calculated with
-# musl libc.
-musl-reference-tests = ['rand']
-
-# Used checked array indexing instead of unchecked array indexing in this
-# library.
-checked = []
-
 [workspace]
 members = [
+  "crates/libm",
   "crates/compiler-builtins-smoke-test",
   "crates/libm-bench",
 ]
-
-[dev-dependencies]
-no-panic = "0.1.8"
-
-[build-dependencies]
-rand = { version = "0.6.5", optional = true }
