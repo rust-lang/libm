@@ -1,6 +1,6 @@
 //! Compare the results of the `libm` implementation against the system's libm.
 #![cfg(test)]
-#![cfg(feature = "system_libm")]
+//#![cfg(feature = "system_libm")]
 
 use libm_test::WithinUlps;
 
@@ -89,7 +89,7 @@ macro_rules! system_libm {
                 }
 
                 // Generate a tuple of arguments containing random values:
-                let mut args: ( $($arg_tys),+ ) = ( $(<$arg_tys as Rand>::gen(&mut rng)),+ );
+                let mut args: ( $($arg_tys,)+ ) = ( $(<$arg_tys as Rand>::gen(&mut rng),)+ );
 
                 // HACK
                 if let "j1" | "jn" = stringify!($id) {
@@ -104,7 +104,7 @@ macro_rules! system_libm {
                 let result = args.call(libm_fn as FnTy);
                 let expected = args.call($id as FnTy);
                 if !result.within_ulps(expected, ULP_TOL) {
-                    eprintln!("result = {:?} != {:?} (expected)", result, expected);
+                    eprintln!("{}{:?} returns = {:?} != {:?} (expected)", stringify!($id), args, result, expected);
                     panic!();
                 }
             }
@@ -128,7 +128,7 @@ trait Call<F> {
 macro_rules! impl_call {
     (($($arg_tys:ty),*) -> $ret_ty:ty: $self_:ident: $($xs:expr),*)  => {
         // We only care about unsafe extern "C" functions here, safe functions coerce to them:
-        impl Call<unsafe extern"C" fn($($arg_tys),*) -> $ret_ty> for ($($arg_tys),+) {
+        impl Call<unsafe extern"C" fn($($arg_tys),*) -> $ret_ty> for ($($arg_tys,)+) {
             type Ret = $ret_ty;
             fn call(self, f: unsafe extern "C" fn($($arg_tys),*) -> $ret_ty) -> Self::Ret {
                 let $self_ = self;
@@ -138,10 +138,10 @@ macro_rules! impl_call {
     };
 }
 
-impl_call!((f32) -> f32: x: x);
-impl_call!((f64) -> f64: x: x);
-impl_call!((f64) -> i32: x: x);
-impl_call!((f32) -> i32: x: x);
+impl_call!((f32) -> f32: x: x.0);
+impl_call!((f64) -> f64: x: x.0);
+impl_call!((f64) -> i32: x: x.0);
+impl_call!((f32) -> i32: x: x.0);
 impl_call!((f32, f32) -> f32: x: x.0, x.1);
 impl_call!((f64, f64) -> f64: x: x.0, x.1);
 impl_call!((f64, i32) -> f64: x: x.0, x.1);
