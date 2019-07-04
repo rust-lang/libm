@@ -1,0 +1,16 @@
+[package]
+name = "libm-analyze"
+version = "0.1.0"
+authors = ["gnzlbg <gonzalobg88@gmail.com>"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+test = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+syn = { version = "0.15", features = ["full", "extra-traits"] }
+quote = "0.6"
+walkdir = "2.2.8"
