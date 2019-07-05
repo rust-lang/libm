@@ -115,7 +115,7 @@ impl_tuple_vec!((i32, f32): x: x.0, x.1);
 impl_tuple_vec!((f32, f32, f32): x: x.0, x.1, x.2);
 impl_tuple_vec!((f64, f64, f64): x: x.0, x.1, x.2);
 
-/// Kind of LibmApi - used to handle generating tests
+/// Kind of libm API - used to handle generating tests
 /// for some functions slightly differently.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum ApiKind {
@@ -155,7 +155,7 @@ macro_rules! assert_approx_eq {
         if !$crate::WithinUlps::within_ulps($result, $expected, $ulps) {
             panic!("{:?} != {:?}", $result, $expected);
         }
-    }
+    };
 }
 
 pub trait Toward: Sized {
@@ -190,8 +190,10 @@ pub trait RandSeq: Sized {
 
 macro_rules! impl_rand_seq_f {
     ($float_ty:ident) => {
+        #[allow(clippy::use_self)]
         impl RandSeq for $float_ty {
             fn rand_seq<R: rand::Rng>(rng: &mut R, _api_kind: ApiKind, len: usize) -> Vec<Self> {
+                use rand::seq::SliceRandom;
                 use std::$float_ty::*;
                 let mut vec = Vec::with_capacity(len);
 
@@ -212,12 +214,12 @@ macro_rules! impl_rand_seq_f {
                 const NSTEPS: usize = 1_000;
                 vec.extend(INFINITY.toward(0., NSTEPS));
                 vec.extend(NEG_INFINITY.toward(0., NSTEPS));
-                vec.extend((0. as $float_ty).toward(MIN_POSITIVE, NSTEPS));
-                vec.extend((0. as $float_ty).toward(-MIN_POSITIVE, NSTEPS));
+                vec.extend((0. as Self).toward(MIN_POSITIVE, NSTEPS));
+                vec.extend((0. as Self).toward(-MIN_POSITIVE, NSTEPS));
 
                 for i in 0..=NSTEPS {
-                    let dx = 2. / NSTEPS as $float_ty;
-                    let next = (-1. as $float_ty) + (i as $float_ty) * dx;
+                    let dx = 2. / NSTEPS as Self;
+                    let next = (-1. as Self) + (i as Self) * dx;
                     vec.push(next);
                 }
 
@@ -227,10 +229,18 @@ macro_rules! impl_rand_seq_f {
                 let remaining_len = len.checked_sub(current_len).unwrap();
 
                 for _ in 0..remaining_len {
-                    let n = rng.gen::<$float_ty>();
+                    let n = rng.gen::<Self>();
                     vec.push(n);
                 }
                 assert_eq!(vec.len(), len);
+
+                // Duplicate the vector, randomly shuffle it, and
+                // concatenate it. Otherwise for n-ary functions
+                // all vectors might have the same values. But
+                // testing with the same values is also worth doing.
+                let mut vec2 = vec.clone();
+                vec2.shuffle(rng);
+                vec.extend(vec2);
                 vec
             }
         }
@@ -242,15 +252,24 @@ impl_rand_seq_f!(f64);
 
 impl RandSeq for i32 {
     fn rand_seq<R: rand::Rng>(rng: &mut R, api_kind: ApiKind, len: usize) -> Vec<Self> {
+        use rand::seq::SliceRandom;
         let mut v = Vec::with_capacity(len);
         for _ in 0..len {
-            let mut r = rng.gen::<i32>();
+            let mut r = rng.gen::<Self>();
             if let ApiKind::Jx = api_kind {
                 r &= 0xffff;
             }
             v.push(r);
         }
         assert_eq!(v.len(), len);
+
+        // Duplicate the vector, randomly shuffle it, and
+        // concatenate it. Otherwise for n-ary functions
+        // all vectors might have the same values. But
+        // testing with the same values is also worth doing.
+        let mut v2 = v.clone();
+        v2.shuffle(rng);
+        v.extend(v2);
         v
     }
 }

@@ -54,7 +54,7 @@ jobs:
     variables:
       TOOLCHAIN: nightly
 
-  - job: rustfmt
+  - job: tools
     pool:
       vmImage: ubuntu-16.04
     steps:
@@ -63,6 +63,10 @@ jobs:
         displayName: "install rustfmt"
       - bash: cargo fmt --all -- --check
         displayName: "check formatting"
+      - bash: rustup component add clippy
+        displayName: "install clippy"
+      - bash: cargo clippy --all -- -D clippy::pedantic
+        displayName: "check clippy"
 
   - job: compiler_builtins_works
     pool:

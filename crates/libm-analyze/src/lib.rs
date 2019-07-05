@@ -208,7 +208,7 @@ fn get_functions(files: &[syn::File]) -> Vec<FnSig> {
                 ));
             }
             if attrs.is_empty() {
-                err!(format!("missing `#[inline]` and `#[no_panic]` attributes"));
+                err!("missing `#[inline]` and `#[no_panic]` attributes");
             } else {
                 let attrs = attrs
                     .iter()
@@ -216,10 +216,10 @@ fn get_functions(files: &[syn::File]) -> Vec<FnSig> {
                     .collect::<Vec<_>>()
                     .join(",");
                 if !attrs.contains("inline") {
-                    err!(format!("missing `#[inline]` attribute"));
+                    err!("missing `#[inline]` attribute");
                 }
                 if !attrs.contains("no_panic") {
-                    err!(format!("missing `#[no_panic]` attributes"));
+                    err!("missing `#[no_panic]` attributes");
                 }
             }
             // Validate and parse output parameters and function arguments:
