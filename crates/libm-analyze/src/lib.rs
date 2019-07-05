@@ -211,22 +211,26 @@ fn get_functions(files: &[syn::File]) -> Vec<FnSig> {
                     syn_to_str!(generics.clone())
                 ));
             }
-            // FIXME: we can do better here, but right now, we should
-            // error if inline and no_panic are not used, which is the
-            // case if the public API has no attributes.
-            //
-            // We might also want to check other attributes as well.
             if attrs.is_empty() {
-                let e2 = e;
                 err!(format!(
-                    "missing `#[inline]` and `#[no_panic]` attributes {}",
-                    attrs
-                        .iter()
-                        .map(|a| syn_to_str!(a))
-                        .collect::<Vec<_>>()
-                        .join(",")
+                    "missing `#[inline]` and `#[no_panic]` attributes"
                 ));
-                e = e2;
+            } else {
+                let attrs = attrs
+                    .iter()
+                    .map(|a| syn_to_str!(a))
+                    .collect::<Vec<_>>()
+                    .join(",");
+                if !attrs.contains("inline") {
+                    err!(format!(
+                        "missing `#[inline]` attribute"
+                    ));
+                }
+                if !attrs.contains("no_panic") {
+                    err!(format!(
+                        "missing `#[no_panic]` attributes"
+                    ));
+                }
             }
             // Validate and parse output parameters and function arguments:
             match output {
