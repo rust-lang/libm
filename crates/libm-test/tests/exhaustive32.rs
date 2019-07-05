@@ -1,6 +1,6 @@
 //! Exhaustively test unary APIs taking 32-bit wide arguments.
 #![cfg(test)]
-#![cfg(exhaustive32)]
+#![cfg(all(exhaustive32, feature = "exhaustive"))]
 use libm_test::assert_approx_eq;
 
 macro_rules! exhaustive32 {
