@@ -60,7 +60,7 @@ macro_rules! exhaustive32 {
                 fn $id($arg_id: f32) -> $ret_ty;
             }
 
-            for i in 0..u32::max_value() {
+            for i in 0..=u32::max_value() {
                 let arg: f32 = unsafe { std::mem::transmute(i) };
                 let result = libm::$id(arg);
                 let expected = unsafe { $id(arg) };
