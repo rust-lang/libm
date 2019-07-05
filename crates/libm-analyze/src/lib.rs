@@ -151,11 +151,7 @@ fn get_functions(files: &[syn::File]) -> Vec<FnSig> {
             // If the function signature isn't extern "C", we aren't ABI compatible
             // with libm.
             if !fn_sig.c_abi {
-                // FIXME: we should error here, but right that would break everything,
-                // so we disable erroring.
-                let e2 = e;
                 err!("not `extern \"C\"`");
-                e = e2;
             }
             // Right now there are no const fn functions. We might add them
             // in the future, and at that point, we should tune this here.
