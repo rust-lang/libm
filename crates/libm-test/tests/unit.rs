@@ -344,3 +344,19 @@ fn j1f_2488() {
 fn y1f_2002() {
     assert_eq!(y1f(2.0000002_f32), -0.10703229_f32);
 }
+
+#[test]
+fn fma_segfault_bug() {
+    // An attempt to substract with overflow was causing a segfault
+    // on FMA for these inputs:
+    assert_eq!(
+        fma(
+            -0.0000000000000002220446049250313,
+            -0.0000000000000002220446049250313,
+            -0.0000000000000002220446049250313
+        ),
+        -0.00000000000000022204460492503126
+    );
+
+    assert_eq!(fma(-0.992, -0.992, -0.992), -0.00793599999988632);
+}
