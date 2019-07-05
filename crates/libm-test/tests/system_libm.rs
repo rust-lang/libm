@@ -54,7 +54,8 @@ macro_rules! system_libm {
 }
 
 libm_analyze::for_each_api!(system_libm(
-    // Not exposed by the system's musl
+    // FIXME: Some are not exposed by the system's musl,
+    // others are incorrect. FMA is broken.
     /*ignored:*/
-    "j0f,j1f,jnf,y0f,y1f,ynf,exp10,exp10f"
+    "j0f,j1f,jnf,y0f,y1f,ynf,exp10,exp10f,fma"
 ));
