@@ -22,13 +22,8 @@ macro_rules! bench_fn {
         #[bench]
         #[allow(unused_mut)]
         pub fn $id(bh: &mut Bencher) {
-            // Type of the system libm fn:
-            type FnTy = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
-
-            // FIXME: extern "C" wrapper
-            extern "C" fn libm_fn($($arg_ids: $arg_tys),*) -> $ret_ty {
-                libm::$id($($arg_ids),*)
-            }
+            type FnTy
+                = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
 
             // Generate a tuple of arguments containing random values:
             let mut rng = rand::thread_rng();
@@ -36,7 +31,7 @@ macro_rules! bench_fn {
 
             adjust_input!(fn: $id, input: x);
 
-            bh.iter(|| test::black_box(x).call(libm_fn as FnTy))
+            bh.iter(|| test::black_box(x).call(libm::$id as FnTy))
         }
     };
 }

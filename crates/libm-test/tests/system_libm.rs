@@ -80,12 +80,7 @@ macro_rules! system_libm {
                 type FnTy
                     = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
 
-                // FIXME: extern "C" wrapper over our libm functions
-                // Shouldn't be needed once they are all extern "C"
-                extern "C" fn libm_fn($($arg_ids: $arg_tys),*) -> $ret_ty {
-                    libm::$id($($arg_ids),*)
-                }
-                extern "C" {
+               extern "C" {
                     // The system's libm function:
                     fn $id($($arg_ids: $arg_tys),*) -> $ret_ty;
                 }
@@ -98,7 +93,7 @@ macro_rules! system_libm {
                 // correct_input!(fn: $id, input: args);
                 adjust_input!(fn: $id, input: args);
 
-                let result = args.call(libm_fn as FnTy);
+                let result = args.call(libm::$id as FnTy);
                 let expected = args.call($id as FnTy);
                 assert_approx_eq!(
                     result == expected,
