@@ -7,7 +7,7 @@ use super::log1pf;
 /// Is defined as `log((1+x)/(1-x))/2 = log1p(2x/(1-x))/2`.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn atanhf(mut x: f32) -> f32 {
+pub extern "C" fn atanhf(mut x: f32) -> f32 {
     let mut u = x.to_bits();
     let sign = (u >> 31) != 0;
 

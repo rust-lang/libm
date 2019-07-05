@@ -4,7 +4,7 @@
 /// first argument, `x`, and the sign of its second argument, `y`.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn copysignf(x: f32, y: f32) -> f32 {
+pub extern "C" fn copysignf(x: f32, y: f32) -> f32 {
     let mut ux = x.to_bits();
     let uy = y.to_bits();
     ux &= 0x7fffffff;

@@ -65,7 +65,7 @@ const S05: f32 = 1.2354227016e-11; /* 0x2d59567e */
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn j1f(x: f32) -> f32 {
+pub extern "C" fn j1f(x: f32) -> f32 {
     let mut z: f32;
     let r: f32;
     let s: f32;
@@ -111,7 +111,7 @@ const V0: [f32; 5] = [
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn y1f(x: f32) -> f32 {
+pub extern "C" fn y1f(x: f32) -> f32 {
     let z: f32;
     let u: f32;
     let v: f32;

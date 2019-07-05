@@ -221,7 +221,7 @@ fn erfc2(ix: u32, mut x: f64) -> f64 {
 /// deviations of the mean (assuming a normal distribution).
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn erf(x: f64) -> f64 {
+pub extern "C" fn erf(x: f64) -> f64 {
     let r: f64;
     let s: f64;
     let z: f64;
@@ -272,7 +272,7 @@ pub fn erf(x: f64) -> f64 {
 /// large probabilities (on large `x`) from 1.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn erfc(x: f64) -> f64 {
+pub extern "C" fn erfc(x: f64) -> f64 {
     let r: f64;
     let s: f64;
     let z: f64;

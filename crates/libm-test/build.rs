@@ -13,9 +13,7 @@ fn main() {
 
     if profile == "release" || opt_level > 0 {
         match target.as_str() {
-            "x86_64-unknown-linux-gnu" |
-            "x86_64-apple-darwin" |
-            "x86_64-pc-windows-msvc" => {
+            "x86_64-unknown-linux-gnu" | "x86_64-apple-darwin" | "x86_64-pc-windows-msvc" => {
                 println!("cargo:rustc-cfg=exhaustive32");
             }
             _ => (),

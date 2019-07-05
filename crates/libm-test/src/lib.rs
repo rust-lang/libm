@@ -112,9 +112,12 @@ macro_rules! assert_approx_eq {
         if !$crate::WithinUlps::within_ulps($result, $expected, $ulps) {
             let f = format!(
                 "{}{:?} returns = {:?} != {:?} (expected)",
-                stringify!($id), $arg, $result, $expected
+                stringify!($id),
+                $arg,
+                $result,
+                $expected
             );
             panic!(f);
         }
-    }
+    };
 }

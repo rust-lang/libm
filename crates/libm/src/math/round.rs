@@ -4,7 +4,7 @@ const TOINT: f64 = 1.0 / f64::EPSILON;
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn round(mut x: f64) -> f64 {
+pub extern "C" fn round(mut x: f64) -> f64 {
     let i = x.to_bits();
     let e: u64 = i >> 52 & 0x7ff;
     let mut y: f64;

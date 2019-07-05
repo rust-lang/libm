@@ -50,7 +50,7 @@ const PI_LO: f64 = 1.2246467991473531772E-16; /* 0x3CA1A626, 0x33145C07 */
 /// Returns a value in radians, in the range of -pi to pi.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn atan2(y: f64, x: f64) -> f64 {
+pub extern "C" fn atan2(y: f64, x: f64) -> f64 {
     if x.is_nan() || y.is_nan() {
         return x + y;
     }

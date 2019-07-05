@@ -17,7 +17,7 @@ use super::{fabsf, j0f, j1f, logf, y0f, y1f};
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn jnf(n: i32, mut x: f32) -> f32 {
+pub extern "C" fn jnf(n: i32, mut x: f32) -> f32 {
     let mut ix: u32;
     let mut nm1: i32;
     let mut sign: bool;
@@ -199,7 +199,7 @@ pub fn jnf(n: i32, mut x: f32) -> f32 {
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn ynf(n: i32, x: f32) -> f32 {
+pub extern "C" fn ynf(n: i32, x: f32) -> f32 {
     let mut ix: u32;
     let mut ib: u32;
     let nm1: i32;

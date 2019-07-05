@@ -32,7 +32,7 @@ const Q5: f64 = -2.01099218183624371326e-07; /* BE8AFDB7 6E09C32D */
 /// where using `exp(x)-1` would lose many significant digits.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn expm1(mut x: f64) -> f64 {
+pub extern "C" fn expm1(mut x: f64) -> f64 {
     let hi: f64;
     let lo: f64;
     let k: i32;

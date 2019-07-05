@@ -115,7 +115,7 @@ const S05: f64 = 1.23542274426137913908e-11; /* 0x3DAB2ACF, 0xCFB97ED8 */
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn j1(x: f64) -> f64 {
+pub extern "C" fn j1(x: f64) -> f64 {
     let mut z: f64;
     let r: f64;
     let s: f64;
@@ -162,7 +162,7 @@ const V0: [f64; 5] = [
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn y1(x: f64) -> f64 {
+pub extern "C" fn y1(x: f64) -> f64 {
     let z: f64;
     let u: f64;
     let v: f64;

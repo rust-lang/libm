@@ -7,7 +7,7 @@ const TOINT: f64 = 1. / f64::EPSILON;
 /// Finds the nearest integer less than or equal to `x`.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn floor(x: f64) -> f64 {
+pub extern "C" fn floor(x: f64) -> f64 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized
     // `f64.floor` native instruction, so we can leverage this for both code size
     // and speed.

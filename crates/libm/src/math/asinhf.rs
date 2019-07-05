@@ -9,7 +9,7 @@ const LN2: f32 = 0.693147180559945309417232121458176568;
 /// Is defined as `sgn(x)*log(|x|+sqrt(x*x+1))`.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn asinhf(mut x: f32) -> f32 {
+pub extern "C" fn asinhf(mut x: f32) -> f32 {
     let u = x.to_bits();
     let i = u & 0x7fffffff;
     let sign = (u >> 31) != 0;

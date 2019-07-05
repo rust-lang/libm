@@ -2,7 +2,7 @@
 #![cfg(test)]
 #![cfg(feature = "system_libm")]
 
-use libm_test::{adjust_input, Call, assert_approx_eq};
+use libm_test::{adjust_input, assert_approx_eq, Call};
 
 // Number of tests to generate for each function
 const NTESTS: usize = 500;

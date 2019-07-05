@@ -64,7 +64,7 @@ const S04: f32 = 1.1661400734e-09; /* 0x30a045e8 */
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn j0f(mut x: f32) -> f32 {
+pub extern "C" fn j0f(mut x: f32) -> f32 {
     let z: f32;
     let r: f32;
     let s: f32;
@@ -110,7 +110,7 @@ const V03: f32 = 2.5915085189e-07; /* 0x348b216c */
 const V04: f32 = 4.4111031494e-10; /* 0x2ff280c2 */
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn y0f(x: f32) -> f32 {
+pub extern "C" fn y0f(x: f32) -> f32 {
     let z: f32;
     let u: f32;
     let v: f32;

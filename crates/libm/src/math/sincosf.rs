@@ -25,7 +25,7 @@ const S4PIO2: f32 = 4.0 * PI_2; /* 0x401921FB, 0x54442D18 */
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn sincosf(x: f32) -> (f32, f32) {
+pub extern "C" fn sincosf(x: f32) -> (f32, f32) {
     let s: f32;
     let c: f32;
     let mut ix: u32;

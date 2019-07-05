@@ -8,7 +8,7 @@ const P10: &[f32] = &[
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn exp10f(x: f32) -> f32 {
+pub extern "C" fn exp10f(x: f32) -> f32 {
     let (mut y, n) = modff(x);
     let u = n.to_bits();
     /* fabsf(n) < 8 without raising invalid on nan */
