@@ -2,7 +2,7 @@
 #![cfg(test)]
 #![cfg(feature = "system_libm")]
 
-use libm_test::{adjust_input, Call, WithinUlps};
+use libm_test::{adjust_input, Call, assert_approx_eq};
 
 // Number of tests to generate for each function
 const NTESTS: usize = 500;
@@ -77,7 +77,9 @@ macro_rules! system_libm {
             let mut rng = rand::thread_rng();
             for _ in 0..NTESTS {
                 // Type of the system libm fn:
-                type FnTy = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
+                type FnTy
+                    = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
+
                 // FIXME: extern "C" wrapper over our libm functions
                 // Shouldn't be needed once they are all extern "C"
                 extern "C" fn libm_fn($($arg_ids: $arg_tys),*) -> $ret_ty {
@@ -89,7 +91,8 @@ macro_rules! system_libm {
                 }
 
                 // Generate a tuple of arguments containing random values:
-                let mut args: ( $($arg_tys,)+ ) = ( $(<$arg_tys as Rand>::gen(&mut rng),)+ );
+                let mut args: ( $($arg_tys,)+ )
+                    = ( $(<$arg_tys as Rand>::gen(&mut rng),)+ );
 
                 // Some APIs need their inputs to be "adjusted" (see macro):
                 // correct_input!(fn: $id, input: args);
@@ -97,10 +100,10 @@ macro_rules! system_libm {
 
                 let result = args.call(libm_fn as FnTy);
                 let expected = args.call($id as FnTy);
-                if !result.within_ulps(expected, ULP_TOL) {
-                    eprintln!("{}{:?} returns = {:?} != {:?} (expected)", stringify!($id), args, result, expected);
-                    panic!();
-                }
+                assert_approx_eq!(
+                    result == expected,
+                    id: $id, arg: args, ulp: ULP_TOL
+                );
             }
         }
     }

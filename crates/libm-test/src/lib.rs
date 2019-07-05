@@ -101,6 +101,20 @@ macro_rules! adjust_input {
         // to execute, so check if their higher bits are set and
         // zero them:
         let p = &mut $arg as *mut _ as *mut i32;
-        unsafe { p.write(p.read() & 0xff_ffff) }
+        unsafe { p.write(p.read() & 0xffff) }
     };
+}
+
+#[macro_export]
+macro_rules! assert_approx_eq {
+    ($result:ident == $expected:ident,
+     id: $id:ident, arg: $arg:ident, ulp: $ulps:expr) => {
+        if !$crate::WithinUlps::within_ulps($result, $expected, $ulps) {
+            let f = format!(
+                "{}{:?} returns = {:?} != {:?} (expected)",
+                stringify!($id), $arg, $result, $expected
+            );
+            panic!(f);
+        }
+    }
 }
