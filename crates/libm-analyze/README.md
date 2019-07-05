@@ -8,7 +8,7 @@ macro_rules! nop {
         id: $id:ident;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ty:ty;
+        ret_ty: $ty:ty;
     ) => {};
 }
 

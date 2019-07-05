@@ -1,115 +1,44 @@
 #![feature(test)]
 extern crate test;
 
+use libm_test::{adjust_input, Call};
 use rand::Rng;
 use test::Bencher;
 
-macro_rules! unary {
-  ($($func:ident),*) => ($(
-      paste::item! {
+macro_rules! bench_fn {
+    // FIXME: jnf benches never terminate
+    (
+        id: jnf;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret_ty: $ret_ty:ty;
+    ) => {};
+    (
+        id: $id:ident;
+        arg_tys: $($arg_tys:ty),*;
+        arg_ids: $($arg_ids:ident),*;
+        ret_ty: $ret_ty:ty;
+    ) => {
         #[bench]
-        pub fn [<$func>](bh: &mut Bencher) {
+        #[allow(unused_mut)]
+        pub fn $id(bh: &mut Bencher) {
+            // Type of the system libm fn:
+            type FnTy = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
+
+            // FIXME: extern "C" wrapper
+            extern "C" fn libm_fn($($arg_ids: $arg_tys),*) -> $ret_ty {
+                libm::$id($($arg_ids),*)
+            }
+
+            // Generate a tuple of arguments containing random values:
             let mut rng = rand::thread_rng();
-            let x = rng.gen::<f64>();
-            bh.iter(|| test::black_box(libm::[<$func>](x)))
+            let mut x: ( $($arg_tys,)+ ) = ( $(rng.gen::<$arg_tys>(),)+ );
+
+            adjust_input!(fn: $id, input: x);
+
+            bh.iter(|| test::black_box(x).call(libm_fn as FnTy))
         }
-        #[bench]
-        pub fn [<$func f>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let x = rng.gen::<f32>();
-            bh.iter(|| test::black_box(libm::[<$func f>](x)))
-        }
-    }
-  )*);
-}
-macro_rules! binary {
-  ($($func:ident),*) => ($(
-      paste::item! {
-        #[bench]
-        pub fn [<$func>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let x = rng.gen::<f64>();
-            let y = rng.gen::<f64>();
-            bh.iter(|| test::black_box(libm::[<$func>](x, y)))
-        }
-        #[bench]
-        pub fn [<$func f>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let x = rng.gen::<f32>();
-            let y = rng.gen::<f32>();
-            bh.iter(|| test::black_box(libm::[<$func f>](x, y)))
-        }
-    }
-  )*);
-  ($($func:ident);*) => ($(
-      paste::item! {
-        #[bench]
-        pub fn [<$func>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let x = rng.gen::<f64>();
-            let n = rng.gen::<i32>();
-            bh.iter(|| test::black_box(libm::[<$func>](x, n)))
-        }
-        #[bench]
-        pub fn [<$func f>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let x = rng.gen::<f32>();
-            let n = rng.gen::<i32>();
-            bh.iter(|| test::black_box(libm::[<$func f>](x, n)))
-        }
-    }
-  )*);
-}
-macro_rules! trinary {
-  ($($func:ident),*) => ($(
-      paste::item! {
-        #[bench]
-        pub fn [<$func>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let x = rng.gen::<f64>();
-            let y = rng.gen::<f64>();
-            let z = rng.gen::<f64>();
-            bh.iter(|| test::black_box(libm::[<$func>](x, y, z)))
-        }
-        #[bench]
-        pub fn [<$func f>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let x = rng.gen::<f32>();
-            let y = rng.gen::<f32>();
-            let z = rng.gen::<f32>();
-            bh.iter(|| test::black_box(libm::[<$func f>](x, y, z)))
-        }
-    }
-  )*);
-}
-macro_rules! bessel {
-  ($($func:ident),*) => ($(
-      paste::item! {
-        #[bench]
-        pub fn [<$func>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let mut n = rng.gen::<i32>();
-            n &= 0xffff;
-            let x = rng.gen::<f64>();
-            bh.iter(|| test::black_box(libm::[<$func>](n, x)))
-        }
-        #[bench]
-        pub fn [<$func f>](bh: &mut Bencher) {
-            let mut rng = rand::thread_rng();
-            let mut n = rng.gen::<i32>();
-            n &= 0xffff;
-            let x = rng.gen::<f32>();
-            bh.iter(|| test::black_box(libm::[<$func f>](n, x)))
-        }
-    }
-  )*);
+    };
 }
 
-unary!(
-    acos, acosh, asin, atan, cbrt, ceil, cos, cosh, erf, exp, exp2, exp10, expm1, fabs, floor, j0,
-    j1, lgamma, log, log1p, log2, log10, round, sin, sinh, sqrt, tan, tanh, tgamma, trunc, y0, y1
-);
-binary!(atan2, copysign, fdim, fmax, fmin, fmod, hypot, pow);
-trinary!(fma);
-bessel!(jn, yn);
-binary!(ldexp; scalbn);
+libm_analyze::for_each_api!(bench_fn);

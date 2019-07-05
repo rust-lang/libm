@@ -1,8 +1,8 @@
 //! Compare the results of the `libm` implementation against the system's libm.
 #![cfg(test)]
-#![cfg(feature = "system_libm")]
+//#![cfg(feature = "system_libm")]
 
-use libm_test::{Call, WithinUlps};
+use libm_test::{adjust_input, Call, WithinUlps};
 
 // Number of tests to generate for each function
 const NTESTS: usize = 500;
@@ -18,49 +18,49 @@ macro_rules! system_libm {
         id: j0f;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
     (
         id: j1f;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
     (
         id: jnf;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
     (
         id: y0f;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
     (
         id: y1f;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
     (
         id: ynf;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
     (
         id: exp10;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
     (
         id: exp10f;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) =>  {};
 
     // Generate random tests for all others:
@@ -68,7 +68,7 @@ macro_rules! system_libm {
         id: $id:ident;
         arg_tys: $($arg_tys:ty),*;
         arg_ids: $($arg_ids:ident),*;
-        ret: $ret_ty:ty;
+        ret_ty: $ret_ty:ty;
     ) => {
         #[test]
         #[allow(unused)]
@@ -91,15 +91,9 @@ macro_rules! system_libm {
                 // Generate a tuple of arguments containing random values:
                 let mut args: ( $($arg_tys,)+ ) = ( $(<$arg_tys as Rand>::gen(&mut rng),)+ );
 
-                // HACK
-                if let "j1" | "jn" = stringify!($id) {
-                    // First argument to these functions are a number of
-                    // iterations and passing large random numbers takes forever
-                    // to execute, so check if their higher bits are set and
-                    // zero them:
-                    let p = &mut args as *mut _ as *mut i32;
-                    unsafe { p.write(p.read() & 0xffff) }
-                }
+                // Some APIs need their inputs to be "adjusted" (see macro):
+                // correct_input!(fn: $id, input: args);
+                adjust_input!(fn: $id, input: args);
 
                 let result = args.call(libm_fn as FnTy);
                 let expected = args.call($id as FnTy);

@@ -27,7 +27,7 @@ pub fn for_each_api(input: TokenStream) -> TokenStream {
                 id: #id;
                 arg_tys: #(#arg_tys),*;
                 arg_ids: #(#arg_ids),*;
-                ret: #ret_ty;
+                ret_ty: #ret_ty;
             }
         };
         tokens.extend(t);

@@ -5,9 +5,6 @@ pub trait WithinUlps {
     fn within_ulps(self, other: Self, ulp_tol: usize) -> bool;
 }
 
-// TODO: this should be moved to the libm-test/src/lib.rs library. And we
-// should make ulps configurable.
-
 // Stamp the impls for floats:
 macro_rules! impl_within_ulps_f {
     ($f_ty:ty, $i_ty:ty) => {
@@ -65,7 +62,6 @@ pub trait Call<F> {
 
 macro_rules! impl_call {
     (($($arg_tys:ty),*) -> $ret_ty:ty: $self_:ident: $($xs:expr),*)  => {
-        // We only care about unsafe extern "C" functions here, safe functions coerce to them:
         impl Call<unsafe extern"C" fn($($arg_tys),*) -> $ret_ty> for ($($arg_tys,)+) {
             type Ret = $ret_ty;
             fn call(self, f: unsafe extern "C" fn($($arg_tys),*) -> $ret_ty) -> Self::Ret {
@@ -88,3 +84,23 @@ impl_call!((i32, f64) -> f64: x: x.0, x.1);
 impl_call!((i32, f32) -> f32: x: x.0, x.1);
 impl_call!((f32, f32, f32) -> f32: x: x.0, x.1, x.2);
 impl_call!((f64, f64, f64) -> f64: x: x.0, x.1, x.2);
+
+// Adjust the input of a function.
+#[macro_export]
+macro_rules! adjust_input {
+    (fn: j1, input: $arg:ident) => {
+        adjust_input!(adjust: $arg)
+    };
+    (fn: jn, input: $arg:ident) => {
+        adjust_input!(adjust: $arg)
+    };
+    (fn: $id:ident, input: $args:ident) => {};
+    (adjust: $arg:ident) => {
+        // First argument to these functions are a number of
+        // iterations and passing large random numbers takes forever
+        // to execute, so check if their higher bits are set and
+        // zero them:
+        let p = &mut $arg as *mut _ as *mut i32;
+        unsafe { p.write(p.read() & 0xff_ffff) }
+    };
+}
