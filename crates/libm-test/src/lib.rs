@@ -151,6 +151,11 @@ macro_rules! assert_approx_eq {
             panic!(f);
         }
     };
+    ($result:expr, $expected:expr, ulp: $ulps:expr) => {
+        if !$crate::WithinUlps::within_ulps($result, $expected, $ulps) {
+            panic!("{:?} != {:?}", $result, $expected);
+        }
+    }
 }
 
 pub trait Toward: Sized {

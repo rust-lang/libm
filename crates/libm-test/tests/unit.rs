@@ -1,6 +1,8 @@
 #![cfg(test)]
 
 use libm::*;
+use libm_test::assert_approx_eq;
+
 #[test]
 fn remquo_q_overflow() {
     // 0xc000000000000001, 0x04c0000000000004
@@ -349,14 +351,19 @@ fn y1f_2002() {
 fn fma_segfault_bug() {
     // An attempt to substract with overflow was causing a segfault
     // on FMA for these inputs:
-    assert_eq!(
+    assert_approx_eq!(
         fma(
             -0.0000000000000002220446049250313,
             -0.0000000000000002220446049250313,
             -0.0000000000000002220446049250313
         ),
-        -0.00000000000000022204460492503126
+        -0.00000000000000022204460492503126,
+        ulp: 0
     );
 
-    assert_eq!(fma(-0.992, -0.992, -0.992), -0.00793599999988632);
+    assert_approx_eq!(
+        fma(-0.992, -0.992, -0.992),
+        -0.00793599999988632,
+        ulp: 0
+    );
 }
