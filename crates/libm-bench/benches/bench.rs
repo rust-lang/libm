@@ -1,7 +1,7 @@
 #![feature(test)]
 extern crate test;
 
-use libm_test::{adjust_input, Call};
+use libm_test::{get_api_kind, ApiKind, Call};
 use rand::Rng;
 use test::Bencher;
 
@@ -29,7 +29,10 @@ macro_rules! bench_fn {
             let mut rng = rand::thread_rng();
             let mut x: ( $($arg_tys,)+ ) = ( $(rng.gen::<$arg_tys>(),)+ );
 
-            adjust_input!(fn: $id, input: x);
+            if let ApiKind::Jx = get_api_kind!(fn: $id) {
+                let ptr = &mut x as *mut _ as *mut i32;
+                unsafe { ptr.write(ptr.read() & 0xffff) };
+            }
 
             bh.iter(|| test::black_box(x).call(libm::$id as FnTy))
         }

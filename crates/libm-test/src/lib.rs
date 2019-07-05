@@ -77,6 +77,7 @@ impl_call!((f64) -> f64: x: x.0);
 impl_call!((f64) -> i32: x: x.0);
 impl_call!((f32) -> i32: x: x.0);
 impl_call!((f32, f32) -> f32: x: x.0, x.1);
+impl_call!((f32, f64) -> f32: x: x.0, x.1);
 impl_call!((f64, f64) -> f64: x: x.0, x.1);
 impl_call!((f64, i32) -> f64: x: x.0, x.1);
 impl_call!((f32, i32) -> f32: x: x.0, x.1);
@@ -85,23 +86,53 @@ impl_call!((i32, f32) -> f32: x: x.0, x.1);
 impl_call!((f32, f32, f32) -> f32: x: x.0, x.1, x.2);
 impl_call!((f64, f64, f64) -> f64: x: x.0, x.1, x.2);
 
-// Adjust the input of a function.
+pub trait TupleVec {
+    type Output;
+    fn get(&self, i: usize) -> Self::Output;
+}
+
+macro_rules! impl_tuple_vec {
+    (($($arg_tys:ty),*): $self_:ident: $($xs:expr),*)  => {
+        impl TupleVec for ($(Vec<$arg_tys>,)+) {
+            type Output = ($($arg_tys,)+);
+            fn get(&self, i: usize) -> Self::Output {
+                let $self_ = self;
+                ($($xs[i],)*)
+            }
+        }
+    };
+}
+
+impl_tuple_vec!((f32): x: x.0);
+impl_tuple_vec!((f64): x: x.0);
+impl_tuple_vec!((f32, f32): x: x.0, x.1);
+impl_tuple_vec!((f32, f64): x: x.0, x.1);
+impl_tuple_vec!((f64, f64): x: x.0, x.1);
+impl_tuple_vec!((f64, i32): x: x.0, x.1);
+impl_tuple_vec!((f32, i32): x: x.0, x.1);
+impl_tuple_vec!((i32, f64): x: x.0, x.1);
+impl_tuple_vec!((i32, f32): x: x.0, x.1);
+impl_tuple_vec!((f32, f32, f32): x: x.0, x.1, x.2);
+impl_tuple_vec!((f64, f64, f64): x: x.0, x.1, x.2);
+
+/// Kind of LibmApi - used to handle generating tests
+/// for some functions slightly differently.
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum ApiKind {
+    Jx,
+    Other,
+}
+
 #[macro_export]
-macro_rules! adjust_input {
-    (fn: j1, input: $arg:ident) => {
-        adjust_input!(adjust: $arg)
+macro_rules! get_api_kind {
+    (fn: j1) => {
+        $crate::ApiKind::Jx
     };
-    (fn: jn, input: $arg:ident) => {
-        adjust_input!(adjust: $arg)
+    (fn: jn) => {
+        $crate::ApiKind::Jx
     };
-    (fn: $id:ident, input: $args:ident) => {};
-    (adjust: $arg:ident) => {
-        // First argument to these functions are a number of
-        // iterations and passing large random numbers takes forever
-        // to execute, so check if their higher bits are set and
-        // zero them:
-        let p = &mut $arg as *mut _ as *mut i32;
-        unsafe { p.write(p.read() & 0xffff) }
+    (fn: $id:ident) => {
+        $crate::ApiKind::Other
     };
 }
 
@@ -120,4 +151,101 @@ macro_rules! assert_approx_eq {
             panic!(f);
         }
     };
+}
+
+pub trait Toward: Sized {
+    fn toward(self, other: Self, len: usize) -> Vec<Self>;
+}
+
+macro_rules! impl_toward_f {
+    ($float_ty:ident, $toward_fn:path) => {
+        impl Toward for $float_ty {
+            fn toward(self, other: Self, len: usize) -> Vec<Self> {
+                let mut vec = Vec::with_capacity(len);
+                let mut current = self;
+                vec.push(self);
+                for _ in 0..=len {
+                    current = $toward_fn(current, other as _);
+                    vec.push(self);
+                    if current.to_bits() == other.to_bits() {
+                        break;
+                    }
+                }
+                vec
+            }
+        }
+    };
+}
+impl_toward_f!(f32, libm::nextafterf);
+impl_toward_f!(f64, libm::nextafter);
+
+pub trait RandSeq: Sized {
+    fn rand_seq<R: rand::Rng>(rng: &mut R, api_kind: ApiKind, len: usize) -> Vec<Self>;
+}
+
+macro_rules! impl_rand_seq_f {
+    ($float_ty:ident) => {
+        impl RandSeq for $float_ty {
+            fn rand_seq<R: rand::Rng>(rng: &mut R, _api_kind: ApiKind, len: usize) -> Vec<Self> {
+                use std::$float_ty::*;
+                let mut vec = Vec::with_capacity(len);
+
+                // These inputs are always tested
+                const BOUNDS: [$float_ty; 9] = [
+                    NAN,
+                    INFINITY,
+                    NEG_INFINITY,
+                    EPSILON,
+                    -EPSILON,
+                    MAX,
+                    MIN,
+                    MIN_POSITIVE,
+                    -MIN_POSITIVE,
+                ];
+                vec.extend(&BOUNDS);
+                // A range around the inputs is also always tested:
+                const NSTEPS: usize = 1_000;
+                vec.extend(INFINITY.toward(0., NSTEPS));
+                vec.extend(NEG_INFINITY.toward(0., NSTEPS));
+                vec.extend((0. as $float_ty).toward(MIN_POSITIVE, NSTEPS));
+                vec.extend((0. as $float_ty).toward(-MIN_POSITIVE, NSTEPS));
+
+                for i in 0..=NSTEPS {
+                    let dx = 2. / NSTEPS as $float_ty;
+                    let next = (-1. as $float_ty) + (i as $float_ty) * dx;
+                    vec.push(next);
+                }
+
+                // ~NSTEPS * 4
+                assert!(len > 2 * 4 * NSTEPS, "len {} !> {}", len, 2 * 4 * NSTEPS);
+                let current_len = vec.len();
+                let remaining_len = len.checked_sub(current_len).unwrap();
+
+                for _ in 0..remaining_len {
+                    let n = rng.gen::<$float_ty>();
+                    vec.push(n);
+                }
+                assert_eq!(vec.len(), len);
+                vec
+            }
+        }
+    };
+}
+
+impl_rand_seq_f!(f32);
+impl_rand_seq_f!(f64);
+
+impl RandSeq for i32 {
+    fn rand_seq<R: rand::Rng>(rng: &mut R, api_kind: ApiKind, len: usize) -> Vec<Self> {
+        let mut v = Vec::with_capacity(len);
+        for _ in 0..len {
+            let mut r = rng.gen::<i32>();
+            if let ApiKind::Jx = api_kind {
+                r &= 0xffff;
+            }
+            v.push(r);
+        }
+        assert_eq!(v.len(), len);
+        v
+    }
 }

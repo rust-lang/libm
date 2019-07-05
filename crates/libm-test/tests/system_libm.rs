@@ -2,10 +2,10 @@
 #![cfg(test)]
 #![cfg(feature = "system_libm")]
 
-use libm_test::{adjust_input, assert_approx_eq, Call};
+use libm_test::{assert_approx_eq, get_api_kind, Call, RandSeq, TupleVec};
 
 // Number of tests to generate for each function
-const NTESTS: usize = 500;
+const NTESTS: usize = 10_000;
 
 const ULP_TOL: usize = 4;
 
@@ -74,25 +74,26 @@ macro_rules! system_libm {
         #[allow(unused)]
         fn $id() {
             use crate::Call;
+            // Type of the system libm fn:
+            type FnTy
+                = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
+            extern "C" {
+                // The system's libm function:
+                fn $id($($arg_ids: $arg_tys),*) -> $ret_ty;
+            }
+
             let mut rng = rand::thread_rng();
-            for _ in 0..NTESTS {
-                // Type of the system libm fn:
-                type FnTy
-                    = unsafe extern "C" fn ($($arg_ids: $arg_tys),*) -> $ret_ty;
 
-               extern "C" {
-                    // The system's libm function:
-                    fn $id($($arg_ids: $arg_tys),*) -> $ret_ty;
-                }
+            // Depending on the type of API, different ranges of values might be
+            // allowed or interesting to test:
+            let api_kind = get_api_kind!(fn: $id);
 
-                // Generate a tuple of arguments containing random values:
-                let mut args: ( $($arg_tys,)+ )
-                    = ( $(<$arg_tys as Rand>::gen(&mut rng),)+ );
+            // Generate a tuple of arguments containing random values:
+            let mut args: ( $(Vec<$arg_tys>,)+ )
+                = ( $(<$arg_tys as RandSeq>::rand_seq(&mut rng, api_kind, NTESTS),)+ );
 
-                // Some APIs need their inputs to be "adjusted" (see macro):
-                // correct_input!(fn: $id, input: args);
-                adjust_input!(fn: $id, input: args);
-
+            for i in 0..NTESTS {
+                let args: ( $($arg_tys,)+ ) = args.get(i);
                 let result = args.call(libm::$id as FnTy);
                 let expected = args.call($id as FnTy);
                 assert_approx_eq!(
@@ -105,31 +106,3 @@ macro_rules! system_libm {
 }
 
 libm_analyze::for_each_api!(system_libm);
-
-// We need to be able to generate random numbers for the types involved.
-//
-// Rand does this well, but we want to also test some other specific values.
-trait Rand {
-    fn gen(rng: &mut rand::rngs::ThreadRng) -> Self;
-}
-
-macro_rules! impl_rand {
-    ($id:ident: [$($e:expr),*]) => {
-        impl Rand for $id {
-            fn gen(r: &mut rand::rngs::ThreadRng) -> Self {
-                use rand::{Rng, seq::SliceRandom};
-                // 1/20 probability of picking a non-random value
-                if r.gen_range(0, 20) < 1 {
-                    *[$($e),*].choose(r).unwrap()
-                } else {
-                    r.gen::<$id>()
-                }
-            }
-        }
-    }
-}
-
-// Some interesting random values
-impl_rand!(f32: [std::f32::NAN, std::f32::INFINITY, std::f32::NEG_INFINITY]);
-impl_rand!(f64: [std::f64::NAN, std::f64::INFINITY, std::f64::NEG_INFINITY]);
-impl_rand!(i32: [i32::max_value(), 0_i32, i32::min_value()]);
