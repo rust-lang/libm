@@ -314,7 +314,7 @@ fn get_arg_ids(len: usize) -> Vec<syn::Ident> {
     ids
 }
 
-/// Returns the ApiKind enum variant for this function
+/// Returns the `ApiKind` enum variant for this function
 fn to_api_kind(id: syn::Ident) -> syn::Ident {
     let name = syn_to_str!(id);
     let first = name.chars().nth(0).unwrap();
@@ -340,19 +340,19 @@ impl syn::parse::Parse for Input {
             if let syn::Lit::Str(c) = ignored {
                 let s = c.value();
                 let mut hash_set = HashSet::<String>::new();
-                for i in s.split(",") {
+                for i in s.split(',') {
                     hash_set.insert(i.to_string());
                 }
-                Ok(Input {
-                    macro_id: macro_id,
+                Ok(Self {
+                    macro_id,
                     ignored: Some(hash_set),
                 })
             } else {
                 Err(lookahead.error())
             }
         } else {
-            Ok(Input {
-                macro_id: macro_id,
+            Ok(Self {
+                macro_id,
                 ignored: None,
             })
         }
