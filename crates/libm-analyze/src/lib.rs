@@ -5,6 +5,7 @@
 extern crate proc_macro;
 use self::proc_macro::TokenStream;
 use quote::quote;
+use std::collections::HashSet;
 use syn::parse_macro_input;
 
 /// `input` contains a single identifier, corresponding to a user-defined macro.
@@ -13,22 +14,26 @@ use syn::parse_macro_input;
 /// See tests/analyze or below for the API.
 #[proc_macro]
 pub fn for_each_api(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as Input);
     let files = get_libm_files();
-    let functions = get_functions(&files);
-    let input = parse_macro_input!(input as syn::Ident);
+    let functions = get_functions(&files, &input.ignored);
     let mut tokens = proc_macro2::TokenStream::new();
+    let input_macro = input.macro_id;
     for function in functions {
         let id = function.ident;
+        let api_kind = function.api_kind;
         let ret_ty = function.ret_ty;
         let arg_tys = function.arg_tys;
         let arg_ids = get_arg_ids(arg_tys.len());
         let t = quote! {
-            #input! {
+            #input_macro! {
                 id: #id;
+                api_kind: #api_kind;
                 arg_tys: #(#arg_tys),*;
                 arg_ids: #(#arg_ids),*;
                 ret_ty: #ret_ty;
             }
+
         };
         tokens.extend(t);
     }
@@ -78,6 +83,7 @@ fn get_libm_files() -> Vec<syn::File> {
 /// Function signature that will be expanded for the user macro.
 struct FnSig {
     ident: syn::Ident,
+    api_kind: syn::Ident,
     c_abi: bool,
     ret_ty: Option<syn::Type>,
     arg_tys: Vec<syn::Type>,
@@ -101,7 +107,7 @@ macro_rules! syn_to_str {
 
 /// Extracts all public functions from the libm files while
 /// doing some sanity checks on the function signatures.
-fn get_functions(files: &[syn::File]) -> Vec<FnSig> {
+fn get_functions(files: &[syn::File], ignored: &Option<HashSet<String>>) -> Vec<FnSig> {
     let mut error = false;
     let mut functions = Vec::new();
     // Traverse all files matching function items
@@ -122,10 +128,17 @@ fn get_functions(files: &[syn::File]) -> Vec<FnSig> {
             // Build a function signature while doing some sanity checks
             let mut fn_sig = FnSig {
                 ident: ident.clone(),
+                api_kind: to_api_kind(ident.clone()),
                 c_abi: false,
                 arg_tys: Vec::new(),
                 ret_ty: None,
             };
+            // Skip ignored functions:
+            if let Some(ignored) = ignored {
+                if ignored.contains(&fn_sig.name()) {
+                    continue;
+                }
+            }
             macro_rules! err {
                 ($msg:expr) => {{
                     #[cfg(feature = "analyze")]
@@ -299,4 +312,49 @@ fn get_arg_ids(len: usize) -> Vec<syn::Ident> {
         ids.push(syn::Ident::new(&x, proc_macro2::Span::call_site()));
     }
     ids
+}
+
+/// Returns the ApiKind enum variant for this function
+fn to_api_kind(id: syn::Ident) -> syn::Ident {
+    let name = syn_to_str!(id);
+    let first = name.chars().nth(0).unwrap();
+    let first_upper = first.to_uppercase().nth(0).unwrap();
+    let name = name.replacen(first, &first_upper.to_string(), 1);
+    syn::Ident::new(&name, proc_macro2::Span::call_site())
+}
+
+#[derive(Debug)]
+struct Input {
+    macro_id: syn::Ident,
+    ignored: Option<HashSet<String>>,
+}
+
+impl syn::parse::Parse for Input {
+    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
+        let content;
+        let macro_id: syn::Ident = input.parse()?;
+        let lookahead = input.lookahead1();
+        if lookahead.peek(syn::token::Paren) {
+            let _paren_token = syn::parenthesized!(content in input);
+            let ignored: syn::Lit = content.parse::<syn::Lit>()?;
+            if let syn::Lit::Str(c) = ignored {
+                let s = c.value();
+                let mut hash_set = HashSet::<String>::new();
+                for i in s.split(",") {
+                    hash_set.insert(i.to_string());
+                }
+                Ok(Input {
+                    macro_id: macro_id,
+                    ignored: Some(hash_set),
+                })
+            } else {
+                Err(lookahead.error())
+            }
+        } else {
+            Ok(Input {
+                macro_id: macro_id,
+                ignored: None,
+            })
+        }
+    }
 }

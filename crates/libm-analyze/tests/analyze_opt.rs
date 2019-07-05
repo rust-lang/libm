@@ -11,4 +11,4 @@ macro_rules! nop {
     ) => {};
 }
 
-libm_analyze::for_each_api!(nop);
+libm_analyze::for_each_api!(nop("j1f,jn"));
