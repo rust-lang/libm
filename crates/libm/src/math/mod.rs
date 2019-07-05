@@ -1,5 +1,6 @@
 macro_rules! force_eval {
     ($e:expr) => {
+        #[allow(unused_unsafe)]
         unsafe {
             ::core::ptr::read_volatile(&$e);
         }
@@ -146,6 +147,8 @@ mod log2f;
 mod logf;
 mod modf;
 mod modff;
+mod nextafter;
+mod nextafterf;
 mod pow;
 mod powf;
 mod remainder;
@@ -258,6 +261,8 @@ pub use self::log2f::log2f;
 pub use self::logf::logf;
 pub use self::modf::modf;
 pub use self::modff::modff;
+pub use self::nextafter::nextafter;
+pub use self::nextafterf::nextafterf;
 pub use self::pow::pow;
 pub use self::powf::powf;
 pub use self::remainder::remainder;
