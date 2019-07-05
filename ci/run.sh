@@ -20,6 +20,7 @@ $CMD --release
 
 $CMD --features 'stable'
 $CMD --release --features 'stable'
+cargo build -p libm-test --features 'exhaustive'
 
 if [ "$TARGET" = "x86_64-unknown-linux-gnu" ]; then
     export TARGET=x86_64-unknown-linux-musl
