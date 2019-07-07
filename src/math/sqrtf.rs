@@ -26,9 +26,9 @@ pub extern "C" fn sqrtf(x: f32) -> f32 {
     llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
             return if x < 0.0 {
-                ::core::f32::NAN
+                core::f32::NAN
             } else {
-                unsafe { ::core::intrinsics::sqrtf32(x) }
+                unsafe { core::intrinsics::sqrtf32(x) }
             }
         }
     }
