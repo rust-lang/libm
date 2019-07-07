@@ -18,7 +18,7 @@ const TINY: f32 = 1.0e-30;
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn sqrtf(x: f32) -> f32 {
+pub extern "C" fn sqrtf(x: f32) -> f32 {
     use super::fdlibm::{FLT_UWORD_IS_FINITE, FLT_UWORD_IS_SUBNORMAL, FLT_UWORD_IS_ZERO};
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized
     // `f32.sqrt` native instruction, so we can leverage this for both code size
