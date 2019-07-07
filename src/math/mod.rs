@@ -367,19 +367,19 @@ mod fdlibm {
     used for NaNs & infinities, or whether it's used for finite numbers. */
 
     /// True if a positive float with bitmask X is finite.
-    #[inline(always)]
+    #[inline]
     pub(crate) fn FLT_UWORD_IS_FINITE(x: u32) -> bool {
         x < INFINITE
     }
 
     /// True if a positive float with bitmask X is not a number.
-    #[inline(always)]
+    #[inline]
     pub(crate) fn FLT_UWORD_IS_NAN(x: u32) -> bool {
         x > INFINITE
     }
 
     /// True if a positive float with bitmask X is +infinity.
-    #[inline(always)]
+    #[inline]
     pub(crate) fn FLT_UWORD_IS_INFINITE(x: u32) -> bool {
         x == INFINITE
     }
@@ -412,14 +412,14 @@ mod fdlibm {
     /// True if a positive float with bitmask X is +0.  Without denormals,
     /// any float with a zero exponent is a +0 representation.  With
     /// denormals, the only +0 representation is a 0 bitmask.
-    #[inline(always)]
+    #[inline]
     pub(crate) fn FLT_UWORD_IS_ZERO(x: u32) -> bool {
         x == 0
     }
 
     /// True if a non-zero positive float with bitmask X is subnormal.
     /// (Routines should check for zeros first.)
-    #[inline(always)]
+    #[inline]
     pub(crate) fn FLT_UWORD_IS_SUBNORMAL(x: u32) -> bool {
         x < 0x0080_0000
     }
