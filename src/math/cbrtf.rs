@@ -45,8 +45,8 @@ pub extern "C" fn cbrtf(x: f32) -> f32 {
     /* rough cbrt to 5 bits */
     let mut t: f32 = if FLT_UWORD_IS_SUBNORMAL(hx) {
         /* subnormal number */
-        let t: f32 = f32::from_bits(0x4b80_0000);
-        let high: u32 = (x * t).to_bits(); /* x * (2 ** 24)*/
+        const X1P24: f32 = 16777216f32; // 2 ** 24
+        let high: u32 = (x * X1P24).to_bits();
         f32::from_bits((high / 3).wrapping_add(B2))
     } else {
         f32::from_bits((hx / 3).wrapping_add(B1))
