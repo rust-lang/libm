@@ -346,6 +346,9 @@ fn combine_words(hi: u32, lo: u32) -> f64 {
 }
 
 mod fdlibm {
+    #![allow(dead_code)] // FIXME: remove it after other dependent codes merged
+    #![allow(non_snake_case)]
+
     /* @(#)fdlibm.h 5.1 93/09/24 */
     /*
      * ====================================================
@@ -358,55 +361,50 @@ mod fdlibm {
      * ====================================================
      */
 
-    #![allow(dead_code)]
-
     /* Most routines need to check whether a float is finite, infinite, or not a
     number, and many need to know whether the result of an operation will
     overflow.  These conditions depend on whether the largest exponent is
     used for NaNs & infinities, or whether it's used for finite numbers. */
 
     /// True if a positive float with bitmask X is finite.
-    #[inline]
-    #[allow(non_snake_case)]
-    pub fn FLT_UWORD_IS_FINITE(x: u32) -> bool {
+    #[inline(always)]
+    pub(crate) fn FLT_UWORD_IS_FINITE(x: u32) -> bool {
         x < INFINITE
     }
 
     /// True if a positive float with bitmask X is not a number.
-    #[inline]
-    #[allow(non_snake_case)]
-    pub fn FLT_UWORD_IS_NAN(x: u32) -> bool {
+    #[inline(always)]
+    pub(crate) fn FLT_UWORD_IS_NAN(x: u32) -> bool {
         x > INFINITE
     }
 
     /// True if a positive float with bitmask X is +infinity.
-    #[inline]
-    #[allow(non_snake_case)]
-    pub fn FLT_UWORD_IS_INFINITE(x: u32) -> bool {
+    #[inline(always)]
+    pub(crate) fn FLT_UWORD_IS_INFINITE(x: u32) -> bool {
         x == INFINITE
     }
 
     const INFINITE: u32 = 0x7f80_0000;
 
     /// The bitmask of FLT_MAX.
-    pub const FLT_UWORD_MAX: u32 = 0x7f7f_ffff;
+    pub(crate) const FLT_UWORD_MAX: u32 = 0x7f7f_ffff;
     /// The bitmask of FLT_MAX/2.
-    pub const FLT_UWORD_HALF_MAX: u32 = FLT_UWORD_MAX - (1 << 23);
+    pub(crate) const FLT_UWORD_HALF_MAX: u32 = FLT_UWORD_MAX - (1 << 23);
     /// The bitmask of the largest finite exponent (129 if the largest
     /// exponent is used for finite numbers, 128 otherwise).
-    pub const FLT_UWORD_EXP_MAX: u32 = 0x4300_0000;
+    pub(crate) const FLT_UWORD_EXP_MAX: u32 = 0x4300_0000;
     /// The bitmask of log(FLT_MAX), rounded down.  This value is the largest
     /// input that can be passed to exp() without producing overflow.
-    pub const FLT_UWORD_LOG_MAX: u32 = 0x42b1_7217;
+    pub(crate) const FLT_UWORD_LOG_MAX: u32 = 0x42b1_7217;
     /// The bitmask of log(2*FLT_MAX), rounded down.  This value is the
     /// largest input than can be passed to cosh() without producing
     /// overflow.
-    pub const FLT_UWORD_LOG_2MAX: u32 = 0x42b2_d4fc;
+    pub(crate) const FLT_UWORD_LOG_2MAX: u32 = 0x42b2_d4fc;
     /// The largest biased exponent that can be used for finite numbers
     /// (255 if the largest exponent is used for finite numbers, 254
     /// otherwise)
-    pub const FLT_LARGEST_EXP: u32 = FLT_UWORD_MAX >> 23;
-    pub const HUGE: f32 = 3.402_823_466_385_288_60e+38;
+    pub(crate) const FLT_LARGEST_EXP: u32 = FLT_UWORD_MAX >> 23;
+    pub(crate) const HUGE: f32 = 3.402_823_466_385_288_60e+38;
 
     /* Many routines check for zero and subnormal numbers.  Such things depend
     on whether the target supports denormals or not */
@@ -414,27 +412,25 @@ mod fdlibm {
     /// True if a positive float with bitmask X is +0.  Without denormals,
     /// any float with a zero exponent is a +0 representation.  With
     /// denormals, the only +0 representation is a 0 bitmask.
-    #[inline]
-    #[allow(non_snake_case)]
-    pub fn FLT_UWORD_IS_ZERO(x: u32) -> bool {
+    #[inline(always)]
+    pub(crate) fn FLT_UWORD_IS_ZERO(x: u32) -> bool {
         x == 0
     }
 
     /// True if a non-zero positive float with bitmask X is subnormal.
     /// (Routines should check for zeros first.)
-    #[inline]
-    #[allow(non_snake_case)]
-    pub fn FLT_UWORD_IS_SUBNORMAL(x: u32) -> bool {
+    #[inline(always)]
+    pub(crate) fn FLT_UWORD_IS_SUBNORMAL(x: u32) -> bool {
         x < 0x0080_0000
     }
 
     /// The bitmask of the smallest float above +0.  Call this number REAL_FLT_MIN...
-    pub const FLT_UWORD_MIN: u32 = 0x0000_0001;
+    pub(crate) const FLT_UWORD_MIN: u32 = 0x0000_0001;
     /// The bitmask of the float representation of REAL_FLT_MIN's exponent.
-    pub const FLT_UWORD_EXP_MIN: u32 = 0x4316_0000;
+    pub(crate) const FLT_UWORD_EXP_MIN: u32 = 0x4316_0000;
     /// The bitmask of |log(REAL_FLT_MIN)|, rounding down.
-    pub const FLT_UWORD_LOG_MIN: u32 = 0x42cf_f1b5;
+    pub(crate) const FLT_UWORD_LOG_MIN: u32 = 0x42cf_f1b5;
     /// REAL_FLT_MIN's exponent - EXP_BIAS (1 if denormals are not supported,
     /// -22 if they are).
-    pub const FLT_SMALLEST_EXP: i32 = -22;
+    pub(crate) const FLT_SMALLEST_EXP: i32 = -22;
 }
