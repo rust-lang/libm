@@ -21,7 +21,7 @@ const ZERO: [f32; 2] = [0.0f32, -0.0];
 /// Method: shift and subtract
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn fmodf(x: f32, y: f32) -> f32 {
+pub extern "C" fn fmodf(x: f32, y: f32) -> f32 {
     use super::fdlibm::{
         FLT_UWORD_IS_FINITE, FLT_UWORD_IS_NAN, FLT_UWORD_IS_SUBNORMAL, FLT_UWORD_IS_ZERO,
     };
@@ -36,9 +36,9 @@ pub fn fmodf(x: f32, y: f32) -> f32 {
     let mut i: i32;
 
     hx = x.to_bits();
-    sx = hx & 0x80000000; /* sign of x */
+    sx = hx & 0x8000_0000; /* sign of x */
     hx ^= sx; /* |x| */
-    hy = y.to_bits() & 0x7fffffff; /* |y| */
+    hy = y.to_bits() & 0x7fff_ffff; /* |y| */
 
     /* purge off exception values */
     if FLT_UWORD_IS_ZERO(hy) || !FLT_UWORD_IS_FINITE(hx) || FLT_UWORD_IS_NAN(hy) {
