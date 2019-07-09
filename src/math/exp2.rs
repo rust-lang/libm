@@ -28,7 +28,7 @@ use super::scalbn;
 
 const TBLSIZE: usize = 256;
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 static TBL: [u64; TBLSIZE * 2] = [
     //  exp2(z + eps)          eps
     0x3fe6a09e667f3d5d, 0x3d39880000000000,
@@ -386,10 +386,4 @@ pub fn exp2(mut x: f64) -> f64 {
     let r = t + t * z * (p1 + z * (p2 + z * (p3 + z * (p4 + z * p5))));
 
     scalbn(r, ki)
-}
-
-#[test]
-fn i0_wrap_test() {
-    let x = -3.0 / 256.0;
-    assert_eq!(exp2(x), f64::from_bits(0x3fefbdba3692d514));
 }
