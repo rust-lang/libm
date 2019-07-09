@@ -6,6 +6,8 @@ const P10: &[f32] = &[
     1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7,
 ];
 
+#[inline]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn exp10f(x: f32) -> f32 {
     let (mut y, n) = modff(x);
     let u = n.to_bits();
