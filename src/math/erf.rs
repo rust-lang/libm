@@ -172,6 +172,7 @@ const SB5: f64 = 2.55305040643316442583e+03; /* 0x40A3F219, 0xCEDF3BE6 */
 const SB6: f64 = 4.74528541206955367215e+02; /* 0x407DA874, 0xE79FE763 */
 const SB7: f64 = -2.24409524465858183362e+01; /* 0xC03670E2, 0x42712D62 */
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn erfc1(x: f64) -> f64 {
     let s: f64;
     let p: f64;
@@ -184,6 +185,7 @@ fn erfc1(x: f64) -> f64 {
     1.0 - ERX - p / q
 }
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn erfc2(ix: u32, mut x: f64) -> f64 {
     let s: f64;
     let r: f64;

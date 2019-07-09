@@ -83,6 +83,7 @@ const SB5: f32 = 2.5530502930e+03; /* 0x451f90ce */
 const SB6: f32 = 4.7452853394e+02; /* 0x43ed43a7 */
 const SB7: f32 = -2.2440952301e+01; /* 0xc1b38712 */
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn erfc1(x: f32) -> f32 {
     let s: f32;
     let p: f32;
@@ -94,6 +95,7 @@ fn erfc1(x: f32) -> f32 {
     return 1.0 - ERX - p / q;
 }
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn erfc2(mut ix: u32, mut x: f32) -> f32 {
     let s: f32;
     let r: f32;

@@ -28,6 +28,7 @@ use super::{exp, floor, k_cos, k_sin, pow};
 const PI: f64 = 3.141592653589793238462643383279502884;
 
 /* sin(pi x) with x > 0x1p-100, if sin(pi*x)==0 the sign is arbitrary */
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn sinpi(mut x: f64) -> f64 {
     let mut n: isize;
 
@@ -111,6 +112,7 @@ const FACT: [f64; 23] = [
 ];
 
 /* S(x) rational function for positive x */
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn s(x: f64) -> f64 {
     let mut num: f64 = 0.0;
     let mut den: f64 = 0.0;

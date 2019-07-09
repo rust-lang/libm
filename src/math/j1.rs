@@ -59,6 +59,7 @@ use super::{cos, fabs, get_high_word, get_low_word, log, sin, sqrt};
 const INVSQRTPI: f64 = 5.64189583547756279280e-01; /* 0x3FE20DD7, 0x50429B6D */
 const TPI: f64 = 6.36619772367581382433e-01; /* 0x3FE45F30, 0x6DC9C883 */
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
     let z: f64;
     let mut s: f64;

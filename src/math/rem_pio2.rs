@@ -50,6 +50,7 @@ pub(crate) fn rem_pio2(x: f64) -> (i32, f64, f64) {
     let ix = (f64::to_bits(x) >> 32) as u32 & 0x7fffffff;
 
     #[inline]
+    #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
     fn medium(x: f64, ix: u32) -> (i32, f64, f64) {
         /* rint(x/(pi/2)), Assume round-to-nearest. */
         let f_n = x as f64 * INV_PIO2 + TO_INT - TO_INT;

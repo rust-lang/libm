@@ -11,6 +11,7 @@ struct Num {
 }
 
 #[inline]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn normalize(x: f64) -> Num {
     let x1p63: f64 = f64::from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
 
@@ -31,6 +32,7 @@ fn normalize(x: f64) -> Num {
 }
 
 #[inline]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn mul(x: u64, y: u64) -> (u64, u64) {
     let t1: u64;
     let t2: u64;

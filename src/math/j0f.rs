@@ -18,6 +18,7 @@ use super::{cosf, fabsf, logf, sinf, sqrtf};
 const INVSQRTPI: f32 = 5.6418961287e-01; /* 0x3f106ebb */
 const TPI: f32 = 6.3661974669e-01; /* 0x3f22f983 */
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn common(ix: u32, x: f32, y0: bool) -> f32 {
     let z: f32;
     let s: f32;
@@ -219,6 +220,7 @@ const PS2: [f32; 5] = [
     1.4657617569e+01, /* 0x416a859a */
 ];
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn pzerof(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 5];
@@ -331,6 +333,7 @@ const QS2: [f32; 6] = [
     -5.3109550476e+00, /* 0xc0a9f358 */
 ];
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn qzerof(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 6];

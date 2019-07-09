@@ -5,6 +5,7 @@ use super::sqrt;
 const SPLIT: f64 = 134217728. + 1.; // 0x1p27 + 1 === (2 ^ 27) + 1
 
 #[inline]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn sq(x: f64) -> (f64, f64) {
     let xh: f64;
     let xl: f64;

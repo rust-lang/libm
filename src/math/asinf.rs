@@ -25,6 +25,7 @@ const P_S2: f32 = -8.6563630030e-03;
 const Q_S1: f32 = -7.0662963390e-01;
 
 #[inline]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn r(z: f32) -> f32 {
     let p = z * (P_S0 + z * (P_S1 + z * P_S2));
     let q = 1. + z * Q_S1;

@@ -1,3 +1,4 @@
+#![allow(unused)]
 /* origin: FreeBSD /usr/src/lib/msun/src/e_j1f.c */
 /*
  * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
@@ -18,6 +19,8 @@ use super::{cosf, fabsf, logf, sinf, sqrtf};
 const INVSQRTPI: f32 = 5.6418961287e-01; /* 0x3f106ebb */
 const TPI: f32 = 6.3661974669e-01; /* 0x3f22f983 */
 
+#[inline(always)]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn common(ix: u32, x: f32, y1: bool, sign: bool) -> f32 {
     let z: f64;
     let mut s: f64;
@@ -218,6 +221,7 @@ const PS2: [f32; 5] = [
     8.3646392822e+00, /* 0x4105d590 */
 ];
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn ponef(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 5];
@@ -330,6 +334,7 @@ const QS2: [f32; 6] = [
     -4.9594988823e+00, /* 0xc09eb437 */
 ];
 
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn qonef(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 6];

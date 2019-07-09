@@ -59,6 +59,7 @@ const INVSQRTPI: f64 = 5.64189583547756279280e-01; /* 0x3FE20DD7, 0x50429B6D */
 const TPI: f64 = 6.36619772367581382433e-01; /* 0x3FE45F30, 0x6DC9C883 */
 
 /* common method when |x|>=2 */
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn common(ix: u32, x: f64, y0: bool) -> f64 {
     let s: f64;
     let mut c: f64;

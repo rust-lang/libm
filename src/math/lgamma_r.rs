@@ -145,6 +145,7 @@ const W5: f64 = 8.36339918996282139126e-04; /* 0x3F4B67BA, 0x4CDAD5D1 */
 const W6: f64 = -1.63092934096575273989e-03; /* 0xBF5AB89D, 0x0B9E43E4 */
 
 /* sin(PI*x) assuming x > 2^-100, if sin(PI*x)==0 the sign is arbitrary */
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn sin_pi(mut x: f64) -> f64 {
     let mut n: i32;
 

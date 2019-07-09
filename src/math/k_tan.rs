@@ -102,6 +102,7 @@ pub(crate) fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
 }
 
 #[inline]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn zero_low_word(x: f64) -> f64 {
     f64::from_bits(f64::to_bits(x) & 0xFFFF_FFFF_0000_0000)
 }
