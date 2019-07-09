@@ -12,7 +12,7 @@ run() {
     # will be owned by root
     mkdir -p target
 
-    docker build -t $target ci/docker/$target
+    docker build -t $target -f ci/docker/$target/Dockerfile ci/
     docker run \
            --rm \
            --user $(id -u):$(id -g) \
@@ -24,6 +24,7 @@ run() {
            -v `rustc --print sysroot`:/rust:ro \
            --init \
            -w /checkout \
+           --privileged \
            $target \
            sh -c "HOME=/tmp PATH=\$PATH:/rust/bin exec ci/run.sh $target"
 }

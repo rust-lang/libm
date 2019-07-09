@@ -29,8 +29,12 @@ members = [
   "crates/libm-bench",
 ]
 
+[build-dependencies]
+rand = { version = "0.6.5", optional = true }
+
 [dev-dependencies]
 no-panic = "0.1.8"
 
-[build-dependencies]
-rand = { version = "0.6.5", optional = true }
+[target.wasm32-unknown-unknown.dev-dependencies]
+wasm-bindgen-test = "0.2.47"
+
