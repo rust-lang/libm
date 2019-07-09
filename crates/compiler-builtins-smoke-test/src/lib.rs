@@ -4,6 +4,10 @@
 
 #![allow(dead_code)]
 #![no_std]
+#![cfg_attr(
+    all(target_arch = "wasm32", not(feature = "stable")),
+    feature(core_intrinsics)
+)]
 
 #[path = "../../../src/math/mod.rs"]
 mod libm;
