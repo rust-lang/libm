@@ -1,4 +1,4 @@
-pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
+pub extern "C" fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
     let ux: u64 = x.to_bits();
     let mut uy: u64 = y.to_bits();
     let mut ex = ((ux >> 52) & 0x7ff) as i32;

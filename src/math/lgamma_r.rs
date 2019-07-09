@@ -164,7 +164,7 @@ fn sin_pi(mut x: f64) -> f64 {
     }
 }
 
-pub fn lgamma_r(mut x: f64) -> (f64, i32) {
+pub extern "C" fn lgamma_r(mut x: f64) -> (f64, i32) {
     let u: u64 = x.to_bits();
     let mut t: f64;
     let y: f64;

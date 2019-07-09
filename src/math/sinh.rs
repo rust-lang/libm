@@ -6,7 +6,7 @@ use super::{expm1, expo2};
 //
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn sinh(x: f64) -> f64 {
+pub extern "C" fn sinh(x: f64) -> f64 {
     // union {double f; uint64_t i;} u = {.f = x};
     // uint32_t w;
     // double t, h, absx;

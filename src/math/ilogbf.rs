@@ -1,7 +1,7 @@
 const FP_ILOGBNAN: i32 = -1 - 0x7fffffff;
 const FP_ILOGB0: i32 = FP_ILOGBNAN;
 
-pub fn ilogbf(x: f32) -> i32 {
+pub extern "C" fn ilogbf(x: f32) -> i32 {
     let mut i = x.to_bits();
     let e = ((i >> 23) & 0xff) as i32;
 

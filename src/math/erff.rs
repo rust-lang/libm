@@ -130,7 +130,7 @@ fn erfc2(mut ix: u32, mut x: f32) -> f32 {
 /// Calculates an approximation to the “error function”, which estimates
 /// the probability that an observation will fall within x standard
 /// deviations of the mean (assuming a normal distribution).
-pub fn erff(x: f32) -> f32 {
+pub extern "C" fn erff(x: f32) -> f32 {
     let r: f32;
     let s: f32;
     let z: f32;
@@ -179,7 +179,7 @@ pub fn erff(x: f32) -> f32 {
 /// Is `1 - erf(x)`. Is computed directly, so that you can use it to avoid
 /// the loss of precision that would result from subtracting
 /// large probabilities (on large `x`) from 1.
-pub fn erfcf(x: f32) -> f32 {
+pub extern "C" fn erfcf(x: f32) -> f32 {
     let r: f32;
     let s: f32;
     let z: f32;

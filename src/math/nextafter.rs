@@ -1,6 +1,6 @@
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn nextafter(x: f64, y: f64) -> f64 {
+pub extern "C" fn nextafter(x: f64, y: f64) -> f64 {
     if x.is_nan() || y.is_nan() {
         return x + y;
     }

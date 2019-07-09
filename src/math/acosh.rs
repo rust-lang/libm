@@ -7,7 +7,7 @@ const LN2: f64 = 0.693147180559945309417232121458176568; /* 0x3fe62e42,  0xfefa3
 /// Calculates the inverse hyperbolic cosine of `x`.
 /// Is defined as `log(x + sqrt(x*x-1))`.
 /// `x` must be a number greater than or equal to 1.
-pub fn acosh(x: f64) -> f64 {
+pub extern "C" fn acosh(x: f64) -> f64 {
     let u = x.to_bits();
     let e = ((u >> 52) as usize) & 0x7ff;
 

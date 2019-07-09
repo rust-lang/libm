@@ -1,6 +1,6 @@
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn fmax(x: f64, y: f64) -> f64 {
+pub extern "C" fn fmax(x: f64, y: f64) -> f64 {
     // IEEE754 says: maxNum(x, y) is the canonicalized number y if x < y, x if y < x, the
     // canonicalized number if one operand is a number and the other a quiet NaN. Otherwise it
     // is either x or y, canonicalized (this means results might differ among implementations).

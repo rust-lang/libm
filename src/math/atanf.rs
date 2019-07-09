@@ -43,7 +43,7 @@ const A_T: [f32; 5] = [
 /// Returns a value in radians, in the range of -pi/2 to pi/2.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn atanf(mut x: f32) -> f32 {
+pub extern "C" fn atanf(mut x: f32) -> f32 {
     let x1p_120 = f32::from_bits(0x03800000); // 0x1p-120 === 2 ^ (-120)
 
     let z: f32;

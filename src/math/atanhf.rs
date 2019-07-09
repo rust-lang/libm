@@ -5,7 +5,7 @@ use super::log1pf;
 ///
 /// Calculates the inverse hyperbolic tangent of `x`.
 /// Is defined as `log((1+x)/(1-x))/2 = log1p(2x/(1-x))/2`.
-pub fn atanhf(mut x: f32) -> f32 {
+pub extern "C" fn atanhf(mut x: f32) -> f32 {
     let mut u = x.to_bits();
     let sign = (u >> 31) != 0;
 

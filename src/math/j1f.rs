@@ -63,7 +63,7 @@ const S03: f32 = 1.1771846857e-06; /* 0x359dffc2 */
 const S04: f32 = 5.0463624390e-09; /* 0x31ad6446 */
 const S05: f32 = 1.2354227016e-11; /* 0x2d59567e */
 
-pub fn j1f(x: f32) -> f32 {
+pub extern "C" fn j1f(x: f32) -> f32 {
     let mut z: f32;
     let r: f32;
     let s: f32;
@@ -107,7 +107,7 @@ const V0: [f32; 5] = [
     1.6655924903e-11, /* 0x2d9281cf */
 ];
 
-pub fn y1f(x: f32) -> f32 {
+pub extern "C" fn y1f(x: f32) -> f32 {
     let z: f32;
     let u: f32;
     let v: f32;

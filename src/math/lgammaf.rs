@@ -1,5 +1,5 @@
 use super::lgammaf_r;
 
-pub fn lgammaf(x: f32) -> f32 {
+pub extern "C" fn lgammaf(x: f32) -> f32 {
     lgammaf_r(x).0
 }

@@ -9,7 +9,7 @@ use super::k_expo2;
 /// Angles are specified in radians.
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn cosh(mut x: f64) -> f64 {
+pub extern "C" fn cosh(mut x: f64) -> f64 {
     /* |x| */
     let mut ix = x.to_bits();
     ix &= 0x7fffffffffffffff;

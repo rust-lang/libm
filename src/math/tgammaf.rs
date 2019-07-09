@@ -1,5 +1,5 @@
 use super::tgamma;
 
-pub fn tgammaf(x: f32) -> f32 {
+pub extern "C" fn tgammaf(x: f32) -> f32 {
     tgamma(x as f64) as f32
 }

@@ -99,7 +99,7 @@ fn sin_pi(mut x: f32) -> f32 {
     }
 }
 
-pub fn lgammaf_r(mut x: f32) -> (f32, i32) {
+pub extern "C" fn lgammaf_r(mut x: f32) -> (f32, i32) {
     let u = x.to_bits();
     let mut t: f32;
     let y: f32;

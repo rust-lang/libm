@@ -67,7 +67,7 @@ const LG7: f64 = 1.479819860511658591e-01; /* 3FC2F112 DF3E5244 */
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn log1p(x: f64) -> f64 {
+pub extern "C" fn log1p(x: f64) -> f64 {
     let mut ui: u64 = x.to_bits();
     let hfsq: f64;
     let mut f: f64 = 0.;

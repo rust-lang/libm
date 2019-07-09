@@ -23,7 +23,7 @@ const LG4: f32 = 0.24279078841; /*  0xf89e26.0p-26 */
 
 #[inline]
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn logf(mut x: f32) -> f32 {
+pub extern "C" fn logf(mut x: f32) -> f32 {
     let x1p25 = f32::from_bits(0x4c000000); // 0x1p25f === 2 ^ 25
 
     let mut ix = x.to_bits();
