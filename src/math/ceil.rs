@@ -12,7 +12,7 @@ pub fn ceil(x: f64) -> f64 {
     // `f64.ceil` native instruction, so we can leverage this for both code size
     // and speed.
     llvm_intrinsically_optimized! {
-        #[cfg(target_arch = "wasm32")] {
+        #[cfg(all(target_arch = "wasm32", not(feature = "stable")))] {
             return unsafe { ::core::intrinsics::ceilf64(x) }
         }
     }
