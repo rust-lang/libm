@@ -3,8 +3,9 @@ use std::env;
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
-    #[cfg(feature = "musl-reference-tests")]
-    musl_reference_tests::generate();
+    #[cfg(all(feature = "musl-reference-tests", target_os = "linux"))] {
+        musl_reference_tests::generate();
+    }
 
     if !cfg!(feature = "checked") {
         let lvl = env::var("OPT_LEVEL").unwrap();
@@ -14,7 +15,7 @@ fn main() {
     }
 }
 
-#[cfg(feature = "musl-reference-tests")]
+#[cfg(all(feature = "musl-reference-tests", target_os = "linux"))]
 mod musl_reference_tests {
     use rand::seq::SliceRandom;
     use rand::Rng;
