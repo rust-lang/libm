@@ -34,7 +34,8 @@ pub fn truncf(x: f32) -> f32 {
 
 #[cfg(test)]
 mod tests {
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn sanity_check() {
         assert_eq!(super::truncf(1.1), 1.0);
     }

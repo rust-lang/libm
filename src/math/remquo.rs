@@ -101,7 +101,8 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
 mod tests {
     use super::remquo;
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn test_q_overflow() {
         // 0xc000000000000001, 0x04c0000000000004
         let _ = remquo(-2.0000000000000004, 8.406091369059082e-286);

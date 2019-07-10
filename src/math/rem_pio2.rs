@@ -190,7 +190,8 @@ pub(crate) fn rem_pio2(x: f64) -> (i32, f64, f64) {
 mod tests {
     use super::rem_pio2;
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn test_near_pi() {
         assert_eq!(
             rem_pio2(3.141592025756836),
@@ -210,12 +211,14 @@ mod tests {
         );
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn test_overflow_b9b847() {
         let _ = rem_pio2(-3054214.5490637687);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn test_overflow_4747b9() {
         let _ = rem_pio2(917340800458.2274);
     }

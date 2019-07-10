@@ -141,7 +141,8 @@ mod tests {
     use super::atan;
     use core::f64;
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn sanity_check() {
         for (input, answer) in [
             (3.0_f64.sqrt() / 3.0, f64::consts::FRAC_PI_6),
@@ -163,22 +164,26 @@ mod tests {
         }
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn zero() {
         assert_eq!(atan(0.0), 0.0);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn infinity() {
         assert_eq!(atan(f64::INFINITY), f64::consts::FRAC_PI_2);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn minus_infinity() {
         assert_eq!(atan(f64::NEG_INFINITY), -f64::consts::FRAC_PI_2);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn nan() {
         assert!(atan(f64::NAN).is_nan());
     }

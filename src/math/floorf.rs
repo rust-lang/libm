@@ -43,7 +43,8 @@ pub fn floorf(x: f32) -> f32 {
 
 #[cfg(test)]
 mod tests {
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn no_overflow() {
         assert_eq!(super::floorf(0.5), 0.0);
     }

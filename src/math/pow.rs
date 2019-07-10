@@ -500,18 +500,21 @@ mod tests {
         });
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn zero_as_exponent() {
         test_sets_as_base(ALL, 0.0, 1.0);
         test_sets_as_base(ALL, -0.0, 1.0);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn one_as_base() {
         test_sets_as_exponent(1.0, ALL, 1.0);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn nan_inputs() {
         // NAN as the base:
         // (NAN ^ anything *but 0* should be NAN)
@@ -522,7 +525,8 @@ mod tests {
         test_sets_as_base(&ALL[..(ALL.len() - 2)], NAN, NAN);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn infinity_as_base() {
         // Positive Infinity as the base:
         // (+Infinity ^ positive anything but 0 and NAN should be +Infinity)
@@ -541,7 +545,8 @@ mod tests {
         test_sets(ALL, &|v: f64| pow(NEG_INFINITY, v), &|v: f64| pow(-0.0, -v));
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn infinity_as_exponent() {
         // Positive/Negative base greater than 1:
         // (pos/neg > 1 ^ Infinity should be Infinity - note this excludes NAN as the base)
@@ -567,7 +572,8 @@ mod tests {
         test_sets_as_base(&[NEG_ONE, POS_ONE], NEG_INFINITY, 1.0);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn zero_as_base() {
         // Positive Zero as the base:
         // (+0 ^ anything positive but 0 and NAN should be +0)
@@ -593,7 +599,8 @@ mod tests {
         test_sets_as_exponent(-0.0, &[NEG_ODDS], NEG_INFINITY);
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn special_cases() {
         // One as the exponent:
         // (anything ^ 1 should be anything - i.e. the base)
@@ -624,7 +631,8 @@ mod tests {
         });
     }
 
-    #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn normal_cases() {
         assert_eq!(pow(2.0, 20.0), (1 << 20) as f64);
         assert_eq!(pow(-1.0, 9.0), -1.0);
