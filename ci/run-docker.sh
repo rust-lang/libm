@@ -1,38 +1,36 @@
+#!/usr/bin/env sh
+
 # Small script to run tests for a target (or all targets) inside all the
 # respective docker images.
 
 set -ex
 
 run() {
-    local target=$1
-
-    echo $target
-
     # This directory needs to exist before calling docker, otherwise docker will create it but it
     # will be owned by root
     mkdir -p target
 
-    docker build -t $target -f ci/docker/$target/Dockerfile ci/
+    docker build -t "${1}" -f "ci/docker/${1}/Dockerfile" ci/
     docker run \
            --rm \
-           --user $(id -u):$(id -g) \
-           -e CARGO_HOME=/cargo \
-           -e CARGO_TARGET_DIR=/target \
-           -v $(dirname $(dirname `which cargo`)):/cargo \
-           -v `pwd`/target:/target \
-           -v `pwd`:/checkout:ro \
-           -v `rustc --print sysroot`:/rust:ro \
+           --user "$(id -u)":"$(id -g)" \
+           --env CARGO_HOME=/cargo \
+           --env CARGO_TARGET_DIR=/checkout/target \
+           --volume "$(dirname "$(dirname "$(command -v cargo)")")":/cargo \
+           --volume "$(rustc --print sysroot)":/rust:ro \
+           --volume "$(pwd)":/checkout:ro \
+           --volume "$(pwd)"/target:/checkout/target \
            --init \
-           -w /checkout \
+           --workdir /checkout \
            --privileged \
-           $target \
-           sh -c "HOME=/tmp PATH=\$PATH:/rust/bin exec ci/run.sh $target"
+           "${1}" \
+           sh -c "HOME=/tmp PATH=\$PATH:/rust/bin exec ci/run.sh ${1}"
 }
 
 if [ -z "$1" ]; then
-  for d in `ls ci/docker/`; do
-    run $d
+    for d in ci/docker/*; do
+      run "${d}"
   done
 else
-  run $1
+  run "${1}"
 fi
