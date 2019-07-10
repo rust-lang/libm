@@ -3,7 +3,8 @@ use std::env;
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
-    #[cfg(all(feature = "musl-reference-tests", target_os = "linux"))] {
+    #[cfg(all(feature = "musl-reference-tests", target_os = "linux"))]
+    {
         musl_reference_tests::generate();
     }
 
