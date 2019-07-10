@@ -6,6 +6,9 @@
     feature(core_intrinsics)
 )]
 
+#[cfg(test)]
+use wasm_bindgen_test::wasm_bindgen_test;
+
 mod math;
 
 use core::{f32, f64};
