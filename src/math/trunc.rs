@@ -34,9 +34,10 @@ pub fn trunc(x: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
+    use crate::*;
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn sanity_check() {
-        assert_eq!(super::trunc(1.1), 1.0);
+        assert_eq!(trunc(1.1), 1.0);
     }
 }

@@ -138,7 +138,7 @@ pub fn atan(x: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use super::atan;
+    use crate::*;
     use core::f64;
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]

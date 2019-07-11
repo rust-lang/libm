@@ -1,7 +1,7 @@
 //! Fake compiler-builtins crate
 //!
 //! This is used to test that we can source import `libm` into the compiler-builtins crate.
-
+#![cfg(not(test))]
 #![allow(dead_code)]
 #![no_std]
 #![cfg_attr(

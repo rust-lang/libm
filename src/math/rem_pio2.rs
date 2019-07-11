@@ -189,6 +189,8 @@ pub(crate) fn rem_pio2(x: f64) -> (i32, f64, f64) {
 #[cfg(test)]
 mod tests {
     use super::rem_pio2;
+    #[cfg(target_arch = "wasm32")]
+    use crate::*;
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     #[cfg_attr(not(target_arch = "wasm32"), test)]

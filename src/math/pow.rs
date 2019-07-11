@@ -415,7 +415,7 @@ mod tests {
 
     use self::core::f64::consts::{E, PI};
     use self::core::f64::{EPSILON, INFINITY, MAX, MIN, MIN_POSITIVE, NAN, NEG_INFINITY};
-    use super::pow;
+    use crate::*;
 
     const POS_ZERO: &[f64] = &[0.0];
     const NEG_ZERO: &[f64] = &[-0.0];

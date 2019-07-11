@@ -388,9 +388,13 @@ pub fn exp2(mut x: f64) -> f64 {
     scalbn(r, ki)
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
-#[cfg_attr(not(target_arch = "wasm32"), test)]
-fn i0_wrap_test() {
-    let x = -3.0 / 256.0;
-    assert_eq!(exp2(x), f64::from_bits(0x3fefbdba3692d514));
+#[cfg(test)]
+mod tests {
+    use crate::*;
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
+    #[cfg_attr(not(target_arch = "wasm32"), test)]
+    fn i0_wrap_test() {
+        let x = -3.0 / 256.0;
+        assert_eq!(exp2(x), f64::from_bits(0x3fefbdba3692d514));
+    }
 }

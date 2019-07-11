@@ -43,10 +43,11 @@ pub fn ceil(x: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
+    use crate::*;
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     #[cfg_attr(not(target_arch = "wasm32"), test)]
     fn sanity_check() {
-        assert_eq!(super::ceil(1.1), 2.0);
-        assert_eq!(super::ceil(2.9), 3.0);
+        assert_eq!(ceil(1.1), 2.0);
+        assert_eq!(ceil(2.9), 3.0);
     }
 }

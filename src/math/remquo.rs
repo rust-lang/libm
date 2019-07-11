@@ -99,7 +99,7 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
 
 #[cfg(test)]
 mod tests {
-    use super::remquo;
+    use crate::*;
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     #[cfg_attr(not(target_arch = "wasm32"), test)]
