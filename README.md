@@ -1,5 +1,7 @@
 # `libm`
 
+[![crates.io](https://img.shields.io/crates/v/libm.svg)](https://crates.io/crates/libm)
+[![docs.rs](https://docs.rs/libm/badge.svg)](https://docs.rs/libm/)
 [![Build Status](https://dev.azure.com/rust-lang/libm/_apis/build/status/rust-lang-nursery.libm?branchName=master)](https://dev.azure.com/rust-lang/libm/_build/latest?definitionId=7&branchName=master)
 
 A port of [MUSL]'s libm to Rust.
