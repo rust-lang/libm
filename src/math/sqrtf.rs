@@ -13,9 +13,8 @@ pub fn sqrtf(x: f32) -> f32 {
     #[cfg(all(
         not(feature = "stable"),
         any(
-            target_arch = "x86",
-            target_arch = "x86_64",
-            target_arch = "arm",
+            all(target_arch = "x86", not(target_feature="soft_float")),
+            all(target_arch = "x86_64", not(target_feature="soft_float")),
             target_arch = "aarch64",
             target_arch = "wasm32",
             target_arch = "powerpc64"
