@@ -21,7 +21,7 @@ pub fn sqrtf(x: f32) -> f32 {
         )
     ))]
     {
-        return unsafe { core::intrinsics::sqrtf64(x) };
+        return unsafe { core::intrinsics::sqrtf32(x) };
     }
     // Stable
     #[cfg(target_feature = "sse2")]
