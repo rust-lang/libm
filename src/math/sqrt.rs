@@ -20,8 +20,8 @@ pub fn sqrt(x: f64) -> f64 {
     #[cfg(all(
         not(feature = "stable"),
         any(
-            target_arch = "x86",
-            target_arch = "x86_64",
+            all(target_arch = "x86", not(target_feature="soft_float")),
+            all(target_arch = "x86_64", not(target_feature="soft_float")),
             target_arch = "aarch64",
             target_arch = "wasm32",
             target_arch = "powerpc64"
