@@ -1,10 +1,9 @@
 //! libm in pure Rust
 #![deny(warnings)]
 #![no_std]
-#![cfg_attr(
-    all(target_arch = "wasm32", not(feature = "stable")),
-    feature(core_intrinsics)
-)]
+#![cfg_attr(not(feature = "stable"), feature(core_intrinsics))]
+#![allow(clippy::unreadable_literal)]
+#![allow(clippy::many_single_char_names)]
 
 mod math;
 
