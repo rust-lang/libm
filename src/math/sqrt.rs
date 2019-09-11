@@ -18,7 +18,7 @@ pub fn sqrt(x: f64) -> f64 {
     // selection for when to do this, because if the intrinsic usage ends up
     // calling back here it's infinite recursion.
     #[cfg(all(
-        not(feature = "stable"),
+        feature = "unstable",
         any(
             all(target_arch = "x86", not(target_feature = "soft_float")),
             all(target_arch = "x86_64", not(target_feature = "soft_float")),

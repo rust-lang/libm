@@ -11,7 +11,7 @@ pub fn sqrtf(x: f32) -> f32 {
 
     // Nightly
     #[cfg(all(
-        not(feature = "stable"),
+        feature = "unstable",
         any(
             all(target_arch = "x86", not(target_feature = "soft_float")),
             all(target_arch = "x86_64", not(target_feature = "soft_float")),
