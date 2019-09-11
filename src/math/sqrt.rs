@@ -3,7 +3,6 @@
 /// This function is intended to exactly match the
 /// [`sqrt`](https://en.cppreference.com/w/c/numeric/math/sqrt) function as
 /// defined by the C/C++ spec.
-#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 #[allow(unreachable_code)]
 pub fn sqrt(x: f64) -> f64 {
     // On most targets LLVM will issue a hardware sqrt instruction instead of a
@@ -128,6 +127,7 @@ pub fn sqrt(x: f64) -> f64 {
  *      sqrt(-ve) = NaN         ... with invalid signal
  *      sqrt(NaN) = NaN         ... with invalid signal for signaling NaN
  */
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn software_sqrt(x: f64) -> f64 {
     use core::num::Wrapping;
 
