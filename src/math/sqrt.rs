@@ -21,7 +21,6 @@ pub fn sqrt(x: f64) -> f64 {
         any(
             all(target_arch = "x86", not(target_feature = "soft-float")),
             all(target_arch = "x86_64", not(target_feature = "soft-float")),
-            all(target_arch = "arm", not(target_feature = "soft-float")),
             all(target_arch = "aarch64", not(target_feature = "soft-float")),
             all(target_arch = "powerpc", target_feature = "hard-float"),
             all(target_arch = "powerpc64", target_feature = "hard-float"),
