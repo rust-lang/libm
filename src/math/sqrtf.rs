@@ -3,7 +3,6 @@
 /// This function is intended to exactly match the
 /// [`sqrtf`](https://en.cppreference.com/w/c/numeric/math/sqrt) function as
 /// defined by the C/C++ spec.
-#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 #[allow(unreachable_code)]
 pub fn sqrtf(x: f32) -> f32 {
     // See the notes in the `sqrt` function for an explanation of what's going on
@@ -57,6 +56,7 @@ pub fn sqrtf(x: f32) -> f32 {
  * is preserved.
  * ====================================================
  */
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 fn software_sqrtf(x: f32) -> f32 {
     const TINY: f32 = 1.0e-30;
 
