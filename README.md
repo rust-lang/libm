@@ -1,8 +1,8 @@
-# `libm`
-
 [![crates.io](https://img.shields.io/crates/v/libm.svg)](https://crates.io/crates/libm)
 [![docs.rs](https://docs.rs/libm/badge.svg)](https://docs.rs/libm/)
 [![Build Status](https://dev.azure.com/rust-lang/libm/_apis/build/status/rust-lang-nursery.libm?branchName=master)](https://dev.azure.com/rust-lang/libm/_build/latest?definitionId=7&branchName=master)
+
+# `libm`
 
 A port of [MUSL]'s libm to Rust.
 
@@ -29,7 +29,7 @@ The API documentation can be found [here](https://docs.rs/libm).
 ## Benchmark
 [benchmark]: #benchmark
 
-The benchmarks are located in `crates/libm-bench` and require a nightly Rust toolchain. 
+The benchmarks are located in `crates/libm-bench` and require a nightly Rust toolchain.
 To run all benchmarks:
 
 > cargo +nightly bench --all

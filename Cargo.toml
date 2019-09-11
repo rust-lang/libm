@@ -13,19 +13,13 @@ edition = "2018"
 [features]
 default = []
 
-# If you enable this feature then the crate will assume that you're building
-# using a Nightly compiler. This allows us to take advantage of unstable
-# features, some of which might never become stable (eg: calling some of the
-# LLVM intrinsics).
+# This tells the compiler to assume that a Nightly toolchain is being used and
+# that it should activate any useful Nightly things accordingly.
 unstable = []
 
 # Generate tests which are random inputs and the outputs are calculated with
 # musl libc.
 musl-reference-tests = ['rand']
-
-# Used checked array indexing instead of unchecked array indexing in this
-# library.
-checked = []
 
 [workspace]
 members = [
