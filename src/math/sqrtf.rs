@@ -15,9 +15,12 @@ pub fn sqrtf(x: f32) -> f32 {
         any(
             all(target_arch = "x86", not(target_feature = "soft-float")),
             all(target_arch = "x86_64", not(target_feature = "soft-float")),
-            target_arch = "aarch64",
+            all(target_arch = "arm", not(target_feature = "soft-float")),
+            all(target_arch = "aarch64", not(target_feature = "soft-float")),
+            all(target_arch = "powerpc", target_feature = "hard-float"),
+            all(target_arch = "powerpc64", target_feature = "hard-float"),
+            all(target_arch = "risc", target_feature = "f"),
             target_arch = "wasm32",
-            target_arch = "powerpc64"
         )
     ))]
     {
