@@ -28,7 +28,7 @@ members = [
 ]
 
 [dev-dependencies]
-no-panic = "0.1.11"
+no-panic = "0.1.8"
 
 [build-dependencies]
 rand = { version = "0.6.5", optional = true }
