@@ -26,6 +26,7 @@ musl-reference-tests = ['rand']
 members = [
   "crates/compiler-builtins-smoke-test",
   "crates/libm-bench",
+  "crates/libm-c-abi"
 ]
 
 [dev-dependencies]

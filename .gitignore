@@ -6,3 +6,6 @@
 /target
 /tests
 Cargo.lock
+# libm-c-abi tests folders
+libc-test
+openlibm
