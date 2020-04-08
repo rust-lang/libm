@@ -135,16 +135,17 @@ mod tests {
         assert_eq!(hypotf(-3.0, 4.0), 5.0);
         assert_eq!(hypotf(4.0, 3.0), 5.0);
         assert_eq!(hypotf(9.0, 10.0), 13.453624);
+        assert_eq!(hypotf(1.0, 1.0), sqrtf(2.0));
     }
 
-    /// The spec: https://en.cppreference.com/w/cpp/numeric/math/floor
+    /// The spec: https://en.cppreference.com/w/c/numeric/math/hypot
     #[test]
     fn spec_tests() {
-        // Not Asserted: that the current rounding mode has no effect.
         assert!(hypotf(0.0, NAN).is_nan());
         assert!(hypotf(NAN, 0.0).is_nan());
         assert!(hypotf(NAN, NAN).is_nan());
         assert_eq!(hypotf(INFINITY, NAN), INFINITY);
+        assert_eq!(hypotf(INFINITY, 0.0), INFINITY);
     }
 }
 
