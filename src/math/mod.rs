@@ -348,3 +348,10 @@ fn with_set_low_word(f: f64, lo: u32) -> f64 {
 fn combine_words(hi: u32, lo: u32) -> f64 {
     f64::from_bits((hi as u64) << 32 | lo as u64)
 }
+
+// Test that the old code continues to build
+#[cfg(test)]
+#[allow(dead_code)]
+mod musl {
+    mod hypotf;
+}
