@@ -1,45 +1,4 @@
 // origin: FreeBSD /usr/src/lib/msun/src/k_tan.c */
-//
-// ====================================================
-// Copyright 2004 Sun Microsystems, Inc.  All Rights Reserved.
-//
-// Permission to use, copy, modify, and distribute this
-// software is freely granted, provided that this notice
-// is preserved.
-// ====================================================
-
-// kernel tan function on ~[-pi/4, pi/4] (except on -0), pi/4 ~ 0.7854
-// Input x is assumed to be bounded by ~pi/4 in magnitude.
-// Input y is the tail of x.
-// Input odd indicates whether tan (if odd = 0) or -1/tan (if odd = 1) is returned.
-//
-// Algorithm
-//      1. Since tan(-x) = -tan(x), we need only to consider positive x.
-//      2. Callers must return tan(-0) = -0 without calling here since our
-//         odd polynomial is not evaluated in a way that preserves -0.
-//         Callers may do the optimization tan(x) ~ x for tiny x.
-//      3. tan(x) is approximated by a odd polynomial of degree 27 on
-//         [0,0.67434]
-//                               3             27
-//              tan(x) ~ x + T1*x + ... + T13*x
-//         where
-//
-//              |tan(x)         2     4            26   |     -59.2
-//              |----- - (1+T1*x +T2*x +.... +T13*x    )| <= 2
-//              |  x                                    |
-//
-//         Note: tan(x+y) = tan(x) + tan'(x)*y
-//                        ~ tan(x) + (1+x*x)*y
-//         Therefore, for better accuracy in computing tan(x+y), let
-//                   3      2      2       2       2
-//              r = x *(T2+x *(T3+x *(...+x *(T12+x *T13))))
-//         then
-//                                  3    2
-//              tan(x+y) = x + (T1*x + (x *(r+y)+y))
-//
-//      4. For x in [0.67434,pi/4],  let y = pi/4 - x, then
-//              tan(x) = tan(pi/4-y) = (1-tan(y))/(1+tan(y))
-//                     = 1 - 2*(tan(y) - (tan(y)^2)/(1+tan(y)))
 static T: [f64; 13] = [
     3.33333333333334091986e-01,  /* 3FD55555, 55555563 */
     1.33333333333201242699e-01,  /* 3FC11111, 1110FE7A */
@@ -73,11 +32,6 @@ pub(crate) fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
     }
     let z = x * x;
     let w = z * z;
-    /*
-     * Break x^5*(T[1]+x^2*T[2]+...) into
-     * x^5(T[1]+x^4*T[3]+...+x^20*T[11]) +
-     * x^5(x^2*(T[2]+x^4*T[4]+...+x^22*[T12]))
-     */
     let r = T[1] + w * (T[3] + w * (T[5] + w * (T[7] + w * (T[9] + w * T[11]))));
     let v = z * (T[2] + w * (T[4] + w * (T[6] + w * (T[8] + w * (T[10] + w * T[12])))));
     let s = z * x;
@@ -92,7 +46,6 @@ pub(crate) fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
     if odd == 0 {
         return w;
     }
-    /* -1.0/(x+r) has up to 2ulp error, so compute it accurately */
     let w0 = zero_low_word(w);
     let v = r - (w0 - x); /* w0+v = r+x */
     let a = -1.0 / w;

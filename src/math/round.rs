@@ -12,7 +12,6 @@ pub fn round(mut x: f64) -> f64 {
         return x;
     }
     if e < 0x3ff - 1 {
-        // raise inexact if x!=0
         force_eval!(x + TOINT);
         return 0.0 * x;
     }

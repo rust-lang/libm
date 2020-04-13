@@ -1,17 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_j0f.c */
-/*
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 use super::{cosf, fabsf, logf, sinf, sqrtf};
 
@@ -139,15 +126,6 @@ pub fn y0f(x: f32) -> f32 {
     return U00 + TPI * logf(x);
 }
 
-/* The asymptotic expansions of pzero is
- *      1 - 9/128 s^2 + 11025/98304 s^4 - ...,  where s = 1/x.
- * For x >= 2, We approximate pzero by
- *      pzero(x) = 1 + (R/S)
- * where  R = pR0 + pR1*s^2 + pR2*s^4 + ... + pR5*s^10
- *        S = 1 + pS0*s^2 + ... + pS4*s^10
- * and
- *      | pzero(x)-1-R/S | <= 2  ** ( -60.26)
- */
 const PR8: [f32; 6] = [
     /* for x in [inf, 8]=1/[0,0.125] */
     0.0000000000e+00,  /* 0x00000000 */
@@ -246,15 +224,6 @@ fn pzerof(x: f32) -> f32 {
     return 1.0 + r / s;
 }
 
-/* For x >= 8, the asymptotic expansions of qzero is
- *      -1/8 s + 75/1024 s^3 - ..., where s = 1/x.
- * We approximate pzero by
- *      qzero(x) = s*(-1.25 + (R/S))
- * where  R = qR0 + qR1*s^2 + qR2*s^4 + ... + qR5*s^10
- *        S = 1 + qS0*s^2 + ... + qS5*s^12
- * and
- *      | qzero(x)/s +1.25-R/S | <= 2  ** ( -61.22)
- */
 const QR8: [f32; 6] = [
     /* for x in [inf, 8]=1/[0,0.125] */
     0.0000000000e+00, /* 0x00000000 */

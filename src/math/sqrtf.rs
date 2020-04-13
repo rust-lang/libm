@@ -1,17 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_sqrtf.c */
-/*
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn sqrtf(x: f32) -> f32 {
@@ -31,7 +18,7 @@ pub fn sqrtf(x: f32) -> f32 {
     {
         // Note: This path is unlikely since LLVM will usually have already
         // optimized sqrt calls into hardware instructions if sse is available,
-        // but if someone does end up here they'll apprected the speed increase.
+        // but if someone does end up here they'll appreciate the speed increase.
         #[cfg(target_arch = "x86")]
         use core::arch::x86::*;
         #[cfg(target_arch = "x86_64")]
@@ -58,12 +45,10 @@ pub fn sqrtf(x: f32) -> f32 {
 
         ix = x.to_bits() as i32;
 
-        /* take care of Inf and NaN */
         if (ix as u32 & 0x7f800000) == 0x7f800000 {
-            return x * x + x; /* sqrt(NaN)=NaN, sqrt(+inf)=+inf, sqrt(-inf)=sNaN */
+            return x * x + x;
         }
 
-        /* take care of zero */
         if ix <= 0 {
             if (ix & !sign) == 0 {
                 return x; /* sqrt(+-0) = +-0 */
@@ -73,10 +58,8 @@ pub fn sqrtf(x: f32) -> f32 {
             }
         }
 
-        /* normalize x */
         m = ix >> 23;
         if m == 0 {
-            /* subnormal x */
             i = 0;
             while ix & 0x00800000 == 0 {
                 ix <<= 1;
@@ -84,19 +67,16 @@ pub fn sqrtf(x: f32) -> f32 {
             }
             m -= i - 1;
         }
-        m -= 127; /* unbias exponent */
+        m -= 127;
         ix = (ix & 0x007fffff) | 0x00800000;
         if m & 1 == 1 {
-            /* odd m, double x to make it even */
             ix += ix;
         }
         m >>= 1; /* m = [m/2] */
-
-        /* generate sqrt(x) bit by bit */
         ix += ix;
         q = 0;
         s = 0;
-        r = 0x01000000; /* r = moving bit from right to left */
+        r = 0x01000000;
 
         while r != 0 {
             t = s + r as i32;
@@ -109,9 +89,8 @@ pub fn sqrtf(x: f32) -> f32 {
             r >>= 1;
         }
 
-        /* use floating add to find out rounding direction */
         if ix != 0 {
-            z = 1.0 - TINY; /* raise inexact flag */
+            z = 1.0 - TINY;
             if z >= 1.0 {
                 z = 1.0 + TINY;
                 if z > 1.0 {

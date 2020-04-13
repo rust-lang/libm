@@ -1,58 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_j1.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunSoft, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-/* j1(x), y1(x)
- * Bessel function of the first and second kinds of order zero.
- * Method -- j1(x):
- *      1. For tiny x, we use j1(x) = x/2 - x^3/16 + x^5/384 - ...
- *      2. Reduce x to |x| since j1(x)=-j1(-x),  and
- *         for x in (0,2)
- *              j1(x) = x/2 + x*z*R0/S0,  where z = x*x;
- *         (precision:  |j1/x - 1/2 - R0/S0 |<2**-61.51 )
- *         for x in (2,inf)
- *              j1(x) = sqrt(2/(pi*x))*(p1(x)*cos(x1)-q1(x)*sin(x1))
- *              y1(x) = sqrt(2/(pi*x))*(p1(x)*sin(x1)+q1(x)*cos(x1))
- *         where x1 = x-3*pi/4. It is better to compute sin(x1),cos(x1)
- *         as follow:
- *              cos(x1) =  cos(x)cos(3pi/4)+sin(x)sin(3pi/4)
- *                      =  1/sqrt(2) * (sin(x) - cos(x))
- *              sin(x1) =  sin(x)cos(3pi/4)-cos(x)sin(3pi/4)
- *                      = -1/sqrt(2) * (sin(x) + cos(x))
- *         (To avoid cancellation, use
- *              sin(x) +- cos(x) = -cos(2x)/(sin(x) -+ cos(x))
- *          to compute the worse one.)
- *
- *      3 Special cases
- *              j1(nan)= nan
- *              j1(0) = 0
- *              j1(inf) = 0
- *
- * Method -- y1(x):
- *      1. screen out x<=0 cases: y1(0)=-inf, y1(x<0)=NaN
- *      2. For x<2.
- *         Since
- *              y1(x) = 2/pi*(j1(x)*(ln(x/2)+Euler)-1/x-x/2+5/64*x^3-...)
- *         therefore y1(x)-2/pi*j1(x)*ln(x)-1/x is an odd function.
- *         We use the following function to approximate y1,
- *              y1(x) = x*U(z)/V(z) + (2/pi)*(j1(x)*ln(x)-1/x), z= x^2
- *         where for x in [0,2] (abs err less than 2**-65.89)
- *              U(z) = U0[0] + U0[1]*z + ... + U0[4]*z^4
- *              V(z) = 1  + v0[0]*z + ... + v0[4]*z^5
- *         Note: For tiny x, 1/x dominate y1 and hence
- *              y1(tiny) = -2/pi/tiny, (choose tiny<2**-54)
- *      3. For x>=2.
- *              y1(x) = sqrt(2/(pi*x))*(p1(x)*sin(x1)+q1(x)*cos(x1))
- *         where x1 = x-3*pi/4. It is better to compute sin(x1),cos(x1)
- *         by method mentioned above.
- */
 
 use super::{cos, fabs, get_high_word, get_low_word, log, sin, sqrt};
 
@@ -193,16 +139,6 @@ pub fn y1(x: f64) -> f64 {
     return x * (u / v) + TPI * (j1(x) * log(x) - 1.0 / x);
 }
 
-/* For x >= 8, the asymptotic expansions of pone is
- *      1 + 15/128 s^2 - 4725/2^15 s^4 - ...,   where s = 1/x.
- * We approximate pone by
- *      pone(x) = 1 + (R/S)
- * where  R = pr0 + pr1*s^2 + pr2*s^4 + ... + pr5*s^10
- *        S = 1 + ps0*s^2 + ... + ps4*s^10
- * and
- *      | pone(x)-1-R/S | <= 2  ** ( -60.06)
- */
-
 const PR8: [f64; 6] = [
     /* for x in [inf, 8]=1/[0,0.125] */
     0.00000000000000000000e+00, /* 0x00000000, 0x00000000 */
@@ -300,16 +236,6 @@ fn pone(x: f64) -> f64 {
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
     return 1.0 + r / s;
 }
-
-/* For x >= 8, the asymptotic expansions of qone is
- *      3/8 s - 105/1024 s^3 - ..., where s = 1/x.
- * We approximate pone by
- *      qone(x) = s*(0.375 + (R/S))
- * where  R = qr1*s^2 + qr2*s^4 + ... + qr5*s^10
- *        S = 1 + qs1*s^2 + ... + qs6*s^12
- * and
- *      | qone(x)/s -0.375-R/S | <= 2  ** ( -61.13)
- */
 
 const QR8: [f64; 6] = [
     /* for x in [inf, 8]=1/[0,0.125] */

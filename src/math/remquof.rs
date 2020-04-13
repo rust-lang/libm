@@ -17,7 +17,6 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, i32) {
         return (x, 0);
     }
 
-    /* normalize x and y */
     if ex == 0 {
         i = uxi << 9;
         while (i >> 31) == 0 {
@@ -72,7 +71,6 @@ pub fn remquof(mut x: f32, mut y: f32) -> (f32, i32) {
         }
     }
 
-    /* scale result and decide between |x| and |x|-|y| */
     if ex > 0 {
         uxi -= 1 << 23;
         uxi |= (ex as u32) << 23;

@@ -1,24 +1,9 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/s_sinf.c */
-/*
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- * Optimized by Bruce D. Evans.
- */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 use super::{k_cosf, k_sinf, rem_pio2f};
 
 use core::f64::consts::FRAC_PI_2;
 
-/* Small multiples of pi/2 rounded to double precision. */
 const S1_PIO2: f64 = 1. * FRAC_PI_2; /* 0x3FF921FB, 0x54442D18 */
 const S2_PIO2: f64 = 2. * FRAC_PI_2; /* 0x400921FB, 0x54442D18 */
 const S3_PIO2: f64 = 3. * FRAC_PI_2; /* 0x4012D97C, 0x7F3321D2 */
@@ -38,7 +23,6 @@ pub fn sinf(x: f32) -> f32 {
         /* |x| ~<= pi/4 */
         if ix < 0x39800000 {
             /* |x| < 2**-12 */
-            /* raise inexact if x!=0 and underflow if subnormal */
             force_eval!(if ix < 0x00800000 {
                 x / x1p120
             } else {
@@ -77,12 +61,10 @@ pub fn sinf(x: f32) -> f32 {
         return k_sinf(if sign { x64 + S4_PIO2 } else { x64 - S4_PIO2 });
     }
 
-    /* sin(Inf or NaN) is NaN */
     if ix >= 0x7f800000 {
         return x - x;
     }
 
-    /* general argument reduction needed */
     let (n, y) = rem_pio2f(x);
     match n & 3 {
         0 => k_sinf(y),

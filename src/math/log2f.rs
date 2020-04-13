@@ -1,17 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_log2f.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-/*
- * See comments in log2.c.
- */
 
 use core::f32;
 
@@ -51,7 +38,6 @@ pub fn log2f(mut x: f32) -> f32 {
         if (ix >> 31) > 0 {
             return (x - x) / 0.0; /* log(-#) = NaN */
         }
-        /* subnormal number, scale up x */
         k -= 25;
         x *= x1p25f;
         ui = x.to_bits();
@@ -62,7 +48,6 @@ pub fn log2f(mut x: f32) -> f32 {
         return 0.;
     }
 
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
     ix += 0x3f800000 - 0x3f3504f3;
     k += (ix >> 23) as i32 - 0x7f;
     ix = (ix & 0x007fffff) + 0x3f3504f3;

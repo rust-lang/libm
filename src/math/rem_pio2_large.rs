@@ -1,32 +1,11 @@
 #![allow(unused_unsafe)]
 /* origin: FreeBSD /usr/src/lib/msun/src/k_rem_pio2.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunSoft, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 use super::floor;
 use super::scalbn;
 
-// initial value for jk
 const INIT_JK: [usize; 4] = [3, 4, 4, 6];
 
-// Table of constants for 2/pi, 396 Hex digits (476 decimal) of 2/pi
-//
-//              integer array, contains the (24*i)-th to (24*i+23)-th
-//              bit of 2/pi after binary point. The corresponding
-//              floating value is
-//
-//                      ipio2[i] * 2^(-24(i+1)).
-//
-// NB: This table must have at least (e0-3)/24 + jk terms.
-//     For quad precision (e0 <= 16360, jk = 6), this is 686.
 #[cfg(target_pointer_width = "32")]
 const IPIO2: [i32; 66] = [
     0xA2F983, 0x6E4E44, 0x1529FC, 0x2757D1, 0xF534DD, 0xC0DB62, 0x95993C, 0x439041, 0xFE5163,
@@ -131,97 +110,8 @@ const PIO2: [f64; 8] = [
     2.16741683877804819444e-51, /* 0x3569F31D, 0x00000000 */
 ];
 
-// fn rem_pio2_large(x : &[f64], y : &mut [f64], e0 : i32, prec : usize) -> i32
-//
-// Input parameters:
-//      x[]     The input value (must be positive) is broken into nx
-//              pieces of 24-bit integers in double precision format.
-//              x[i] will be the i-th 24 bit of x. The scaled exponent
-//              of x[0] is given in input parameter e0 (i.e., x[0]*2^e0
-//              match x's up to 24 bits.
-//
-//              Example of breaking a double positive z into x[0]+x[1]+x[2]:
-//                      e0 = ilogb(z)-23
-//                      z  = scalbn(z,-e0)
-//              for i = 0,1,2
-//                      x[i] = floor(z)
-//                      z    = (z-x[i])*2**24
-//
-//      y[]     ouput result in an array of double precision numbers.
-//              The dimension of y[] is:
-//                      24-bit  precision       1
-//                      53-bit  precision       2
-//                      64-bit  precision       2
-//                      113-bit precision       3
-//              The actual value is the sum of them. Thus for 113-bit
-//              precison, one may have to do something like:
-//
-//              long double t,w,r_head, r_tail;
-//              t = (long double)y[2] + (long double)y[1];
-//              w = (long double)y[0];
-//              r_head = t+w;
-//              r_tail = w - (r_head - t);
-//
-//      e0      The exponent of x[0]. Must be <= 16360 or you need to
-//              expand the ipio2 table.
-//
-//      prec    an integer indicating the precision:
-//                      0       24  bits (single)
-//                      1       53  bits (double)
-//                      2       64  bits (extended)
-//                      3       113 bits (quad)
-//
-// Here is the description of some local variables:
-//
-//      jk      jk+1 is the initial number of terms of ipio2[] needed
-//              in the computation. The minimum and recommended value
-//              for jk is 3,4,4,6 for single, double, extended, and quad.
-//              jk+1 must be 2 larger than you might expect so that our
-//              recomputation test works. (Up to 24 bits in the integer
-//              part (the 24 bits of it that we compute) and 23 bits in
-//              the fraction part may be lost to cancelation before we
-//              recompute.)
-//
-//      jz      local integer variable indicating the number of
-//              terms of ipio2[] used.
-//
-//      jx      nx - 1
-//
-//      jv      index for pointing to the suitable ipio2[] for the
-//              computation. In general, we want
-//                      ( 2^e0*x[0] * ipio2[jv-1]*2^(-24jv) )/8
-//              is an integer. Thus
-//                      e0-3-24*jv >= 0 or (e0-3)/24 >= jv
-//              Hence jv = max(0,(e0-3)/24).
-//
-//      jp      jp+1 is the number of terms in PIo2[] needed, jp = jk.
-//
-//      q[]     double array with integral value, representing the
-//              24-bits chunk of the product of x and 2/pi.
-//
-//      q0      the corresponding exponent of q[0]. Note that the
-//              exponent for q[i] would be q0-24*i.
-//
-//      PIo2[]  double precision array, obtained by cutting pi/2
-//              into 24 bits chunks.
-//
-//      f[]     ipio2[] in floating point
-//
-//      iq[]    integer array by breaking up q[] in 24-bits chunk.
-//
-//      fq[]    final product of x*(2/pi) in fq[0],..,fq[jk]
-//
-//      ih      integer. If >0 it indicates q[] is >= 0.5, hence
-//              it also indicates the *sign* of the result.
-
 /// Return the last three digits of N with y = x - N*pi/2
 /// so that |y| < pi/2.
-///
-/// The method is to compute the integer (mod 8) and fraction parts of
-/// (2/pi)*x without doing the full multiplication. In general we
-/// skip the part of the product that are known to be a huge integer (
-/// more accurately, = 0 mod 8 ). Thus the number of operations are
-/// independent of the exponent of the input.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
     let x1p24 = f64::from_bits(0x4170000000000000); // 0x1p24 === 2 ^ 24
@@ -241,11 +131,9 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
     let mut q: [f64; 20] = [0.; 20];
     let mut iq: [i32; 20] = [0; 20];
 
-    /* initialize jk*/
     let jk = INIT_JK[prec];
     let jp = jk;
 
-    /* determine jx,jv,q0, note that 3>q0 */
     let jx = nx - 1;
     let mut jv = (e0 - 3) / 24;
     if jv < 0 {
@@ -254,7 +142,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
     let mut q0 = e0 - 24 * (jv + 1);
     let jv = jv as usize;
 
-    /* set up f[0] to f[jx+jk] where f[jx+jk] = ipio2[jv+jk] */
     let mut j = (jv as i32) - (jx as i32);
     let m = jx + jk;
     for i in 0..=m {
@@ -266,7 +153,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
         j += 1;
     }
 
-    /* compute q[0],q[1],...q[jk] */
     for i in 0..=jk {
         fw = 0f64;
         for j in 0..=jx {
@@ -278,7 +164,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
     let mut jz = jk;
 
     'recompute: loop {
-        /* distill q[] into iq[] reversingly */
         let mut i = 0i32;
         z = i!(q, jz);
         for j in (1..=jz).rev() {
@@ -288,14 +173,12 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
             i += 1;
         }
 
-        /* compute n */
-        z = scalbn(z, q0); /* actual value of z */
-        z -= 8.0 * floor(z * 0.125); /* trim off integer >= 8 */
+        z = scalbn(z, q0);
+        z -= 8.0 * floor(z * 0.125);
         n = z as i32;
         z -= n as f64;
         ih = 0;
         if q0 > 0 {
-            /* need iq[jz-1] to determine n */
             i = i!(iq, jz - 1) >> (24 - q0);
             n += i;
             i!(iq, jz - 1, -=, i << (24 - q0));
@@ -307,7 +190,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
         }
 
         if ih > 0 {
-            /* q > 0.5 */
             n += 1;
             let mut carry = 0i32;
             for i in 0..jz {
@@ -323,7 +205,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
                 }
             }
             if q0 > 0 {
-                /* rare case: chance is 1 in 12 */
                 match q0 {
                     1 => {
                         i!(iq, jz - 1, &=, 0x7fffff);
@@ -342,21 +223,18 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
             }
         }
 
-        /* check if recomputation is needed */
         if z == 0. {
             let mut j = 0;
             for i in (jk..=jz - 1).rev() {
                 j |= i!(iq, i);
             }
             if j == 0 {
-                /* need recomputation */
                 let mut k = 1;
                 while i!(iq, jk - k, ==, 0) {
                     k += 1; /* k = no. of terms needed */
                 }
 
                 for i in (jz + 1)..=(jz + k) {
-                    /* add q[jz+1] to q[jz+k] */
                     i!(f, jx + i, =, i!(IPIO2, jv + i) as f64);
                     fw = 0f64;
                     for j in 0..=jx {
@@ -372,7 +250,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
         break;
     }
 
-    /* chop off zero terms */
     if z == 0. {
         jz -= 1;
         q0 -= 24;
@@ -381,7 +258,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
             q0 -= 24;
         }
     } else {
-        /* break z into 24-bit if necessary */
         z = scalbn(z, -q0);
         if z >= x1p24 {
             fw = (x1p_24 * z) as i32 as f64;
@@ -394,14 +270,12 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
         }
     }
 
-    /* convert integer "bit" chunk to floating-point value */
     fw = scalbn(1., q0);
     for i in (0..=jz).rev() {
         i!(q, i, =, fw * (i!(iq, i) as f64));
         fw *= x1p_24;
     }
 
-    /* compute PIo2[0,...,jp]*q[jz,...,0] */
     for i in (0..=jz).rev() {
         fw = 0f64;
         let mut k = 0;
@@ -412,7 +286,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
         i!(fq, jz - i, =, fw);
     }
 
-    /* compress fq[] into y[] */
     match prec {
         0 => {
             fw = 0f64;
@@ -436,7 +309,6 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
             i!(y, 1, =, if ih == 0 { fw } else { -fw });
         }
         3 => {
-            /* painful */
             for i in (1..=jz).rev() {
                 fw = i!(fq, i - 1) + i!(fq, i);
                 i!(fq, i, +=, i!(fq, i - 1) - fw);

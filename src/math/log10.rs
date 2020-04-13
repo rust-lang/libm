@@ -1,21 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_log10.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunSoft, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-/*
- * Return the base 10 logarithm of x.  See log.c for most comments.
- *
- * Reduce x to 2^k (1+f) and calculate r = log(1+f) - f + f*f/2
- * as in log.c, then combine and scale in extra precision:
- *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
- */
 
 use core::f64;
 
@@ -62,7 +45,6 @@ pub fn log10(mut x: f64) -> f64 {
         if (hx >> 31) > 0 {
             return (x - x) / 0.0; /* log(-#) = NaN */
         }
-        /* subnormal number, scale x up */
         k -= 54;
         x *= x1p54;
         ui = x.to_bits();
@@ -73,7 +55,6 @@ pub fn log10(mut x: f64) -> f64 {
         return 0.;
     }
 
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3ff00000 - 0x3fe6a09e;
     k += (hx >> 20) as i32 - 0x3ff;
     hx = (hx & 0x000fffff) + 0x3fe6a09e;
@@ -89,8 +70,6 @@ pub fn log10(mut x: f64) -> f64 {
     t2 = z * (LG1 + w * (LG3 + w * (LG5 + w * LG7)));
     r = t2 + t1;
 
-    /* See log2.c for details. */
-    /* hi+lo = f - hfsq + s*(hfsq+R) ~ log(1+f) */
     hi = f - hfsq;
     ui = hi.to_bits();
     ui &= (-1i64 as u64) << 32;
@@ -103,12 +82,6 @@ pub fn log10(mut x: f64) -> f64 {
     y = dk * LOG10_2HI;
     val_lo = dk * LOG10_2LO + (lo + hi) * IVLN10LO + lo * IVLN10HI;
 
-    /*
-     * Extra precision in for adding y is not strictly needed
-     * since there is no very large cancellation near x = sqrt(2) or
-     * x = 1/sqrt(2), but we do it anyway since it costs little on CPUs
-     * with some parallelism and it reduces the error for many args.
-     */
     w = y + val_hi;
     val_lo += (y - w) + val_hi;
     val_hi = w;

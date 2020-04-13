@@ -24,12 +24,10 @@ pub fn nextafter(x: f64, y: f64) -> f64 {
     }
 
     let e = ux_i.wrapping_shr(52 & 0x7ff);
-    // raise overflow if ux.f is infinite and x is finite
     if e == 0x7ff {
         force_eval!(x + x);
     }
     let ux_f = f64::from_bits(ux_i);
-    // raise underflow if ux.f is subnormal or zero
     if e == 0 {
         force_eval!(x * x + ux_f * ux_f);
     }

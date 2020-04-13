@@ -1,17 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_lgammaf_r.c */
-/*
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 use super::{floorf, k_cosf, k_sinf, logf};
 
@@ -117,7 +104,6 @@ pub fn lgammaf_r(mut x: f32) -> (f32, i32) {
     let sign: bool;
     let mut signgam: i32;
 
-    /* purge off +-inf, NaN, +-0, tiny and negative arguments */
     signgam = 1;
     sign = (u >> 31) != 0;
     ix = u & 0x7fffffff;
@@ -149,12 +135,9 @@ pub fn lgammaf_r(mut x: f32) -> (f32, i32) {
         nadj = 0.0;
     }
 
-    /* purge off 1 and 2 */
     if ix == 0x3f800000 || ix == 0x40000000 {
         r = 0.0;
-    }
-    /* for x < 2.0 */
-    else if ix < 0x40000000 {
+    } else if ix < 0x40000000 {
         if ix <= 0x3f666666 {
             /* lgamma(x) = lgamma(x+1)-log(x) */
             r = -logf(x);

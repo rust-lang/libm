@@ -1,21 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_log2.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunSoft, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-/*
- * Return the base 2 logarithm of x.  See log.c for most comments.
- *
- * Reduce x to 2^k (1+f) and calculate r = log(1+f) - f + f*f/2
- * as in log.c, then combine and scale in extra precision:
- *    log2(x) = (f - f*f/2 + r)/log(2) + k
- */
 
 use core::f64;
 
@@ -59,7 +42,6 @@ pub fn log2(mut x: f64) -> f64 {
         if (hx >> 31) > 0 {
             return (x - x) / 0.0; /* log(-#) = NaN */
         }
-        /* subnormal number, scale x up */
         k -= 54;
         x *= x1p54;
         ui = x.to_bits();
@@ -70,7 +52,6 @@ pub fn log2(mut x: f64) -> f64 {
         return 0.;
     }
 
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3ff00000 - 0x3fe6a09e;
     k += (hx >> 20) as i32 - 0x3ff;
     hx = (hx & 0x000fffff) + 0x3fe6a09e;
@@ -96,7 +77,6 @@ pub fn log2(mut x: f64) -> f64 {
     val_hi = hi * IVLN2HI;
     val_lo = (lo + hi) * IVLN2LO + lo * IVLN2HI;
 
-    /* spadd(val_hi, val_lo, y), except for not using double_t: */
     y = k.into();
     w = y + val_hi;
     val_lo += (y - w) + val_hi;

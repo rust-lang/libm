@@ -17,7 +17,6 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
         return (x, 0);
     }
 
-    /* normalize x and y */
     if ex == 0 {
         i = uxi << 12;
         while (i >> 63) == 0 {
@@ -47,7 +46,6 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
         if ex < ey {
             return (x, 0);
         }
-        /* x mod y */
         while ex > ey {
             i = uxi.wrapping_sub(uy);
             if (i >> 63) == 0 {
@@ -73,7 +71,6 @@ pub fn remquo(mut x: f64, mut y: f64) -> (f64, i32) {
         }
     }
 
-    /* scale result and decide between |x| and |x|-|y| */
     if ex > 0 {
         uxi -= 1 << 52;
         uxi |= (ex as u64) << 52;

@@ -1,62 +1,5 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_pow.c */
-/*
- * ====================================================
- * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
-// pow(x,y) return x**y
-//
-//                    n
-// Method:  Let x =  2   * (1+f)
-//      1. Compute and return log2(x) in two pieces:
-//              log2(x) = w1 + w2,
-//         where w1 has 53-24 = 29 bit trailing zeros.
-//      2. Perform y*log2(x) = n+y' by simulating muti-precision
-//         arithmetic, where |y'|<=0.5.
-//      3. Return x**y = 2**n*exp(y'*log2)
-//
-// Special cases:
-//      1.  (anything) ** 0  is 1
-//      2.  1 ** (anything)  is 1
-//      3.  (anything except 1) ** NAN is NAN
-//      4.  NAN ** (anything except 0) is NAN
-//      5.  +-(|x| > 1) **  +INF is +INF
-//      6.  +-(|x| > 1) **  -INF is +0
-//      7.  +-(|x| < 1) **  +INF is +0
-//      8.  +-(|x| < 1) **  -INF is +INF
-//      9.  -1          ** +-INF is 1
-//      10. +0 ** (+anything except 0, NAN)               is +0
-//      11. -0 ** (+anything except 0, NAN, odd integer)  is +0
-//      12. +0 ** (-anything except 0, NAN)               is +INF, raise divbyzero
-//      13. -0 ** (-anything except 0, NAN, odd integer)  is +INF, raise divbyzero
-//      14. -0 ** (+odd integer) is -0
-//      15. -0 ** (-odd integer) is -INF, raise divbyzero
-//      16. +INF ** (+anything except 0,NAN) is +INF
-//      17. +INF ** (-anything except 0,NAN) is +0
-//      18. -INF ** (+odd integer) is -INF
-//      19. -INF ** (anything) = -0 ** (-anything), (anything except odd integer)
-//      20. (anything) ** 1 is (anything)
-//      21. (anything) ** -1 is 1/(anything)
-//      22. (-anything) ** (integer) is (-1)**(integer)*(+anything**integer)
-//      23. (-anything except 0 and inf) ** (non-integer) is NAN
-//
-// Accuracy:
-//      pow(x,y) returns x**y nearly rounded. In particular
-//                      pow(integer,integer)
-//      always returns the correct integer provided it is
-//      representable.
-//
-// Constants :
-// The hexadecimal values are the intended ones for the following
-// constants. The decimal values may be used, provided that the
-// compiler will convert from decimal to binary accurately enough
-// to produce the hexadecimal values shown.
-//
 use super::{fabs, get_high_word, scalbn, sqrt, with_set_high_word, with_set_low_word};
 
 const BP: [f64; 2] = [1.0, 1.5];
@@ -100,17 +43,14 @@ pub fn pow(x: f64, y: f64) -> f64 {
     let mut ix: i32 = (hx & 0x7fffffff) as i32;
     let iy: i32 = (hy & 0x7fffffff) as i32;
 
-    /* x**0 = 1, even if x is NaN */
     if ((iy as u32) | ly) == 0 {
         return 1.0;
     }
 
-    /* 1**y = 1, even if y is NaN */
     if hx == 0x3ff00000 && lx == 0 {
         return 1.0;
     }
 
-    /* NaN if either arg is NaN */
     if ix > 0x7ff00000
         || (ix == 0x7ff00000 && lx != 0)
         || iy > 0x7ff00000
@@ -119,11 +59,6 @@ pub fn pow(x: f64, y: f64) -> f64 {
         return x + y;
     }
 
-    /* determine if y is an odd int when x < 0
-     * yisint = 0       ... y is not an integer
-     * yisint = 1       ... y is an odd int
-     * yisint = 2       ... y is an even int
-     */
     let mut yisint: i32 = 0;
     let mut k: i32;
     let mut j: i32;
@@ -150,10 +85,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
     }
 
     if ly == 0 {
-        /* special value of y */
         if iy == 0x7ff00000 {
-            /* y is +-inf */
-
             return if ((ix - 0x3ff00000) | (lx as i32)) == 0 {
                 /* (-1)**+-inf is 1 */
                 1.0
@@ -175,17 +107,14 @@ pub fn pow(x: f64, y: f64) -> f64 {
         }
 
         if iy == 0x3ff00000 {
-            /* y is +-1 */
             return if hy >= 0 { x } else { 1.0 / x };
         }
 
         if hy == 0x40000000 {
-            /* y is 2 */
             return x * x;
         }
 
         if hy == 0x3fe00000 {
-            /* y is 0.5 */
             if hx >= 0 {
                 /* x >= +0 */
                 return sqrt(x);
@@ -195,9 +124,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
     let mut ax: f64 = fabs(x);
     if lx == 0 {
-        /* special value of x */
         if ix == 0x7ff00000 || ix == 0 || ix == 0x3ff00000 {
-            /* x is +-0,+-inf,+-1 */
             let mut z: f64 = ax;
 
             if hy < 0 {
@@ -217,7 +144,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
         }
     }
 
-    let mut s: f64 = 1.0; /* sign of result */
+    let mut s: f64 = 1.0;
     if hx < 0 {
         if yisint == 0 {
             /* (x<0)**(non-int) is NaN */
@@ -230,7 +157,6 @@ pub fn pow(x: f64, y: f64) -> f64 {
         }
     }
 
-    /* |y| is HUGE */
     if iy > 0x41e00000 {
         /* if |y| > 2**31 */
         if iy > 0x43f00000 {
@@ -244,7 +170,6 @@ pub fn pow(x: f64, y: f64) -> f64 {
             }
         }
 
-        /* over/underflow if x is not close to one */
         if ix < 0x3fefffff {
             return if hy < 0 {
                 s * HUGE * HUGE
@@ -260,20 +185,16 @@ pub fn pow(x: f64, y: f64) -> f64 {
             };
         }
 
-        /* now |1-x| is TINY <= 2**-20, suffice to compute
-        log(x) by x-x^2/2+x^3/3-x^4/4 */
-        let t: f64 = ax - 1.0; /* t has 20 trailing zeros */
+        let t: f64 = ax - 1.0;
         let w: f64 = (t * t) * (0.5 - t * (0.3333333333333333333333 - t * 0.25));
-        let u: f64 = IVLN2_H * t; /* ivln2_h has 21 sig. bits */
+        let u: f64 = IVLN2_H * t;
         let v: f64 = t * IVLN2_L - w * IVLN2;
         t1 = with_set_low_word(u + v, 0);
         t2 = v - (t1 - u);
     } else {
-        // double ss,s2,s_h,s_l,t_h,t_l;
         let mut n: i32 = 0;
 
         if ix < 0x00100000 {
-            /* take care subnormal number */
             ax *= TWO53;
             n -= 53;
             ix = get_high_word(ax) as i32;
@@ -282,9 +203,8 @@ pub fn pow(x: f64, y: f64) -> f64 {
         n += (ix >> 20) - 0x3ff;
         j = ix & 0x000fffff;
 
-        /* determine interval */
         let k: i32;
-        ix = j | 0x3ff00000; /* normalize ix */
+        ix = j | 0x3ff00000;
         if j <= 0x3988E {
             /* |x|<sqrt(3/2) */
             k = 0;
@@ -312,7 +232,6 @@ pub fn pow(x: f64, y: f64) -> f64 {
         let t_l: f64 = ax - (t_h - BP[k as usize]);
         let s_l: f64 = v * ((u - s_h * t_h) - s_h * t_l);
 
-        /* compute log(ax) */
         let s2: f64 = ss * ss;
         let mut r: f64 = s2 * s2 * (L1 + s2 * (L2 + s2 * (L3 + s2 * (L4 + s2 * (L5 + s2 * L6)))));
         r += s_l * (s_h + ss);
@@ -336,7 +255,6 @@ pub fn pow(x: f64, y: f64) -> f64 {
         t2 = z_l - (((t1 - t) - DP_H[k as usize]) - z_h);
     }
 
-    /* split up y into y1+y2 and compute (y1+y2)*(t1+t2) */
     let y1: f64 = with_set_low_word(y, 0);
     let p_l: f64 = (y - y1) * t1 + y * t2;
     let mut p_h: f64 = y1 * t1;
@@ -349,11 +267,11 @@ pub fn pow(x: f64, y: f64) -> f64 {
         /* z >= 1024 */
         if (j - 0x40900000) | i != 0 {
             /* if z > 1024 */
-            return s * HUGE * HUGE; /* overflow */
+            return s * HUGE * HUGE;
         }
 
         if p_l + OVT > z - p_h {
-            return s * HUGE * HUGE; /* overflow */
+            return s * HUGE * HUGE;
         }
     } else if (j & 0x7fffffff) >= 0x4090cc00 {
         /* z <= -1075 */
@@ -361,15 +279,14 @@ pub fn pow(x: f64, y: f64) -> f64 {
 
         if (((j as u32) - 0xc090cc00) | (i as u32)) != 0 {
             /* z < -1075 */
-            return s * TINY * TINY; /* underflow */
+            return s * TINY * TINY;
         }
 
         if p_l <= z - p_h {
-            return s * TINY * TINY; /* underflow */
+            return s * TINY * TINY;
         }
     }
 
-    /* compute 2**(p_h+p_l) */
     let i: i32 = j & (0x7fffffff as i32);
     k = (i >> 20) - 0x3ff;
     let mut n: i32 = 0;

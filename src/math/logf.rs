@@ -1,17 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_logf.c */
-/*
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 const LN2_HI: f32 = 6.9313812256e-01; /* 0x3f317180 */
 const LN2_LO: f32 = 9.0580006145e-06; /* 0x3717f7d1 */
@@ -36,7 +23,6 @@ pub fn logf(mut x: f32) -> f32 {
         if (ix >> 31) != 0 {
             return (x - x) / 0.; /* log(-#) = NaN */
         }
-        /* subnormal number, scale up x */
         k -= 25;
         x *= x1p25;
         ix = x.to_bits();
@@ -46,7 +32,6 @@ pub fn logf(mut x: f32) -> f32 {
         return 0.;
     }
 
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
     ix += 0x3f800000 - 0x3f3504f3;
     k += ((ix >> 23) as i32) - 0x7f;
     ix = (ix & 0x007fffff) + 0x3f3504f3;

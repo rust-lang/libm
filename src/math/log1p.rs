@@ -1,57 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/s_log1p.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-/* double log1p(double x)
- * Return the natural logarithm of 1+x.
- *
- * Method :
- *   1. Argument Reduction: find k and f such that
- *                      1+x = 2^k * (1+f),
- *         where  sqrt(2)/2 < 1+f < sqrt(2) .
- *
- *      Note. If k=0, then f=x is exact. However, if k!=0, then f
- *      may not be representable exactly. In that case, a correction
- *      term is need. Let u=1+x rounded. Let c = (1+x)-u, then
- *      log(1+x) - log(u) ~ c/u. Thus, we proceed to compute log(u),
- *      and add back the correction term c/u.
- *      (Note: when x > 2**53, one can simply return log(x))
- *
- *   2. Approximation of log(1+f): See log.c
- *
- *   3. Finally, log1p(x) = k*ln2 + log(1+f) + c/u. See log.c
- *
- * Special cases:
- *      log1p(x) is NaN with signal if x < -1 (including -INF) ;
- *      log1p(+INF) is +INF; log1p(-1) is -INF with signal;
- *      log1p(NaN) is that NaN with no signal.
- *
- * Accuracy:
- *      according to an error analysis, the error is always less than
- *      1 ulp (unit in the last place).
- *
- * Constants:
- * The hexadecimal values are the intended ones for the following
- * constants. The decimal values may be used, provided that the
- * compiler will convert from decimal to binary accurately enough
- * to produce the hexadecimal values shown.
- *
- * Note: Assuming log() return accurate answer, the following
- *       algorithm can be used to compute log1p(x) to within a few ULP:
- *
- *              u = 1+x;
- *              if(u==1.0) return x ; else
- *                         return log(u)*(x/(u-1.0));
- *
- *       See HP-15C Advanced Functions Handbook, p.193.
- */
 
 use core::f64;
 
@@ -115,7 +62,6 @@ pub fn log1p(x: f64) -> f64 {
         hu = (ui >> 32) as u32;
         hu += 0x3ff00000 - 0x3fe6a09e;
         k = (hu >> 20) as i32 - 0x3ff;
-        /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
         if k < 54 {
             c = if k >= 2 {
                 1. - (f64::from_bits(ui) - x)
@@ -126,7 +72,6 @@ pub fn log1p(x: f64) -> f64 {
         } else {
             c = 0.;
         }
-        /* reduce u into [sqrt(2)/2, sqrt(2)] */
         hu = (hu & 0x000fffff) + 0x3fe6a09e;
         ui = (hu as u64) << 32 | (ui & 0xffffffff);
         f = f64::from_bits(ui) - 1.;

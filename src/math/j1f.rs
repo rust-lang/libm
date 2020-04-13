@@ -1,17 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_j1f.c */
-/*
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 use super::{cosf, fabsf, logf, sinf, sqrtf};
 
@@ -137,16 +124,6 @@ pub fn y1f(x: f32) -> f32 {
     return x * (u / v) + TPI * (j1f(x) * logf(x) - 1.0 / x);
 }
 
-/* For x >= 8, the asymptotic expansions of pone is
- *      1 + 15/128 s^2 - 4725/2^15 s^4 - ...,   where s = 1/x.
- * We approximate pone by
- *      pone(x) = 1 + (R/S)
- * where  R = pr0 + pr1*s^2 + pr2*s^4 + ... + pr5*s^10
- *        S = 1 + ps0*s^2 + ... + ps4*s^10
- * and
- *      | pone(x)-1-R/S | <= 2  ** ( -60.06)
- */
-
 const PR8: [f32; 6] = [
     /* for x in [inf, 8]=1/[0,0.125] */
     0.0000000000e+00, /* 0x00000000 */
@@ -244,16 +221,6 @@ fn ponef(x: f32) -> f32 {
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
     return 1.0 + r / s;
 }
-
-/* For x >= 8, the asymptotic expansions of qone is
- *      3/8 s - 105/1024 s^3 - ..., where s = 1/x.
- * We approximate pone by
- *      qone(x) = s*(0.375 + (R/S))
- * where  R = qr1*s^2 + qr2*s^4 + ... + qr5*s^10
- *        S = 1 + qs1*s^2 + ... + qs6*s^12
- * and
- *      | qone(x)/s -0.375-R/S | <= 2  ** ( -61.13)
- */
 
 const QR8: [f32; 6] = [
     /* for x in [inf, 8]=1/[0,0.125] */

@@ -1,14 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/s_log1pf.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 use core::f32;
 
@@ -70,7 +60,6 @@ pub fn log1pf(x: f32) -> f32 {
         iu = ui;
         iu += 0x3f800000 - 0x3f3504f3;
         k = (iu >> 23) as i32 - 0x7f;
-        /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
         if k < 25 {
             c = if k >= 2 {
                 1. - (f32::from_bits(ui) - x)
@@ -81,7 +70,6 @@ pub fn log1pf(x: f32) -> f32 {
         } else {
             c = 0.;
         }
-        /* reduce u into [sqrt(2)/2, sqrt(2)] */
         iu = (iu & 0x007fffff) + 0x3f3504f3;
         ui = iu;
         f = f32::from_bits(ui) - 1.;

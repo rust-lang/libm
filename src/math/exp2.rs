@@ -1,28 +1,4 @@
-// origin: FreeBSD /usr/src/lib/msun/src/s_exp2.c */
-//-
-// Copyright (c) 2005 David Schultz <das@FreeBSD.ORG>
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions
-// are met:
-// 1. Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-// 2. Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in the
-//    documentation and/or other materials provided with the distribution.
-//
-// THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-// ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-// OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-// LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-// OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-// SUCH DAMAGE.
+/* origin: FreeBSD /usr/src/lib/msun/src/s_exp2.c */
 
 use super::scalbn;
 
@@ -288,36 +264,6 @@ static TBL: [u64; TBLSIZE * 2] = [
     0x3ff68155d44ca97e, 0x3ce6800000000000,
     0x3ff690f4b19e9471, 0xbd29780000000000,
 ];
-
-// exp2(x): compute the base 2 exponential of x
-//
-// Accuracy: Peak error < 0.503 ulp for normalized results.
-//
-// Method: (accurate tables)
-//
-//   Reduce x:
-//     x = k + y, for integer k and |y| <= 1/2.
-//     Thus we have exp2(x) = 2**k * exp2(y).
-//
-//   Reduce y:
-//     y = i/TBLSIZE + z - eps[i] for integer i near y * TBLSIZE.
-//     Thus we have exp2(y) = exp2(i/TBLSIZE) * exp2(z - eps[i]),
-//     with |z - eps[i]| <= 2**-9 + 2**-39 for the table used.
-//
-//   We compute exp2(i/TBLSIZE) via table lookup and exp2(z - eps[i]) via
-//   a degree-5 minimax polynomial with maximum error under 1.3 * 2**-61.
-//   The values in exp2t[] and eps[] are chosen such that
-//   exp2t[i] = exp2(i/TBLSIZE + eps[i]), and eps[i] is a small offset such
-//   that exp2t[i] is accurate to 2**-64.
-//
-//   Note that the range of i is +-TBLSIZE/2, so we actually index the tables
-//   by i0 = i + TBLSIZE/2.  For cache efficiency, exp2t[] and eps[] are
-//   virtual tables, interleaved in the real table tbl[].
-//
-//   This method is due to Gal, with many details due to Gal and Bachelis:
-//
-//      Gal, S. and Bachelis, B.  An Accurate Elementary Mathematical Library
-//      for the IEEE Floating Point Standard.  TOMS 17(1), 26-46 (1991).
 
 /// Exponential, base 2 (f64)
 ///

@@ -1,17 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_powf.c */
-/*
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 
 use super::{fabsf, scalbnf, sqrtf};
 
@@ -78,26 +65,18 @@ pub fn powf(x: f32, y: f32) -> f32 {
     ix = hx & 0x7fffffff;
     iy = hy & 0x7fffffff;
 
-    /* x**0 = 1, even if x is NaN */
     if iy == 0 {
         return 1.0;
     }
 
-    /* 1**y = 1, even if y is NaN */
     if hx == 0x3f800000 {
         return 1.0;
     }
 
-    /* NaN if either arg is NaN */
     if ix > 0x7f800000 || iy > 0x7f800000 {
         return x + y;
     }
 
-    /* determine if y is an odd int when x < 0
-     * yisint = 0       ... y is not an integer
-     * yisint = 1       ... y is an odd int
-     * yisint = 2       ... y is an even int
-     */
     yisint = 0;
     if hx < 0 {
         if iy >= 0x4b800000 {
@@ -111,7 +90,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
         }
     }
 
-    /* special value of y */
     if iy == 0x7f800000 {
         /* y is +-inf */
         if ix == 0x3f800000 {
@@ -144,7 +122,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
     }
 
     ax = fabsf(x);
-    /* special value of x */
     if ix == 0x7f800000 || ix == 0 || ix == 0x3f800000 {
         /* x is +-0,+-inf,+-1 */
         z = ax;
@@ -163,7 +140,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         return z;
     }
 
-    sn = 1.0; /* sign of result */
+    sn = 1.0;
     if hx < 0 {
         if yisint == 0 {
             /* (x<0)**(non-int) is NaN */
@@ -179,7 +156,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
     /* |y| is HUGE */
     if iy > 0x4d000000 {
         /* if |y| > 2**27 */
-        /* over/underflow if x is not close to one */
         if ix < 0x3f7ffff8 {
             return if hy < 0 {
                 sn * HUGE * HUGE
@@ -196,9 +172,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
             };
         }
 
-        /* now |1-x| is TINY <= 2**-20, suffice to compute
-        log(x) by x-x^2/2+x^3/3-x^4/4 */
-        t = ax - 1.; /* t has 20 trailing zeros */
+        t = ax - 1.;
         w = (t * t) * (0.5 - t * (0.333333333333 - t * 0.25));
         u = IVLN2_H * t; /* IVLN2_H has 16 sig. bits */
         v = t * IVLN2_L - w * IVLN2;
@@ -214,7 +188,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
         let mut t_l: f32;
 
         n = 0;
-        /* take care subnormal number */
         if ix < 0x00800000 {
             ax *= TWO24;
             n -= 24;
@@ -222,8 +195,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         }
         n += ((ix) >> 23) - 0x7f;
         j = ix & 0x007fffff;
-        /* determine interval */
-        ix = j | 0x3f800000; /* normalize ix */
+        ix = j | 0x3f800000;
         if j <= 0x1cc471 {
             /* |x|<sqrt(3/2) */
             k = 0;
@@ -237,7 +209,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
         }
         ax = f32::from_bits(ix as u32);
 
-        /* compute s = s_h+s_l = (x-1)/(x+1) or (x-1.5)/(x+1.5) */
         u = ax - BP[k as usize]; /* bp[0]=1.0, bp[1]=1.5 */
         v = 1.0 / (ax + BP[k as usize]);
         s = u * v;
@@ -276,7 +247,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
         t2 = z_l - (((t1 - t) - DP_H[k as usize]) - z_h);
     };
 
-    /* split up y into y1+y2 and compute (y1+y2)*(t1+t2) */
     is = y.to_bits() as i32;
     y1 = f32::from_bits(is as u32 & 0xfffff000);
     p_l = (y - y1) * t1 + y * t2;
@@ -302,9 +272,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
         return sn * TINY * TINY; /* underflow */
     }
 
-    /*
-     * compute 2**(p_h+p_l)
-     */
     i = j & 0x7fffffff;
     k = (i >> 23) - 0x7f;
     n = 0;

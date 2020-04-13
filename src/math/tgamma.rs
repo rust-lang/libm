@@ -1,33 +1,8 @@
-/*
-"A Precision Approximation of the Gamma Function" - Cornelius Lanczos (1964)
-"Lanczos Implementation of the Gamma Function" - Paul Godfrey (2001)
-"An Analysis of the Lanczos Gamma Approximation" - Glendon Ralph Pugh (2004)
-
-approximation method:
-
-                        (x - 0.5)         S(x)
-Gamma(x) = (x + g - 0.5)         *  ----------------
-                                    exp(x + g - 0.5)
-
-with
-                 a1      a2      a3            aN
-S(x) ~= [ a0 + ----- + ----- + ----- + ... + ----- ]
-               x + 1   x + 2   x + 3         x + N
-
-with a0, a1, a2, a3,.. aN constants which depend on g.
-
-for x < 0 the following reflection formula is used:
-
-Gamma(x)*Gamma(-x) = -pi/(x sin(pi x))
-
-most ideas and constants are from boost and python
-*/
 extern crate core;
 use super::{exp, floor, k_cos, k_sin, pow};
 
 const PI: f64 = 3.141592653589793238462643383279502884;
 
-/* sin(pi x) with x > 0x1p-100, if sin(pi*x)==0 the sign is arbitrary */
 fn sinpi(mut x: f64) -> f64 {
     let mut n: isize;
 
@@ -51,7 +26,6 @@ fn sinpi(mut x: f64) -> f64 {
 }
 
 const N: usize = 12;
-//static const double g = 6.024680040776729583740234375;
 const GMHALF: f64 = 5.524680040776729583740234375;
 const SNUM: [f64; N + 1] = [
     23531376880.410759688572007674451636754734846804940,
@@ -110,12 +84,10 @@ const FACT: [f64; 23] = [
     1124000727777607680000.0,
 ];
 
-/* S(x) rational function for positive x */
 fn s(x: f64) -> f64 {
     let mut num: f64 = 0.0;
     let mut den: f64 = 0.0;
 
-    /* to avoid overflow handle large x differently */
     if x < 8.0 {
         for i in (0..=N).rev() {
             num = num * x + SNUM[i];
@@ -140,18 +112,13 @@ pub fn tgamma(mut x: f64) -> f64 {
     let ix: u32 = ((u >> 32) as u32) & 0x7fffffff;
     let sign: bool = (u >> 63) != 0;
 
-    /* special cases */
     if ix >= 0x7ff00000 {
-        /* tgamma(nan)=nan, tgamma(inf)=inf, tgamma(-inf)=nan with invalid */
         return x + core::f64::INFINITY;
     }
     if ix < ((0x3ff - 54) << 20) {
-        /* |x| < 2^-54: tgamma(x) ~ 1/x, +-0 raises div-by-zero */
         return 1.0 / x;
     }
 
-    /* integer arguments */
-    /* raise inexact when non-integer */
     if x == floor(x) {
         if sign {
             return 0.0 / 0.0;
@@ -161,8 +128,6 @@ pub fn tgamma(mut x: f64) -> f64 {
         }
     }
 
-    /* x >= 172: tgamma(x)=inf with overflow */
-    /* x =< -184: tgamma(x)=+-0 with underflow */
     if ix >= 0x40670000 {
         /* |x| >= 184 */
         if sign {
@@ -181,7 +146,6 @@ pub fn tgamma(mut x: f64) -> f64 {
 
     absx = if sign { -x } else { x };
 
-    /* handle the error of x + g - 0.5 */
     y = absx + GMHALF;
     if absx > GMHALF {
         dy = y - absx;
@@ -194,8 +158,6 @@ pub fn tgamma(mut x: f64) -> f64 {
     z = absx - 0.5;
     r = s(absx) * exp(-y);
     if x < 0.0 {
-        /* reflection formula for negative x */
-        /* sinpi(absx) is not 0, integers are already handled */
         r = -PI / (sinpi(absx) * absx * r);
         dy = -dy;
         z = -z;

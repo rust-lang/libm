@@ -1,37 +1,4 @@
 /* origin: FreeBSD /usr/src/lib/msun/src/e_acos.c */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunSoft, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-/* acos(x)
- * Method :
- *      acos(x)  = pi/2 - asin(x)
- *      acos(-x) = pi/2 + asin(x)
- * For |x|<=0.5
- *      acos(x) = pi/2 - (x + x*x^2*R(x^2))     (see asin.c)
- * For x>0.5
- *      acos(x) = pi/2 - (pi/2 - 2asin(sqrt((1-x)/2)))
- *              = 2asin(sqrt((1-x)/2))
- *              = 2s + 2s*z*R(z)        ...z=(1-x)/2, s=sqrt(z)
- *              = 2f + (2c + 2s*z*R(z))
- *     where f=hi part of s, and c = (z-f*f)/(s+f) is the correction term
- *     for f so that f+c ~ sqrt(z).
- * For x<-0.5
- *      acos(x) = pi - 2asin(sqrt((1-|x|)/2))
- *              = pi - 0.5*(s+s*z*R(z)), where z=(1-|x|)/2,s=sqrt(z)
- *
- * Special cases:
- *      if x is NaN, return x itself;
- *      if |x|>1, return NaN with invalid signal.
- *
- * Function needed: sqrt
- */
 
 use super::sqrt;
 
