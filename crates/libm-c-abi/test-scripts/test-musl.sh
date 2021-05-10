@@ -11,7 +11,7 @@ CRATE_RELEASE_DIR="${CARGO_TARGET_DIR:-${SCRIPT_DIR}/../../../target/}release/"
 
 if [ ! -d "${REPO_DIR}" ]; then
   cd ${SCRIPT_DIR}
-    git clone git://nsz.repo.hu:45100/repo/libc-test
+    git clone git://nsz.repo.hu:49100/repo/libc-test
     cd ${REPO_DIR}
       cat << EOF > config.mak
 CFLAGS += -pipe -std=c99 -D_POSIX_C_SOURCE=200809L -Wall -Wno-unused-function -Wno-missing-braces -Wno-unused -Wno-overflow

@@ -225,22 +225,22 @@ pub extern "C" fn lround(arg: c_double) -> c_long {
 }
 
 #[no_mangle]
-pub extern "C" fn llrint(arg: c_double) -> c_longlong {
+pub extern "C" fn llrint(_arg: c_double) -> c_longlong {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn lrint(arg: c_double) -> c_long {
+pub extern "C" fn lrint(_arg: c_double) -> c_long {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn rint(arg: c_double) -> c_double {
+pub extern "C" fn rint(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn nearbyint(arg: c_double) -> c_double {
+pub extern "C" fn nearbyint(_arg: c_double) -> c_double {
     unimplemented!()
 }
 

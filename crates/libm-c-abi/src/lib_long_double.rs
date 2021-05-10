@@ -1,6 +1,6 @@
 //fixme: type are wrong should use long double
-use super::signgam;
-use core::{f64, i32};
+
+
 use libc::{c_double, c_int, c_long, c_longlong};
 
 #[no_mangle]
@@ -104,12 +104,12 @@ pub extern "C" fn floorl(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn fmal(_x:c_double, _y: c_double, z: c_double) -> c_double {
+pub extern "C" fn fmal(_x:c_double, _y: c_double, _z: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn fmodl(numer: c_double, denom: c_double) -> c_double {
+pub extern "C" fn fmodl(_numer: c_double, _denom: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -149,12 +149,12 @@ pub extern "C" fn log2l(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn powl(base: c_double, exponent: c_double) -> c_double {
+pub extern "C" fn powl(_base: c_double, _exponent: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn pow10l(exponent: c_double) -> c_double {
+pub extern "C" fn pow10l(_exponent: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -243,7 +243,7 @@ pub extern "C" fn nearbyintl(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn sincosl(_x:c_double, si_n: *mut c_double, cos: *mut c_double) {
+pub extern "C" fn sincosl(_x:c_double, _si_n: *mut c_double, _cos: *mut c_double) {
     unimplemented!()
 }
 // fixme should probably be in internals
@@ -294,12 +294,12 @@ pub extern "C" fn nextafterl(_x:c_double, _y: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn remquol(numer: c_double, denom: c_double, quot: *mut c_int) -> c_double {
+pub extern "C" fn remquol(_numer: c_double, _denom: c_double, _quot: *mut c_int) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn remainderl(numer: c_double, denom: c_double) -> c_double {
+pub extern "C" fn remainderl(_numer: c_double, _denom: c_double) -> c_double {
     unimplemented!()
 }
 

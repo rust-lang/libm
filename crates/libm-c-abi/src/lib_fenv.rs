@@ -1,9 +1,8 @@
-use libc::{c_float, c_int, c_long, c_longlong, c_ulong};
+use libc::{c_int, c_ulong};
 
-const FE_ALL_EXCEPT: c_int = 0;
+//const FE_ALL_EXCEPT: c_int = 0;
 const FE_TONEAREST: c_int = 0;
 
-type fexcept_t = c_ulong;
 
 #[repr(C)]
 pub struct fenv_t {
@@ -36,12 +35,12 @@ extern "C" fn __fesetround(_r: c_int) -> c_int {
 }
 
 #[no_mangle]
-pub extern "C" fn fegetenv(envp: *const fenv_t) -> c_int {
+pub extern "C" fn fegetenv(_envp: *const fenv_t) -> c_int {
     0
 }
 
 #[no_mangle]
-pub extern "C" fn fesetenv(envp: *const fenv_t) -> c_int {
+pub extern "C" fn fesetenv(_envp: *const fenv_t) -> c_int {
     0
 }
 

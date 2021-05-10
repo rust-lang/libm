@@ -225,21 +225,21 @@ pub extern "C" fn lroundf(arg: c_float) -> c_long {
 }
 
 #[no_mangle]
-pub extern "C" fn llrintf(arg: c_float) -> c_longlong {
+pub extern "C" fn llrintf(_arg: c_float) -> c_longlong {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn lrintf(arg: c_float) -> c_long {
+pub extern "C" fn lrintf(_arg: c_float) -> c_long {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn rintf(arg: c_float) -> c_float {
+pub extern "C" fn rintf(_arg: c_float) -> c_float {
     unimplemented!()
 }
 #[no_mangle]
-pub extern "C" fn nearbyintf(arg: c_float) -> c_float {
+pub extern "C" fn nearbyintf(_arg: c_float) -> c_float {
     unimplemented!()
 }
 
@@ -251,6 +251,7 @@ pub extern "C" fn sincosf(x: c_float, sin: *mut c_float, cos: *mut c_float) {
         *cos = rcos;
     }
 }
+
 // fixme should probably be in internals
 #[no_mangle]
 pub extern "C" fn scalblnf(x: c_float, n: c_long) -> c_float {
@@ -343,7 +344,7 @@ pub extern "C" fn __isnormalf(x: c_float) -> c_int {
 }
 
 #[no_mangle]
-pub extern "C" fn __fpclassifyf(x: c_float) -> c_int {
+pub extern "C" fn __fpclassifyf(_x: c_float) -> c_int {
     const FP_NORMAL: i32 = 0x4;
     FP_NORMAL
 }
