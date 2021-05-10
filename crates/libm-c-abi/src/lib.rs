@@ -1,3 +1,6 @@
+#![no_std]
+#![feature(lang_items)]
+
 mod lib_f32;
 mod lib_f64;
 mod lib_fenv;
@@ -10,3 +13,13 @@ pub use lib_long_double::*;
 
 #[no_mangle]
 pub static mut signgam: i32 = 0;
+
+use core::panic::PanicInfo;
+
+#[panic_handler]
+fn panic(_panic: &PanicInfo<'_>) -> ! {
+    loop {}
+}
+
+#[lang = "eh_personality"]
+extern "C" fn eh_personality() {}

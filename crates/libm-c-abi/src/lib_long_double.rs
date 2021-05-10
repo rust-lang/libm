@@ -4,107 +4,107 @@ use core::{f64, i32};
 use libc::{c_double, c_int, c_long, c_longlong};
 
 #[no_mangle]
-pub extern "C" fn acosl(arg: c_double) -> c_double {
+pub extern "C" fn acosl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn acoshl(arg: c_double) -> c_double {
+pub extern "C" fn acoshl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn asinl(arg: c_double) -> c_double {
+pub extern "C" fn asinl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn asinhl(arg: c_double) -> c_double {
+pub extern "C" fn asinhl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn atanl(arg: c_double) -> c_double {
+pub extern "C" fn atanl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn atan2l(y: c_double, x: c_double) -> c_double {
+pub extern "C" fn atan2l(_y: c_double, _x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn atanhl(arg: c_double) -> c_double {
+pub extern "C" fn atanhl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn cbrtl(arg: c_double) -> c_double {
+pub extern "C" fn cbrtl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn ceill(arg: c_double) -> c_double {
+pub extern "C" fn ceill(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn cosl(arg: c_double) -> c_double {
+pub extern "C" fn cosl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn coshl(arg: c_double) -> c_double {
+pub extern "C" fn coshl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn expl(arg: c_double) -> c_double {
+pub extern "C" fn expl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn exp2l(arg: c_double) -> c_double {
+pub extern "C" fn exp2l(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn expm1l(arg: c_double) -> c_double {
+pub extern "C" fn expm1l(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn exp10l(arg: c_double) -> c_double {
+pub extern "C" fn exp10l(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn erfl(arg: c_double) -> c_double {
+pub extern "C" fn erfl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn erfcl(arg: c_double) -> c_double {
+pub extern "C" fn erfcl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn fabsl(arg: c_double) -> c_double {
+pub extern "C" fn fabsl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn fdiml(x: c_double, y: c_double) -> c_double {
+pub extern "C" fn fdiml(_x:c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn floorl(arg: c_double) -> c_double {
+pub extern "C" fn floorl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn fmal(x: c_double, y: c_double, z: c_double) -> c_double {
+pub extern "C" fn fmal(_x:c_double, _y: c_double, z: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -114,37 +114,37 @@ pub extern "C" fn fmodl(numer: c_double, denom: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn fmaxl(x: c_double, y: c_double) -> c_double {
+pub extern "C" fn fmaxl(_x:c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn fminl(x: c_double, y: c_double) -> c_double {
+pub extern "C" fn fminl(_x:c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn hypotl(x: c_double, y: c_double) -> c_double {
+pub extern "C" fn hypotl(_x:c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn logl(arg: c_double) -> c_double {
+pub extern "C" fn logl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn log10l(arg: c_double) -> c_double {
+pub extern "C" fn log10l(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn log1pl(arg: c_double) -> c_double {
+pub extern "C" fn log1pl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn log2l(arg: c_double) -> c_double {
+pub extern "C" fn log2l(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -159,137 +159,137 @@ pub extern "C" fn pow10l(exponent: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn roundl(arg: c_double) -> c_double {
+pub extern "C" fn roundl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn scalbnl(x: c_double, n: c_int) -> c_double {
+pub extern "C" fn scalbnl(_x:c_double, _n: c_int) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn sinl(arg: c_double) -> c_double {
+pub extern "C" fn sinl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn sinhl(arg: c_double) -> c_double {
+pub extern "C" fn sinhl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn sqrtl(arg: c_double) -> c_double {
+pub extern "C" fn sqrtl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn tanl(arg: c_double) -> c_double {
+pub extern "C" fn tanl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn tanhl(arg: c_double) -> c_double {
+pub extern "C" fn tanhl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn truncl(arg: c_double) -> c_double {
+pub extern "C" fn truncl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn lgammal(arg: c_double) -> c_double {
+pub extern "C" fn lgammal(_arg: c_double) -> c_double {
     unimplemented!()
 }
 #[no_mangle]
-pub extern "C" fn tgammal(arg: c_double) -> c_double {
-    unimplemented!()
-}
-
-#[no_mangle]
-pub extern "C" fn ilogbl(arg: c_double) -> c_int {
+pub extern "C" fn tgammal(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn llroundl(arg: c_double) -> c_longlong {
+pub extern "C" fn ilogbl(_arg: c_double) -> c_int {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn lroundl(arg: c_double) -> c_long {
+pub extern "C" fn llroundl(_arg: c_double) -> c_longlong {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn llrintl(arg: c_double) -> c_longlong {
+pub extern "C" fn lroundl(_arg: c_double) -> c_long {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn lrintl(arg: c_double) -> c_long {
+pub extern "C" fn llrintl(_arg: c_double) -> c_longlong {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn rintl(arg: c_double) -> c_double {
+pub extern "C" fn lrintl(_arg: c_double) -> c_long {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn nearbyintl(arg: c_double) -> c_double {
+pub extern "C" fn rintl(_arg: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn sincosl(x: c_double, sin: *mut c_double, cos: *mut c_double) {
+pub extern "C" fn nearbyintl(_arg: c_double) -> c_double {
+    unimplemented!()
+}
+
+#[no_mangle]
+pub extern "C" fn sincosl(_x:c_double, si_n: *mut c_double, cos: *mut c_double) {
     unimplemented!()
 }
 // fixme should probably be in internals
 #[no_mangle]
-pub extern "C" fn scalblnl(x: c_double, n: c_long) -> c_double {
+pub extern "C" fn scalblnl(_x:c_double, _n: c_long) -> c_double {
     unimplemented!()
 }
 
 // fixme should probably be in internals
 #[no_mangle]
-pub extern "C" fn logbl(x: c_double) -> c_double {
+pub extern "C" fn logbl(_x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn j0l(x: c_double) -> c_double {
+pub extern "C" fn j0l(_x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn y0l(x: c_double) -> c_double {
+pub extern "C" fn y0l(_x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn j1l(x: c_double) -> c_double {
+pub extern "C" fn j1l(_x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn y1l(x: c_double) -> c_double {
+pub extern "C" fn y1l(_x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn jnl(n: c_int, x: c_double) -> c_double {
+pub extern "C" fn jnl(_n: c_int, _x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn ynl(n: c_int, x: c_double) -> c_double {
+pub extern "C" fn ynl(_n: c_int, _x:c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn nextafterl(x: c_double, y: c_double) -> c_double {
+pub extern "C" fn nextafterl(_x:c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -305,14 +305,14 @@ pub extern "C" fn remainderl(numer: c_double, denom: c_double) -> c_double {
 
 // todo : add a newlib test cfg feature flag?
 #[no_mangle]
-pub extern "C" fn __isfinitel(x: c_double) -> c_int {
+pub extern "C" fn __isfinitel(_x:c_double) -> c_int {
     unimplemented!()
 }
 #[no_mangle]
-pub extern "C" fn __isnormall(x: c_double) -> c_int {
+pub extern "C" fn __isnormall(_x:c_double) -> c_int {
     unimplemented!()
 }
 #[no_mangle]
-pub extern "C" fn __fpclassifydl(x: c_double) -> c_int {
+pub extern "C" fn __fpclassifydl(_x:c_double) -> c_int {
     unimplemented!()
 }

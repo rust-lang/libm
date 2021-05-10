@@ -9,6 +9,12 @@ license = "MIT OR Apache-2.0"
 [lib]
 crate-type = ["staticlib", "cdylib"]
 
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
 [dependencies]
 libm = { path = "../.." }
 libc = {version="0.2", default-features=false}
