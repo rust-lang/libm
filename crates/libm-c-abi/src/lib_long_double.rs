@@ -1,6 +1,5 @@
 //fixme: type are wrong should use long double
 
-
 use libc::{c_double, c_int, c_long, c_longlong};
 
 #[no_mangle]
@@ -29,7 +28,7 @@ pub extern "C" fn atanl(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn atan2l(_y: c_double, _x:c_double) -> c_double {
+pub extern "C" fn atan2l(_y: c_double, _x: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -94,7 +93,7 @@ pub extern "C" fn fabsl(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn fdiml(_x:c_double, _y: c_double) -> c_double {
+pub extern "C" fn fdiml(_x: c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -104,7 +103,7 @@ pub extern "C" fn floorl(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn fmal(_x:c_double, _y: c_double, _z: c_double) -> c_double {
+pub extern "C" fn fmal(_x: c_double, _y: c_double, _z: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -114,17 +113,17 @@ pub extern "C" fn fmodl(_numer: c_double, _denom: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn fmaxl(_x:c_double, _y: c_double) -> c_double {
+pub extern "C" fn fmaxl(_x: c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn fminl(_x:c_double, _y: c_double) -> c_double {
+pub extern "C" fn fminl(_x: c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn hypotl(_x:c_double, _y: c_double) -> c_double {
+pub extern "C" fn hypotl(_x: c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -164,7 +163,7 @@ pub extern "C" fn roundl(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn scalbnl(_x:c_double, _n: c_int) -> c_double {
+pub extern "C" fn scalbnl(_x: c_double, _n: c_int) -> c_double {
     unimplemented!()
 }
 
@@ -243,53 +242,53 @@ pub extern "C" fn nearbyintl(_arg: c_double) -> c_double {
 }
 
 #[no_mangle]
-pub extern "C" fn sincosl(_x:c_double, _si_n: *mut c_double, _cos: *mut c_double) {
+pub extern "C" fn sincosl(_x: c_double, _si_n: *mut c_double, _cos: *mut c_double) {
     unimplemented!()
 }
 // fixme should probably be in internals
 #[no_mangle]
-pub extern "C" fn scalblnl(_x:c_double, _n: c_long) -> c_double {
+pub extern "C" fn scalblnl(_x: c_double, _n: c_long) -> c_double {
     unimplemented!()
 }
 
 // fixme should probably be in internals
 #[no_mangle]
-pub extern "C" fn logbl(_x:c_double) -> c_double {
+pub extern "C" fn logbl(_x: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn j0l(_x:c_double) -> c_double {
+pub extern "C" fn j0l(_x: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn y0l(_x:c_double) -> c_double {
+pub extern "C" fn y0l(_x: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn j1l(_x:c_double) -> c_double {
+pub extern "C" fn j1l(_x: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn y1l(_x:c_double) -> c_double {
+pub extern "C" fn y1l(_x: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn jnl(_n: c_int, _x:c_double) -> c_double {
+pub extern "C" fn jnl(_n: c_int, _x: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn ynl(_n: c_int, _x:c_double) -> c_double {
+pub extern "C" fn ynl(_n: c_int, _x: c_double) -> c_double {
     unimplemented!()
 }
 
 #[no_mangle]
-pub extern "C" fn nextafterl(_x:c_double, _y: c_double) -> c_double {
+pub extern "C" fn nextafterl(_x: c_double, _y: c_double) -> c_double {
     unimplemented!()
 }
 
@@ -305,14 +304,14 @@ pub extern "C" fn remainderl(_numer: c_double, _denom: c_double) -> c_double {
 
 // todo : add a newlib test cfg feature flag?
 #[no_mangle]
-pub extern "C" fn __isfinitel(_x:c_double) -> c_int {
+pub extern "C" fn __isfinitel(_x: c_double) -> c_int {
     unimplemented!()
 }
 #[no_mangle]
-pub extern "C" fn __isnormall(_x:c_double) -> c_int {
+pub extern "C" fn __isnormall(_x: c_double) -> c_int {
     unimplemented!()
 }
 #[no_mangle]
-pub extern "C" fn __fpclassifydl(_x:c_double) -> c_int {
+pub extern "C" fn __fpclassifydl(_x: c_double) -> c_int {
     unimplemented!()
 }

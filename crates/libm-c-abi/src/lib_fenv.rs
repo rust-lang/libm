@@ -3,7 +3,6 @@ use libc::{c_int, c_ulong};
 //const FE_ALL_EXCEPT: c_int = 0;
 const FE_TONEAREST: c_int = 0;
 
-
 #[repr(C)]
 pub struct fenv_t {
     __cw: c_ulong,

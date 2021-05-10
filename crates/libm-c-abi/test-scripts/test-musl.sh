@@ -14,12 +14,7 @@ if [ ! -d "${REPO_DIR}" ]; then
     git clone git://nsz.repo.hu:49100/repo/libc-test
     cd ${REPO_DIR}
       cat << EOF > config.mak
-CFLAGS += -pipe -std=c99 -D_POSIX_C_SOURCE=200809L -Wall -Wno-unused-function -Wno-missing-braces -Wno-unused -Wno-overflow
-CFLAGS += -Wno-unknown-pragmas -fno-builtin -frounding-math
-CFLAGS += -Werror=implicit-function-declaration -Werror=implicit-int -Werror=pointer-sign -Werror=pointer-arith
-CFLAGS += -g
-LDFLAGS += -g
-LDLIBS += -lpthread -lrt
+CFLAGS += -std=c99 -fno-builtin -frounding-math
 LDLIBS += -L ${CRATE_RELEASE_DIR} -lrelibm -Wl,-rpath=${CRATE_RELEASE_DIR}
 EOF
     cd -
