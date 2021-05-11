@@ -17,4 +17,4 @@ panic = "abort"
 
 [dependencies]
 libm = { path = "../.." }
-libc = {version="0.2", default-features=false}
+libc = { version = "0.2.94", default-features = false }
