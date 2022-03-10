@@ -335,17 +335,17 @@ use self::rem_pio2_large::rem_pio2_large;
 use self::rem_pio2f::rem_pio2f;
 
 #[inline]
-fn get_high_word(x: f64) -> u32 {
+const fn get_high_word(x: f64) -> u32 {
     (x.to_bits() >> 32) as u32
 }
 
 #[inline]
-fn get_low_word(x: f64) -> u32 {
+const fn get_low_word(x: f64) -> u32 {
     x.to_bits() as u32
 }
 
 #[inline]
-fn with_set_high_word(f: f64, hi: u32) -> f64 {
+const fn with_set_high_word(f: f64, hi: u32) -> f64 {
     let mut tmp = f.to_bits();
     tmp &= 0x00000000_ffffffff;
     tmp |= (hi as u64) << 32;
@@ -353,7 +353,7 @@ fn with_set_high_word(f: f64, hi: u32) -> f64 {
 }
 
 #[inline]
-fn with_set_low_word(f: f64, lo: u32) -> f64 {
+const fn with_set_low_word(f: f64, lo: u32) -> f64 {
     let mut tmp = f.to_bits();
     tmp &= 0xffffffff_00000000;
     tmp |= lo as u64;
@@ -361,6 +361,6 @@ fn with_set_low_word(f: f64, lo: u32) -> f64 {
 }
 
 #[inline]
-fn combine_words(hi: u32, lo: u32) -> f64 {
+const fn combine_words(hi: u32, lo: u32) -> f64 {
     f64::from_bits((hi as u64) << 32 | lo as u64)
 }

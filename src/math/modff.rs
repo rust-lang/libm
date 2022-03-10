@@ -1,4 +1,4 @@
-pub fn modff(x: f32) -> (f32, f32) {
+pub const fn modff(x: f32) -> (f32, f32) {
     let rv2: f32;
     let mut u: u32 = x.to_bits();
     let mask: u32;

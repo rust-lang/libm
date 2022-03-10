@@ -11,6 +11,10 @@
 #![allow(clippy::float_cmp)]
 #![allow(clippy::eq_op)]
 #![allow(clippy::assign_op_pattern)]
+#![deny(clippy::missing_const_for_fn)]
+#![feature(const_float_bits_conv)]
+#![feature(const_fn_floating_point_arithmetic)]
+#![feature(const_float_classify)]
 
 mod math;
 

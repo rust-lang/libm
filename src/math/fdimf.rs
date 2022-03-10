@@ -9,7 +9,7 @@ use core::f32;
 ///
 /// A range error may occur.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn fdimf(x: f32, y: f32) -> f32 {
+pub const fn fdimf(x: f32, y: f32) -> f32 {
     if x.is_nan() {
         x
     } else if y.is_nan() {
