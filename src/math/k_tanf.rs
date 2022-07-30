@@ -20,7 +20,7 @@ const T: [f64; 6] = [
 ];
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub(crate) fn k_tanf(x: f64, odd: bool) -> f32 {
+pub(crate) const fn k_tanf(x: f64, odd: bool) -> f32 {
     let z = x * x;
     /*
      * Split up the polynomial into small independent terms to give

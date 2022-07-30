@@ -40,7 +40,7 @@
 //      4. For x in [0.67434,pi/4],  let y = pi/4 - x, then
 //              tan(x) = tan(pi/4-y) = (1-tan(y))/(1+tan(y))
 //                     = 1 - 2*(tan(y) - (tan(y)^2)/(1+tan(y)))
-static T: [f64; 13] = [
+const T: [f64; 13] = [
     3.33333333333334091986e-01,  /* 3FD55555, 55555563 */
     1.33333333333201242699e-01,  /* 3FC11111, 1110FE7A */
     5.39682539762260521377e-02,  /* 3FABA1BA, 1BB341FE */
@@ -59,7 +59,7 @@ const PIO4: f64 = 7.85398163397448278999e-01; /* 3FE921FB, 54442D18 */
 const PIO4_LO: f64 = 3.06161699786838301793e-17; /* 3C81A626, 33145C07 */
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub(crate) fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
+pub(crate) const fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
     let hx = (f64::to_bits(x) >> 32) as u32;
     let big = (hx & 0x7fffffff) >= 0x3FE59428; /* |x| >= 0.6744 */
     if big {
@@ -100,6 +100,6 @@ pub(crate) fn k_tan(mut x: f64, mut y: f64, odd: i32) -> f64 {
     a0 + a * (1.0 + a0 * w0 + a0 * v)
 }
 
-fn zero_low_word(x: f64) -> f64 {
+const fn zero_low_word(x: f64) -> f64 {
     f64::from_bits(f64::to_bits(x) & 0xFFFF_FFFF_0000_0000)
 }

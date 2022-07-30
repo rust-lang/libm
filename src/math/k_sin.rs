@@ -44,7 +44,7 @@ const S6: f64 = 1.58969099521155010221e-10; /* 0x3DE5D93A, 0x5ACFD57C */
 //         then                   3    2
 //              sin(x) = x + (S1*x + (x *(r-y/2)+y))
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub(crate) fn k_sin(x: f64, y: f64, iy: i32) -> f64 {
+pub(crate) const fn k_sin(x: f64, y: f64, iy: i32) -> f64 {
     let z = x * x;
     let w = z * z;
     let r = S2 + z * (S3 + z * S4) + z * w * (S5 + z * S6);

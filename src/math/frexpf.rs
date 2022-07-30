@@ -1,4 +1,4 @@
-pub fn frexpf(x: f32) -> (f32, i32) {
+pub const fn frexpf(x: f32) -> (f32, i32) {
     let mut y = x.to_bits();
     let ee: i32 = ((y >> 23) & 0xff) as i32;
 

@@ -30,7 +30,7 @@ const LG6: f64 = 1.531383769920937332e-01; /* 3FC39A09 D078C69F */
 const LG7: f64 = 1.479819860511658591e-01; /* 3FC2F112 DF3E5244 */
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn log2(mut x: f64) -> f64 {
+pub const fn log2(mut x: f64) -> f64 {
     let x1p54 = f64::from_bits(0x4350000000000000); // 0x1p54 === 2 ^ 54
 
     let mut ui: u64 = x.to_bits();
@@ -97,7 +97,7 @@ pub fn log2(mut x: f64) -> f64 {
     val_lo = (lo + hi) * IVLN2LO + lo * IVLN2HI;
 
     /* spadd(val_hi, val_lo, y), except for not using double_t: */
-    y = k.into();
+    y = k as f64;
     w = y + val_hi;
     val_lo += (y - w) + val_hi;
     val_hi = w;
