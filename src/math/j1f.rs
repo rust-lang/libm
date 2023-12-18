@@ -21,7 +21,6 @@ const TPI: f32 = 6.3661974669e-01; /* 0x3f22f983 */
 fn common(ix: u32, x: f32, y1: bool, sign: bool) -> f32 {
     let z: f64;
     let mut s: f64;
-    let c: f64;
     let mut ss: f64;
     let mut cc: f64;
 
@@ -29,7 +28,7 @@ fn common(ix: u32, x: f32, y1: bool, sign: bool) -> f32 {
     if y1 {
         s = -s;
     }
-    c = cosf(x) as f64;
+    let c: f64 = cosf(x) as f64;
     cc = s - c;
     if ix < 0x7f000000 {
         ss = -s - c;
@@ -53,25 +52,24 @@ fn common(ix: u32, x: f32, y1: bool, sign: bool) -> f32 {
 }
 
 /* R0/S0 on [0,2] */
-const R00: f32 = -6.2500000000e-02; /* 0xbd800000 */
-const R01: f32 = 1.4070566976e-03; /* 0x3ab86cfd */
-const R02: f32 = -1.5995563444e-05; /* 0xb7862e36 */
-const R03: f32 = 4.9672799207e-08; /* 0x335557d2 */
-const S01: f32 = 1.9153760746e-02; /* 0x3c9ce859 */
-const S02: f32 = 1.8594678841e-04; /* 0x3942fab6 */
-const S03: f32 = 1.1771846857e-06; /* 0x359dffc2 */
-const S04: f32 = 5.0463624390e-09; /* 0x31ad6446 */
-const S05: f32 = 1.2354227016e-11; /* 0x2d59567e */
+const R00: f32 = -6.25e-2; /* 0xbd800000 */
+const R01: f32 = 1.407_056_7e-3; /* 0x3ab86cfd */
+const R02: f32 = -1.599_556_3e-5; /* 0xb7862e36 */
+const R03: f32 = 4.967_28e-8; /* 0x335557d2 */
+const S01: f32 = 1.915_376e-2; /* 0x3c9ce859 */
+const S02: f32 = 1.859_467_9e-4; /* 0x3942fab6 */
+const S03: f32 = 1.177_184_7e-6; /* 0x359dffc2 */
+const S04: f32 = 5.046_362_4e-9; /* 0x31ad6446 */
+const S05: f32 = 1.235_422_7e-11; /* 0x2d59567e */
 
 pub fn j1f(x: f32) -> f32 {
     let mut z: f32;
     let r: f32;
     let s: f32;
     let mut ix: u32;
-    let sign: bool;
 
     ix = x.to_bits();
-    sign = (ix >> 31) != 0;
+    let sign: bool = (ix >> 31) != 0;
     ix &= 0x7fffffff;
     if ix >= 0x7f800000 {
         return 1.0 / (x * x);
@@ -108,17 +106,12 @@ const V0: [f32; 5] = [
 ];
 
 pub fn y1f(x: f32) -> f32 {
-    let z: f32;
-    let u: f32;
-    let v: f32;
-    let ix: u32;
-
-    ix = x.to_bits();
+    let ix: u32 = x.to_bits();
     if (ix & 0x7fffffff) == 0 {
         return -1.0 / 0.0;
     }
     if (ix >> 31) != 0 {
-        return 0.0 / 0.0;
+        return f32::NAN;
     }
     if ix >= 0x7f800000 {
         return 1.0 / x;
@@ -131,9 +124,9 @@ pub fn y1f(x: f32) -> f32 {
         /* x < 2**-25 */
         return -TPI / x;
     }
-    z = x * x;
-    u = U0[0] + z * (U0[1] + z * (U0[2] + z * (U0[3] + z * U0[4])));
-    v = 1.0 + z * (V0[0] + z * (V0[1] + z * (V0[2] + z * (V0[3] + z * V0[4]))));
+    let z: f32 = x * x;
+    let u: f32 = U0[0] + z * (U0[1] + z * (U0[2] + z * (U0[3] + z * U0[4])));
+    let v: f32 = 1.0 + z * (V0[0] + z * (V0[1] + z * (V0[2] + z * (V0[3] + z * V0[4]))));
     return x * (u / v) + TPI * (j1f(x) * logf(x) - 1.0 / x);
 }
 
@@ -217,9 +210,6 @@ const PS2: [f32; 5] = [
 fn ponef(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 5];
-    let z: f32;
-    let r: f32;
-    let s: f32;
     let mut ix: u32;
 
     ix = x.to_bits();
@@ -239,9 +229,9 @@ fn ponef(x: f32) -> f32 {
         p = &PR2;
         q = &PS2;
     }
-    z = 1.0 / (x * x);
-    r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
-    s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
+    let z: f32 = 1.0 / (x * x);
+    let r: f32 = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
+    let s: f32 = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
     return 1.0 + r / s;
 }
 
@@ -329,9 +319,6 @@ const QS2: [f32; 6] = [
 fn qonef(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 6];
-    let s: f32;
-    let r: f32;
-    let z: f32;
     let mut ix: u32;
 
     ix = x.to_bits();
@@ -351,9 +338,9 @@ fn qonef(x: f32) -> f32 {
         p = &QR2;
         q = &QS2;
     }
-    z = 1.0 / (x * x);
-    r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
-    s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
+    let z: f32 = 1.0 / (x * x);
+    let r: f32 = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
+    let s: f32 = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
     return (0.375 + r / s) / x;
 }
 

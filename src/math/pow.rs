@@ -97,8 +97,8 @@ pub fn pow(x: f64, y: f64) -> f64 {
     let (hx, lx): (i32, u32) = ((x.to_bits() >> 32) as i32, x.to_bits() as u32);
     let (hy, ly): (i32, u32) = ((y.to_bits() >> 32) as i32, y.to_bits() as u32);
 
-    let mut ix: i32 = (hx & 0x7fffffff) as i32;
-    let iy: i32 = (hy & 0x7fffffff) as i32;
+    let mut ix: i32 = hx & 0x7fffffff;
+    let iy: i32 = hy & 0x7fffffff;
 
     /* x**0 = 1, even if x is NaN */
     if ((iy as u32) | ly) == 0 {
@@ -370,7 +370,7 @@ pub fn pow(x: f64, y: f64) -> f64 {
     }
 
     /* compute 2**(p_h+p_l) */
-    let i: i32 = j & (0x7fffffff as i32);
+    let i: i32 = j & 0x7fffffff_i32;
     k = (i >> 20) - 0x3ff;
     let mut n: i32 = 0;
 
@@ -608,7 +608,7 @@ mod tests {
 
         // Factoring -1 out:
         // (negative anything ^ integer should be (-1 ^ integer) * (positive anything ^ integer))
-        (&[POS_ZERO, NEG_ZERO, POS_ONE, NEG_ONE, POS_EVENS, NEG_EVENS])
+        [POS_ZERO, NEG_ZERO, POS_ONE, NEG_ONE, POS_EVENS, NEG_EVENS]
             .iter()
             .for_each(|int_set| {
                 int_set.iter().for_each(|int| {
@@ -620,7 +620,7 @@ mod tests {
 
         // Negative base (imaginary results):
         // (-anything except 0 and Infinity ^ non-integer should be NAN)
-        (&NEG[1..(NEG.len() - 1)]).iter().for_each(|set| {
+        NEG[1..(NEG.len() - 1)].iter().for_each(|set| {
             set.iter().for_each(|val| {
                 test_sets(&ALL[3..7], &|v: f64| pow(*val, v), &|_| NAN);
             })

@@ -62,7 +62,6 @@ const TPI: f64 = 6.36619772367581382433e-01; /* 0x3FE45F30, 0x6DC9C883 */
 fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
     let z: f64;
     let mut s: f64;
-    let c: f64;
     let mut ss: f64;
     let mut cc: f64;
 
@@ -78,7 +77,7 @@ fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
     if y1 {
         s = -s;
     }
-    c = cos(x);
+    let c: f64 = cos(x);
     cc = s - c;
     if ix < 0x7fe00000 {
         /* avoid overflow in 2*x */
@@ -118,10 +117,9 @@ pub fn j1(x: f64) -> f64 {
     let r: f64;
     let s: f64;
     let mut ix: u32;
-    let sign: bool;
 
     ix = get_high_word(x);
-    sign = (ix >> 31) != 0;
+    let sign: bool = (ix >> 31) != 0;
     ix &= 0x7fffffff;
     if ix >= 0x7ff00000 {
         return 1.0 / (x * x);
@@ -159,21 +157,15 @@ const V0: [f64; 5] = [
 ];
 
 pub fn y1(x: f64) -> f64 {
-    let z: f64;
-    let u: f64;
-    let v: f64;
-    let ix: u32;
-    let lx: u32;
-
-    ix = get_high_word(x);
-    lx = get_low_word(x);
+    let ix: u32 = get_high_word(x);
+    let lx: u32 = get_low_word(x);
 
     /* y1(nan)=nan, y1(<0)=nan, y1(0)=-inf, y1(inf)=0 */
     if (ix << 1 | lx) == 0 {
         return -1.0 / 0.0;
     }
     if (ix >> 31) != 0 {
-        return 0.0 / 0.0;
+        return f64::NAN;
     }
     if ix >= 0x7ff00000 {
         return 1.0 / x;
@@ -187,9 +179,9 @@ pub fn y1(x: f64) -> f64 {
         /* x < 2**-54 */
         return -TPI / x;
     }
-    z = x * x;
-    u = U0[0] + z * (U0[1] + z * (U0[2] + z * (U0[3] + z * U0[4])));
-    v = 1.0 + z * (V0[0] + z * (V0[1] + z * (V0[2] + z * (V0[3] + z * V0[4]))));
+    let z: f64 = x * x;
+    let u: f64 = U0[0] + z * (U0[1] + z * (U0[2] + z * (U0[3] + z * U0[4])));
+    let v: f64 = 1.0 + z * (V0[0] + z * (V0[1] + z * (V0[2] + z * (V0[3] + z * V0[4]))));
     return x * (u / v) + TPI * (j1(x) * log(x) - 1.0 / x);
 }
 
@@ -273,9 +265,6 @@ const PS2: [f64; 5] = [
 fn pone(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 5];
-    let z: f64;
-    let r: f64;
-    let s: f64;
     let mut ix: u32;
 
     ix = get_high_word(x);
@@ -295,9 +284,9 @@ fn pone(x: f64) -> f64 {
         p = &PR2;
         q = &PS2;
     }
-    z = 1.0 / (x * x);
-    r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
-    s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
+    let z: f64 = 1.0 / (x * x);
+    let r: f64 = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
+    let s: f64 = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
     return 1.0 + r / s;
 }
 
@@ -385,9 +374,6 @@ const QS2: [f64; 6] = [
 fn qone(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 6];
-    let s: f64;
-    let r: f64;
-    let z: f64;
     let mut ix: u32;
 
     ix = get_high_word(x);
@@ -407,8 +393,8 @@ fn qone(x: f64) -> f64 {
         p = &QR2;
         q = &QS2;
     }
-    z = 1.0 / (x * x);
-    r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
-    s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
+    let z: f64 = 1.0 / (x * x);
+    let r: f64 = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
+    let s: f64 = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
     return (0.375 + r / s) / x;
 }

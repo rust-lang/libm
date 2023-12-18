@@ -14,7 +14,6 @@ pub fn truncf(x: f32) -> f32 {
 
     let mut i: u32 = x.to_bits();
     let mut e: i32 = (i >> 23 & 0xff) as i32 - 0x7f + 9;
-    let m: u32;
 
     if e >= 23 + 9 {
         return x;
@@ -22,7 +21,7 @@ pub fn truncf(x: f32) -> f32 {
     if e < 9 {
         e = 1;
     }
-    m = -1i32 as u32 >> e;
+    let m: u32 = -1i32 as u32 >> e;
     if (i & m) == 0 {
         return x;
     }

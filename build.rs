@@ -213,7 +213,7 @@ mod musl_reference_tests {
                 }
                 Ty::I32 => {
                     if r.gen_range(0, 10) < 1 {
-                        let i = *[i32::max_value(), 0, i32::min_value()].choose(r).unwrap();
+                        let i = *[i32::MAX, 0, i32::MIN].choose(r).unwrap();
                         i.into()
                     } else {
                         r.gen::<i32>().into()

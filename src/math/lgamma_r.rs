@@ -178,15 +178,13 @@ pub fn lgamma_r(mut x: f64) -> (f64, i32) {
     let q: f64;
     let mut r: f64;
     let w: f64;
-    let ix: u32;
-    let sign: bool;
     let i: i32;
     let mut signgam: i32;
 
     /* purge off +-inf, NaN, +-0, tiny and negative arguments */
     signgam = 1;
-    sign = (u >> 63) != 0;
-    ix = ((u >> 32) as u32) & 0x7fffffff;
+    let sign: bool = (u >> 63) != 0;
+    let ix: u32 = ((u >> 32) as u32) & 0x7fffffff;
     if ix >= 0x7ff00000 {
         return (x * x, signgam);
     }

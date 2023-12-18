@@ -24,7 +24,7 @@ pub fn ilogb(x: f64) -> i32 {
         if (i << 12) != 0 {
             FP_ILOGBNAN
         } else {
-            i32::max_value()
+            i32::MAX
         }
     } else {
         e - 0x3ff

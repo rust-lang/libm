@@ -14,8 +14,6 @@ use super::{get_high_word, k_cos, k_sin, rem_pio2};
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn sincos(x: f64) -> (f64, f64) {
-    let s: f64;
-    let c: f64;
     let mut ix: u32;
 
     ix = get_high_word(x);
@@ -45,8 +43,8 @@ pub fn sincos(x: f64) -> (f64, f64) {
 
     /* argument reduction needed */
     let (n, y0, y1) = rem_pio2(x);
-    s = k_sin(y0, y1, 1);
-    c = k_cos(y0, y1);
+    let s: f64 = k_sin(y0, y1, 1);
+    let c: f64 = k_cos(y0, y1);
     match n & 3 {
         0 => (s, c),
         1 => (c, -s),

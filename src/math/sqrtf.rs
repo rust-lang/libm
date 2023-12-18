@@ -147,7 +147,7 @@ mod tests {
         // Not Asserted: FE_INVALID exception is raised if argument is negative.
         assert!(sqrtf(-1.0).is_nan());
         assert!(sqrtf(NAN).is_nan());
-        for f in [0.0, -0.0, INFINITY].iter().copied() {
+        for f in [0.0, -0.0, f32::INFINITY].iter().copied() {
             assert_eq!(sqrtf(f), f);
         }
     }
@@ -155,7 +155,7 @@ mod tests {
     #[test]
     fn conformance_tests() {
         let values = [
-            3.14159265359f32,
+            core::f32::consts::PI,
             10000.0f32,
             f32::from_bits(0x0000000f),
             INFINITY,

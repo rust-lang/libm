@@ -23,21 +23,12 @@ const LG4: f32 = 0.24279078841; /* 0xf89e26.0p-26 */
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn log1pf(x: f32) -> f32 {
     let mut ui: u32 = x.to_bits();
-    let hfsq: f32;
     let mut f: f32 = 0.;
     let mut c: f32 = 0.;
-    let s: f32;
-    let z: f32;
-    let r: f32;
-    let w: f32;
-    let t1: f32;
-    let t2: f32;
-    let dk: f32;
-    let ix: u32;
     let mut iu: u32;
     let mut k: i32;
 
-    ix = ui;
+    let ix: u32 = ui;
     k = 1;
     if ix < 0x3ed413d0 || (ix >> 31) > 0 {
         /* 1+x < sqrt(2)+  */
@@ -86,13 +77,13 @@ pub fn log1pf(x: f32) -> f32 {
         ui = iu;
         f = f32::from_bits(ui) - 1.;
     }
-    s = f / (2.0 + f);
-    z = s * s;
-    w = z * z;
-    t1 = w * (LG2 + w * LG4);
-    t2 = z * (LG1 + w * LG3);
-    r = t2 + t1;
-    hfsq = 0.5 * f * f;
-    dk = k as f32;
+    let s: f32 = f / (2.0 + f);
+    let z: f32 = s * s;
+    let w: f32 = z * z;
+    let t1: f32 = w * (LG2 + w * LG4);
+    let t2: f32 = z * (LG1 + w * LG3);
+    let r: f32 = t2 + t1;
+    let hfsq: f32 = 0.5 * f * f;
+    let dk: f32 = k as f32;
     s * (hfsq + r) + (dk * LN2_LO + c) - hfsq + f + dk * LN2_HI
 }

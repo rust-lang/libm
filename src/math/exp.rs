@@ -88,15 +88,11 @@ pub fn exp(mut x: f64) -> f64 {
 
     let hi: f64;
     let lo: f64;
-    let c: f64;
-    let xx: f64;
-    let y: f64;
     let k: i32;
-    let sign: i32;
     let mut hx: u32;
 
     hx = (x.to_bits() >> 32) as u32;
-    sign = (hx >> 31) as i32;
+    let sign: i32 = (hx >> 31) as i32;
     hx &= 0x7fffffff; /* high word of |x| */
 
     /* special cases */
@@ -143,9 +139,9 @@ pub fn exp(mut x: f64) -> f64 {
     }
 
     /* x is now in primary range */
-    xx = x * x;
-    c = x - xx * (P1 + xx * (P2 + xx * (P3 + xx * (P4 + xx * P5))));
-    y = 1. + (x * c / (2. - c) - lo + hi);
+    let xx: f64 = x * x;
+    let c: f64 = x - xx * (P1 + xx * (P2 + xx * (P3 + xx * (P4 + xx * P5))));
+    let y: f64 = 1. + (x * c / (2. - c) - lo + hi);
     if k == 0 {
         y
     } else {

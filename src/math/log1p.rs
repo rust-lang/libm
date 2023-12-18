@@ -68,21 +68,12 @@ const LG7: f64 = 1.479819860511658591e-01; /* 3FC2F112 DF3E5244 */
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn log1p(x: f64) -> f64 {
     let mut ui: u64 = x.to_bits();
-    let hfsq: f64;
     let mut f: f64 = 0.;
     let mut c: f64 = 0.;
-    let s: f64;
-    let z: f64;
-    let r: f64;
-    let w: f64;
-    let t1: f64;
-    let t2: f64;
-    let dk: f64;
-    let hx: u32;
     let mut hu: u32;
     let mut k: i32;
 
-    hx = (ui >> 32) as u32;
+    let hx: u32 = (ui >> 32) as u32;
     k = 1;
     if hx < 0x3fda827a || (hx >> 31) > 0 {
         /* 1+x < sqrt(2)+ */
@@ -131,13 +122,13 @@ pub fn log1p(x: f64) -> f64 {
         ui = (hu as u64) << 32 | (ui & 0xffffffff);
         f = f64::from_bits(ui) - 1.;
     }
-    hfsq = 0.5 * f * f;
-    s = f / (2.0 + f);
-    z = s * s;
-    w = z * z;
-    t1 = w * (LG2 + w * (LG4 + w * LG6));
-    t2 = z * (LG1 + w * (LG3 + w * (LG5 + w * LG7)));
-    r = t2 + t1;
-    dk = k as f64;
+    let hfsq: f64 = 0.5 * f * f;
+    let s: f64 = f / (2.0 + f);
+    let z: f64 = s * s;
+    let w: f64 = z * z;
+    let t1: f64 = w * (LG2 + w * (LG4 + w * LG6));
+    let t2: f64 = z * (LG1 + w * (LG3 + w * (LG5 + w * LG7)));
+    let r: f64 = t2 + t1;
+    let dk: f64 = k as f64;
     s * (hfsq + r) + (dk * LN2_LO + c) - hfsq + f + dk * LN2_HI
 }

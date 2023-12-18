@@ -34,17 +34,8 @@ pub fn log2(mut x: f64) -> f64 {
     let x1p54 = f64::from_bits(0x4350000000000000); // 0x1p54 === 2 ^ 54
 
     let mut ui: u64 = x.to_bits();
-    let hfsq: f64;
-    let f: f64;
-    let s: f64;
-    let z: f64;
-    let r: f64;
     let mut w: f64;
-    let t1: f64;
-    let t2: f64;
-    let y: f64;
     let mut hi: f64;
-    let lo: f64;
     let mut val_hi: f64;
     let mut val_lo: f64;
     let mut hx: u32;
@@ -77,27 +68,27 @@ pub fn log2(mut x: f64) -> f64 {
     ui = (hx as u64) << 32 | (ui & 0xffffffff);
     x = f64::from_bits(ui);
 
-    f = x - 1.0;
-    hfsq = 0.5 * f * f;
-    s = f / (2.0 + f);
-    z = s * s;
+    let f: f64 = x - 1.0;
+    let hfsq: f64 = 0.5 * f * f;
+    let s: f64 = f / (2.0 + f);
+    let z: f64 = s * s;
     w = z * z;
-    t1 = w * (LG2 + w * (LG4 + w * LG6));
-    t2 = z * (LG1 + w * (LG3 + w * (LG5 + w * LG7)));
-    r = t2 + t1;
+    let t1: f64 = w * (LG2 + w * (LG4 + w * LG6));
+    let t2: f64 = z * (LG1 + w * (LG3 + w * (LG5 + w * LG7)));
+    let r: f64 = t2 + t1;
 
     /* hi+lo = f - hfsq + s*(hfsq+R) ~ log(1+f) */
     hi = f - hfsq;
     ui = hi.to_bits();
     ui &= (-1i64 as u64) << 32;
     hi = f64::from_bits(ui);
-    lo = f - hi - hfsq + s * (hfsq + r);
+    let lo: f64 = f - hi - hfsq + s * (hfsq + r);
 
     val_hi = hi * IVLN2HI;
     val_lo = (lo + hi) * IVLN2LO + lo * IVLN2HI;
 
     /* spadd(val_hi, val_lo, y), except for not using double_t: */
-    y = k.into();
+    let y: f64 = k.into();
     w = y + val_hi;
     val_lo += (y - w) + val_hi;
     val_hi = w;

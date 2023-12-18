@@ -84,21 +84,15 @@ const SB6: f32 = 4.7452853394e+02; /* 0x43ed43a7 */
 const SB7: f32 = -2.2440952301e+01; /* 0xc1b38712 */
 
 fn erfc1(x: f32) -> f32 {
-    let s: f32;
-    let p: f32;
-    let q: f32;
-
-    s = fabsf(x) - 1.0;
-    p = PA0 + s * (PA1 + s * (PA2 + s * (PA3 + s * (PA4 + s * (PA5 + s * PA6)))));
-    q = 1.0 + s * (QA1 + s * (QA2 + s * (QA3 + s * (QA4 + s * (QA5 + s * QA6)))));
+    let s: f32 = fabsf(x) - 1.0;
+    let p: f32 = PA0 + s * (PA1 + s * (PA2 + s * (PA3 + s * (PA4 + s * (PA5 + s * PA6)))));
+    let q: f32 = 1.0 + s * (QA1 + s * (QA2 + s * (QA3 + s * (QA4 + s * (QA5 + s * QA6)))));
     return 1.0 - ERX - p / q;
 }
 
 fn erfc2(mut ix: u32, mut x: f32) -> f32 {
-    let s: f32;
     let r: f32;
     let big_s: f32;
-    let z: f32;
 
     if ix < 0x3fa00000 {
         /* |x| < 1.25 */
@@ -106,7 +100,7 @@ fn erfc2(mut ix: u32, mut x: f32) -> f32 {
     }
 
     x = fabsf(x);
-    s = 1.0 / (x * x);
+    let s: f32 = 1.0 / (x * x);
     if ix < 0x4036db6d {
         /* |x| < 1/0.35 */
         r = RA0 + s * (RA1 + s * (RA2 + s * (RA3 + s * (RA4 + s * (RA5 + s * (RA6 + s * RA7))))));
@@ -120,7 +114,7 @@ fn erfc2(mut ix: u32, mut x: f32) -> f32 {
             1.0 + s * (SB1 + s * (SB2 + s * (SB3 + s * (SB4 + s * (SB5 + s * (SB6 + s * SB7))))));
     }
     ix = x.to_bits();
-    z = f32::from_bits(ix & 0xffffe000);
+    let z: f32 = f32::from_bits(ix & 0xffffe000);
 
     expf(-z * z - 0.5625) * expf((z - x) * (z + x) + r / big_s) / x
 }
@@ -137,10 +131,9 @@ pub fn erff(x: f32) -> f32 {
     let z: f32;
     let y: f32;
     let mut ix: u32;
-    let sign: usize;
 
     ix = x.to_bits();
-    sign = (ix >> 31) as usize;
+    let sign: usize = (ix >> 31) as usize;
     ix &= 0x7fffffff;
     if ix >= 0x7f800000 {
         /* erf(nan)=nan, erf(+-inf)=+-1 */
@@ -186,10 +179,9 @@ pub fn erfcf(x: f32) -> f32 {
     let z: f32;
     let y: f32;
     let mut ix: u32;
-    let sign: usize;
 
     ix = x.to_bits();
-    sign = (ix >> 31) as usize;
+    let sign: usize = (ix >> 31) as usize;
     ix &= 0x7fffffff;
     if ix >= 0x7f800000 {
         /* erfc(nan)=nan, erfc(+-inf)=0,2 */

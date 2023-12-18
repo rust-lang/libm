@@ -28,10 +28,8 @@ pub fn sincosf(x: f32) -> (f32, f32) {
     let s: f32;
     let c: f32;
     let mut ix: u32;
-    let sign: bool;
-
     ix = x.to_bits();
-    sign = (ix >> 31) != 0;
+    let sign: bool = (ix >> 31) != 0;
     ix &= 0x7fffffff;
 
     /* |x| ~<= pi/4 */
@@ -64,14 +62,12 @@ pub fn sincosf(x: f32) -> (f32, f32) {
             }
         }
         /* -sin(x+c) is not correct if x+c could be 0: -0 vs +0 */
-        else {
-            if sign {
-                s = -k_sinf((x + S2PIO2) as f64);
-                c = -k_cosf((x + S2PIO2) as f64);
-            } else {
-                s = -k_sinf((x - S2PIO2) as f64);
-                c = -k_cosf((x - S2PIO2) as f64);
-            }
+        else if sign {
+            s = -k_sinf((x + S2PIO2) as f64);
+            c = -k_cosf((x + S2PIO2) as f64);
+        } else {
+            s = -k_sinf((x - S2PIO2) as f64);
+            c = -k_cosf((x - S2PIO2) as f64);
         }
 
         return (s, c);
@@ -88,14 +84,12 @@ pub fn sincosf(x: f32) -> (f32, f32) {
                 s = -k_cosf((x - S3PIO2) as f64);
                 c = k_sinf((x - S3PIO2) as f64);
             }
+        } else if sign {
+            s = k_sinf((x + S4PIO2) as f64);
+            c = k_cosf((x + S4PIO2) as f64);
         } else {
-            if sign {
-                s = k_sinf((x + S4PIO2) as f64);
-                c = k_cosf((x + S4PIO2) as f64);
-            } else {
-                s = k_sinf((x - S4PIO2) as f64);
-                c = k_cosf((x - S4PIO2) as f64);
-            }
+            s = k_sinf((x - S4PIO2) as f64);
+            c = k_cosf((x - S4PIO2) as f64);
         }
 
         return (s, c);

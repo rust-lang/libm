@@ -28,16 +28,7 @@ pub fn log2f(mut x: f32) -> f32 {
     let x1p25f = f32::from_bits(0x4c000000); // 0x1p25f === 2 ^ 25
 
     let mut ui: u32 = x.to_bits();
-    let hfsq: f32;
-    let f: f32;
-    let s: f32;
-    let z: f32;
-    let r: f32;
-    let w: f32;
-    let t1: f32;
-    let t2: f32;
     let mut hi: f32;
-    let lo: f32;
     let mut ix: u32;
     let mut k: i32;
 
@@ -69,19 +60,19 @@ pub fn log2f(mut x: f32) -> f32 {
     ui = ix;
     x = f32::from_bits(ui);
 
-    f = x - 1.0;
-    s = f / (2.0 + f);
-    z = s * s;
-    w = z * z;
-    t1 = w * (LG2 + w * LG4);
-    t2 = z * (LG1 + w * LG3);
-    r = t2 + t1;
-    hfsq = 0.5 * f * f;
+    let f: f32 = x - 1.0;
+    let s: f32 = f / (2.0 + f);
+    let z: f32 = s * s;
+    let w: f32 = z * z;
+    let t1: f32 = w * (LG2 + w * LG4);
+    let t2: f32 = z * (LG1 + w * LG3);
+    let r: f32 = t2 + t1;
+    let hfsq: f32 = 0.5 * f * f;
 
     hi = f - hfsq;
     ui = hi.to_bits();
     ui &= 0xfffff000;
     hi = f32::from_bits(ui);
-    lo = f - hi - hfsq + s * (hfsq + r);
+    let lo: f32 = f - hi - hfsq + s * (hfsq + r);
     (lo + hi) * IVLN2LO + lo * IVLN2HI + hi * IVLN2HI + k as f32
 }

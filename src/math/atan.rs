@@ -146,9 +146,9 @@ mod tests {
             (3.0_f64.sqrt() / 3.0, f64::consts::FRAC_PI_6),
             (1.0, f64::consts::FRAC_PI_4),
             (3.0_f64.sqrt(), f64::consts::FRAC_PI_3),
-            (-3.0_f64.sqrt() / 3.0, -f64::consts::FRAC_PI_6),
+            (-(3.0_f64.sqrt()) / 3.0, -f64::consts::FRAC_PI_6),
             (-1.0, -f64::consts::FRAC_PI_4),
-            (-3.0_f64.sqrt(), -f64::consts::FRAC_PI_3),
+            (-(3.0_f64.sqrt()), -f64::consts::FRAC_PI_3),
         ]
         .iter()
         {

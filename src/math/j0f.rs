@@ -20,7 +20,6 @@ const TPI: f32 = 6.3661974669e-01; /* 0x3f22f983 */
 
 fn common(ix: u32, x: f32, y0: bool) -> f32 {
     let z: f32;
-    let s: f32;
     let mut c: f32;
     let mut ss: f32;
     let mut cc: f32;
@@ -28,7 +27,7 @@ fn common(ix: u32, x: f32, y0: bool) -> f32 {
      * j0(x) = 1/sqrt(pi) * (P(0,x)*cc - Q(0,x)*ss) / sqrt(x)
      * y0(x) = 1/sqrt(pi) * (P(0,x)*ss + Q(0,x)*cc) / sqrt(x)
      */
-    s = sinf(x);
+    let s: f32 = sinf(x);
     c = cosf(x);
     if y0 {
         c = -c;
@@ -111,14 +110,12 @@ pub fn y0f(x: f32) -> f32 {
     let z: f32;
     let u: f32;
     let v: f32;
-    let ix: u32;
-
-    ix = x.to_bits();
+    let ix: u32 = x.to_bits();
     if (ix & 0x7fffffff) == 0 {
         return -1.0 / 0.0;
     }
     if (ix >> 31) != 0 {
-        return 0.0 / 0.0;
+        return f32::NAN;
     }
     if ix >= 0x7f800000 {
         return 1.0 / x;
@@ -218,9 +215,6 @@ const PS2: [f32; 5] = [
 fn pzerof(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 5];
-    let z: f32;
-    let r: f32;
-    let s: f32;
     let mut ix: u32;
 
     ix = x.to_bits();
@@ -240,9 +234,9 @@ fn pzerof(x: f32) -> f32 {
         p = &PR2;
         q = &PS2;
     }
-    z = 1.0 / (x * x);
-    r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
-    s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
+    let z: f32 = 1.0 / (x * x);
+    let r: f32 = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
+    let s: f32 = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
     return 1.0 + r / s;
 }
 
@@ -330,9 +324,6 @@ const QS2: [f32; 6] = [
 fn qzerof(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 6];
-    let s: f32;
-    let r: f32;
-    let z: f32;
     let mut ix: u32;
 
     ix = x.to_bits();
@@ -352,8 +343,8 @@ fn qzerof(x: f32) -> f32 {
         p = &QR2;
         q = &QS2;
     }
-    z = 1.0 / (x * x);
-    r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
-    s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
+    let z: f32 = 1.0 / (x * x);
+    let r: f32 = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
+    let s: f32 = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
     return (-0.125 + r / s) / x;
 }

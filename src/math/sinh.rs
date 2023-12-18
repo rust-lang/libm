@@ -12,10 +12,8 @@ pub fn sinh(x: f64) -> f64 {
 
     let mut uf: f64 = x;
     let mut ui: u64 = f64::to_bits(uf);
-    let w: u32;
     let t: f64;
     let mut h: f64;
-    let absx: f64;
 
     h = 0.5;
     if ui >> 63 != 0 {
@@ -24,8 +22,8 @@ pub fn sinh(x: f64) -> f64 {
     /* |x| */
     ui &= !1 / 2;
     uf = f64::from_bits(ui);
-    absx = uf;
-    w = (ui >> 32) as u32;
+    let absx: f64 = uf;
+    let w: u32 = (ui >> 32) as u32;
 
     /* |x| < log(DBL_MAX) */
     if w < 0x40862e42 {
