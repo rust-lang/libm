@@ -24,13 +24,13 @@ pub fn ceilf(x: f32) -> f32 {
         if (ui & m) == 0 {
             return x;
         }
-        force_eval!(x + f32::from_bits(0x7b800000));
+        core::hint::black_box(x + f32::from_bits(0x7b800000));
         if ui >> 31 == 0 {
             ui += m;
         }
         ui &= !m;
     } else {
-        force_eval!(x + f32::from_bits(0x7b800000));
+        core::hint::black_box(x + f32::from_bits(0x7b800000));
         if ui >> 31 != 0 {
             return -0.0;
         } else if ui << 1 != 0 {

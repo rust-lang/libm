@@ -108,7 +108,7 @@ pub fn exp(mut x: f64) -> f64 {
         }
         if x < -708.39641853226410622 {
             /* underflow if x!=-inf */
-            force_eval!((-x1p_149 / x) as f32);
+            core::hint::black_box((-x1p_149 / x) as f32);
             if x < -745.13321910194110842 {
                 return 0.;
             }
@@ -134,7 +134,7 @@ pub fn exp(mut x: f64) -> f64 {
         lo = 0.;
     } else {
         /* inexact if x!=0 */
-        force_eval!(x1p1023 + x);
+        core::hint::black_box(x1p1023 + x);
         return 1. + x;
     }
 

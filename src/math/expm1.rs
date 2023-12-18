@@ -83,7 +83,7 @@ pub fn expm1(mut x: f64) -> f64 {
     } else if hx < 0x3c900000 {
         /* |x| < 2**-54, return x */
         if hx < 0x00100000 {
-            force_eval!(x);
+            core::hint::black_box(x);
         }
         return x;
     } else {

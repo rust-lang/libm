@@ -28,7 +28,7 @@ pub fn asinhf(mut x: f32) -> f32 {
     } else {
         /* |x| < 0x1p-12, raise inexact if x!=0 */
         let x1p120 = f32::from_bits(0x7b800000);
-        force_eval!(x + x1p120);
+        core::hint::black_box(x + x1p120);
     }
 
     if sign {

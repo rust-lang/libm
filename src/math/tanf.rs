@@ -39,7 +39,7 @@ pub fn tanf(x: f32) -> f32 {
         if ix < 0x39800000 {
             /* |x| < 2**-12 */
             /* raise inexact if x!=0 and underflow if subnormal */
-            force_eval!(if ix < 0x00800000 {
+            core::hint::black_box(if ix < 0x00800000 {
                 x / x1p120
             } else {
                 x + x1p120

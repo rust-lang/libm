@@ -39,7 +39,7 @@ pub fn cosf(x: f32) -> f32 {
         if ix < 0x39800000 {
             /* |x| < 2**-12 */
             /* raise inexact if x != 0 */
-            force_eval!(x + x1p120);
+            core::hint::black_box(x + x1p120);
             return 1.;
         }
         return k_cosf(x64);

@@ -167,7 +167,7 @@ pub fn tgamma(mut x: f64) -> f64 {
         /* |x| >= 184 */
         if sign {
             let x1p_126 = f64::from_bits(0x3810000000000000); // 0x1p-126 == 2^-126
-            force_eval!((x1p_126 / x) as f32);
+            core::hint::black_box((x1p_126 / x) as f32);
             if floor(x) * 0.5 == floor(x * 0.5) {
                 return 0.0;
             } else {

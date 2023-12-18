@@ -47,7 +47,7 @@ pub(crate) fn rem_pio2f(x: f32) -> (i32, f64) {
         // force rounding of tmp to it's storage format on x87 to avoid
         // excess precision issues.
         #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-        let tmp = force_eval!(tmp);
+        let tmp = core::hint::black_box(tmp);
         let f_n = tmp - TOINT;
         return (f_n as i32, x64 - f_n * PIO2_1 - f_n * PIO2_1T);
     }

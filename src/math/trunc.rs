@@ -25,7 +25,7 @@ pub fn trunc(x: f64) -> f64 {
     if (i & m) == 0 {
         return x;
     }
-    force_eval!(x + x1p120);
+    core::hint::black_box(x + x1p120);
     i &= !m;
     f64::from_bits(i)
 }

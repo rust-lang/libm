@@ -26,9 +26,9 @@ pub fn sincos(x: f64) -> (f64, f64) {
             /* raise inexact if x!=0 and underflow if subnormal */
             let x1p120 = f64::from_bits(0x4770000000000000); // 0x1p120 == 2^120
             if ix < 0x00100000 {
-                force_eval!(x / x1p120);
+                core::hint::black_box(x / x1p120);
             } else {
-                force_eval!(x + x1p120);
+                core::hint::black_box(x + x1p120);
             }
             return (x, 1.0);
         }

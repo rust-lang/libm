@@ -38,7 +38,7 @@ pub fn tanh(mut x: f64) -> f64 {
     } else {
         /* |x| is subnormal */
         /* note: the branch above would not raise underflow in [0x1p-1023,0x1p-1022) */
-        force_eval!(x as f32);
+        core::hint::black_box(x as f32);
         t = x;
     }
 

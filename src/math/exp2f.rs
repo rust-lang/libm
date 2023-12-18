@@ -103,7 +103,7 @@ pub fn exp2f(mut x: f32) -> f32 {
         if ui >= 0x80000000 {
             /* x < -126 */
             if ui >= 0xc3160000 || (ui & 0x0000ffff != 0) {
-                force_eval!(f32::from_bits(0x80000001) / x);
+                core::hint::black_box(f32::from_bits(0x80000001) / x);
             }
             if ui >= 0xc3160000 {
                 /* x <= -150 */

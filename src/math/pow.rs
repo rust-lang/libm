@@ -485,9 +485,9 @@ mod tests {
                 let res = computed(*val);
 
                 #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-                let exp = force_eval!(exp);
+                let exp = core::hint::black_box(exp);
                 #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-                let res = force_eval!(res);
+                let res = core::hint::black_box(res);
                 assert!(
                     if exp.is_nan() {
                         res.is_nan()

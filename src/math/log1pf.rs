@@ -43,7 +43,7 @@ pub fn log1pf(x: f32) -> f32 {
             /* |x| < 2**-24 */
             /* underflow if subnormal */
             if (ix & 0x7f800000) == 0 {
-                force_eval!(x * x);
+                core::hint::black_box(x * x);
             }
             return x;
         }
