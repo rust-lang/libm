@@ -30,7 +30,7 @@ fn normalize(x: f64) -> Num {
 }
 
 #[inline]
-fn mul(x: u64, y: u64) -> (u64, u64) {
+const fn mul(x: u64, y: u64) -> (u64, u64) {
     let t = (x as u128).wrapping_mul(y as u128);
     ((t >> 64) as u64, t as u64)
 }
