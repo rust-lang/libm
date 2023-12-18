@@ -40,6 +40,15 @@ jobs:
       run: rustup update stable && rustup default stable && rustup component add rustfmt
     - run: cargo fmt -- --check
 
+  clippy:
+    name: Lints
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Install Rust
+      run: rustup update stable && rustup default stable && rustup component add clippy
+    - run: cargo clippy --all-targets
+
   wasm:
     name: WebAssembly
     runs-on: ubuntu-latest
