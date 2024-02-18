@@ -227,7 +227,7 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
     let x1p24 = f64::from_bits(0x4170000000000000); // 0x1p24 === 2 ^ 24
     let x1p_24 = f64::from_bits(0x3e70000000000000); // 0x1p_24 === 2 ^ (-24)
 
-    #[cfg(all(target_pointer_width = "64", feature = "checked"))]
+    #[cfg(all(target_pointer_width = "64", debug_assertions))]
     assert!(e0 <= 16360);
 
     let nx = x.len();
