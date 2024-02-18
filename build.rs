@@ -12,6 +12,11 @@ fn main() {
             println!("cargo:rustc-cfg=assert_no_panic");
         }
     }
+    // add cfg flags to suppress warnings generated from compiling `std` specifically
+    if cfg!(feature = "rustc-dep-of-std") {
+        println!("cargo:rustc-check-cfg=cfg(rustfmt)");
+        println!("cargo:rustc-check-cfg=cfg(assert_no_panic)");
+    }
 }
 
 #[cfg(feature = "musl-reference-tests")]
