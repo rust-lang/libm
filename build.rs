@@ -6,11 +6,16 @@ fn main() {
     #[cfg(feature = "musl-reference-tests")]
     musl_reference_tests::generate();
 
-    if !cfg!(feature = "checked") {
+    if !cfg!(debug_assertions) {
         let lvl = env::var("OPT_LEVEL").unwrap();
         if lvl != "0" {
             println!("cargo:rustc-cfg=assert_no_panic");
         }
+    }
+    // add cfg flags to suppress warnings generated from compiling `std` specifically
+    if cfg!(feature = "rustc-dep-of-std") {
+        println!("cargo:rustc-check-cfg=cfg(rustfmt)");
+        println!("cargo:rustc-check-cfg=cfg(assert_no_panic)");
     }
 }
 
