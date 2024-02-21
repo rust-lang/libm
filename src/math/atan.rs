@@ -85,7 +85,7 @@ pub fn atan(x: f64) -> f64 {
             /* |x| < 2^-27 */
             if ix < 0x0010_0000 {
                 /* raise underflow for subnormal x */
-                force_eval!(x as f32);
+                core::hint::black_box(x as f32);
             }
 
             return x;
@@ -146,9 +146,9 @@ mod tests {
             (3.0_f64.sqrt() / 3.0, f64::consts::FRAC_PI_6),
             (1.0, f64::consts::FRAC_PI_4),
             (3.0_f64.sqrt(), f64::consts::FRAC_PI_3),
-            (-3.0_f64.sqrt() / 3.0, -f64::consts::FRAC_PI_6),
+            (-(3.0_f64.sqrt()) / 3.0, -f64::consts::FRAC_PI_6),
             (-1.0, -f64::consts::FRAC_PI_4),
-            (-3.0_f64.sqrt(), -f64::consts::FRAC_PI_3),
+            (-(3.0_f64.sqrt()), -f64::consts::FRAC_PI_3),
         ]
         .iter()
         {

@@ -11,7 +11,10 @@
 #![allow(clippy::mixed_case_hex_literals)]
 #![allow(clippy::float_cmp)]
 #![allow(clippy::eq_op)]
+#![allow(clippy::excessive_precision)]
 #![allow(clippy::assign_op_pattern)]
+#![allow(clippy::wildcard_in_or_patterns)]
+#![deny(clippy::missing_const_for_fn)]
 
 mod libm_helper;
 mod math;

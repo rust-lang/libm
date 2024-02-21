@@ -9,17 +9,17 @@ pub fn rintf(x: f32) -> f32 {
     } else {
         let ans = if is_positive {
             #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let x = force_eval!(x);
+            let x = core::hint::black_box(x);
             let xplusoneovere = x + one_over_e;
             #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let xplusoneovere = force_eval!(xplusoneovere);
+            let xplusoneovere = core::hint::black_box(xplusoneovere);
             xplusoneovere - one_over_e
         } else {
             #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let x = force_eval!(x);
+            let x = core::hint::black_box(x);
             let xminusoneovere = x - one_over_e;
             #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let xminusoneovere = force_eval!(xminusoneovere);
+            let xminusoneovere = core::hint::black_box(xminusoneovere);
             xminusoneovere + one_over_e
         };
 

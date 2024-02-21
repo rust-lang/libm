@@ -28,7 +28,7 @@ use super::scalbn;
 
 const TBLSIZE: usize = 256;
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 static TBL: [u64; TBLSIZE * 2] = [
     //  exp2(z + eps)          eps
     0x3fe6a09e667f3d5d, 0x3d39880000000000,
@@ -358,7 +358,7 @@ pub fn exp2(mut x: f64) -> f64 {
             /* x <= -1022 */
             /* underflow */
             if x <= -1075.0 || x - x1p52 + x1p52 != x {
-                force_eval!((_0x1p_149 / x) as f32);
+                core::hint::black_box((_0x1p_149 / x) as f32);
             }
             if x <= -1075.0 {
                 return 0.0;

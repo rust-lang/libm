@@ -20,7 +20,7 @@ pub fn coshf(mut x: f32) -> f32 {
     /* |x| < log(2) */
     if w < 0x3f317217 {
         if w < (0x3f800000 - (12 << 23)) {
-            force_eval!(x + x1p120);
+            core::hint::black_box(x + x1p120);
             return 1.;
         }
         let t = expm1f(x);

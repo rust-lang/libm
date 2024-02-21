@@ -132,7 +132,6 @@ fn s(x: f64) -> f64 {
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn tgamma(mut x: f64) -> f64 {
     let u: u64 = x.to_bits();
-    let absx: f64;
     let mut y: f64;
     let mut dy: f64;
     let mut z: f64;
@@ -154,7 +153,7 @@ pub fn tgamma(mut x: f64) -> f64 {
     /* raise inexact when non-integer */
     if x == floor(x) {
         if sign {
-            return 0.0 / 0.0;
+            return f64::NAN;
         }
         if x <= FACT.len() as f64 {
             return i!(FACT, (x as usize) - 1);
@@ -167,7 +166,7 @@ pub fn tgamma(mut x: f64) -> f64 {
         /* |x| >= 184 */
         if sign {
             let x1p_126 = f64::from_bits(0x3810000000000000); // 0x1p-126 == 2^-126
-            force_eval!((x1p_126 / x) as f32);
+            core::hint::black_box((x1p_126 / x) as f32);
             if floor(x) * 0.5 == floor(x * 0.5) {
                 return 0.0;
             } else {
@@ -179,7 +178,7 @@ pub fn tgamma(mut x: f64) -> f64 {
         return x;
     }
 
-    absx = if sign { -x } else { x };
+    let absx: f64 = if sign { -x } else { x };
 
     /* handle the error of x + g - 0.5 */
     y = absx + GMHALF;

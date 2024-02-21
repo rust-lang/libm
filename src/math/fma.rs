@@ -30,7 +30,7 @@ fn normalize(x: f64) -> Num {
 }
 
 #[inline]
-fn mul(x: u64, y: u64) -> (u64, u64) {
+const fn mul(x: u64, y: u64) -> (u64, u64) {
     let t = (x as u128).wrapping_mul(y as u128);
     ((t >> 64) as u64, t as u64)
 }
@@ -210,7 +210,7 @@ mod tests {
         let result = fma(-0.992, -0.992, -0.992);
         //force rounding to storage format on x87 to prevent superious errors.
         #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-        let result = force_eval!(result);
+        let result = core::hint::black_box(result);
         assert_eq!(result, -0.007936000000000007,);
     }
 

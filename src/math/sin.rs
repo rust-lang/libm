@@ -53,9 +53,9 @@ pub fn sin(x: f64) -> f64 {
             /* |x| < 2**-26 */
             /* raise inexact if x != 0 and underflow if subnormal*/
             if ix < 0x00100000 {
-                force_eval!(x / x1p120);
+                core::hint::black_box(x / x1p120);
             } else {
-                force_eval!(x + x1p120);
+                core::hint::black_box(x + x1p120);
             }
             return x;
         }
@@ -83,6 +83,6 @@ fn test_near_pi() {
     let sx = f64::from_bits(0x3ea50d15ced1a4a2); // 6.273720864039205e-7
     let result = sin(x);
     #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-    let result = force_eval!(result);
+    let result = core::hint::black_box(result);
     assert_eq!(result, sx);
 }

@@ -19,7 +19,7 @@ pub fn cosh(mut x: f64) -> f64 {
     if w < 0x3fe62e42 {
         if w < 0x3ff00000 - (26 << 20) {
             let x1p120 = f64::from_bits(0x4770000000000000);
-            force_eval!(x + x1p120);
+            core::hint::black_box(x + x1p120);
             return 1.;
         }
         let t = expm1(x); // exponential minus 1

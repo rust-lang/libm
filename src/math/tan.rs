@@ -49,7 +49,7 @@ pub fn tan(x: f64) -> f64 {
         if ix < 0x3e400000 {
             /* |x| < 2**-27 */
             /* raise inexact if x!=0 and underflow if subnormal */
-            force_eval!(if ix < 0x00100000 {
+            core::hint::black_box(if ix < 0x00100000 {
                 x / x1p120 as f64
             } else {
                 x + x1p120 as f64

@@ -54,7 +54,7 @@ pub fn expf(mut x: f32) -> f32 {
         }
         if signb {
             /* underflow */
-            force_eval!(-x1p_126 / x);
+            core::hint::black_box(-x1p_126 / x);
             if hx >= 0x42cff1b5 {
                 /* x <= -103.972084f */
                 return 0.;
@@ -85,7 +85,7 @@ pub fn expf(mut x: f32) -> f32 {
         lo = 0.;
     } else {
         /* raise inexact */
-        force_eval!(x1p127 + x);
+        core::hint::black_box(x1p127 + x);
         return 1. + x;
     }
 

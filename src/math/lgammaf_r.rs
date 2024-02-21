@@ -113,15 +113,13 @@ pub fn lgammaf_r(mut x: f32) -> (f32, i32) {
     let q: f32;
     let mut r: f32;
     let w: f32;
-    let ix: u32;
     let i: i32;
-    let sign: bool;
     let mut signgam: i32;
 
     /* purge off +-inf, NaN, +-0, tiny and negative arguments */
     signgam = 1;
-    sign = (u >> 31) != 0;
-    ix = u & 0x7fffffff;
+    let sign: bool = (u >> 31) != 0;
+    let ix: u32 = u & 0x7fffffff;
     if ix >= 0x7f800000 {
         return (x * x, signgam);
     }

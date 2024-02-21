@@ -26,12 +26,12 @@ pub fn nextafterf(x: f32, y: f32) -> f32 {
     let e = ux_i & 0x7f80_0000_u32;
     // raise overflow if ux_f is infinite and x is finite
     if e == 0x7f80_0000_u32 {
-        force_eval!(x + x);
+        core::hint::black_box(x + x);
     }
     let ux_f = f32::from_bits(ux_i);
     // raise underflow if ux_f is subnormal or zero
     if e == 0 {
-        force_eval!(x * x + ux_f * ux_f);
+        core::hint::black_box(x * x + ux_f * ux_f);
     }
     ux_f
 }

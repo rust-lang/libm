@@ -83,7 +83,7 @@ pub fn expm1(mut x: f64) -> f64 {
     } else if hx < 0x3c900000 {
         /* |x| < 2**-54, return x */
         if hx < 0x00100000 {
-            force_eval!(x);
+            core::hint::black_box(x);
         }
         return x;
     } else {
@@ -115,7 +115,7 @@ pub fn expm1(mut x: f64) -> f64 {
     }
     ui = ((0x3ff + k) as u64) << 52; /* 2^k */
     let twopk = f64::from_bits(ui);
-    if k < 0 || k > 56 {
+    if !(0..=56).contains(&k) {
         /* suffice to return exp(x)-1 */
         y = x - e + 1.0;
         if k == 1024 {

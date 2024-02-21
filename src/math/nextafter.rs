@@ -10,8 +10,8 @@ pub fn nextafter(x: f64, y: f64) -> f64 {
         return y;
     }
 
-    let ax = ux_i & !1_u64 / 2;
-    let ay = uy_i & !1_u64 / 2;
+    let ax = ux_i & (!1_u64 / 2);
+    let ay = uy_i & (!1_u64 / 2);
     if ax == 0 {
         if ay == 0 {
             return y;
@@ -26,12 +26,12 @@ pub fn nextafter(x: f64, y: f64) -> f64 {
     let e = ux_i >> 52 & 0x7ff;
     // raise overflow if ux.f is infinite and x is finite
     if e == 0x7ff {
-        force_eval!(x + x);
+        core::hint::black_box(x + x);
     }
     let ux_f = f64::from_bits(ux_i);
     // raise underflow if ux.f is subnormal or zero
     if e == 0 {
-        force_eval!(x * x + ux_f * ux_f);
+        core::hint::black_box(x * x + ux_f * ux_f);
     }
     ux_f
 }
