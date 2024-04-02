@@ -61,12 +61,6 @@ mod musl_reference_tests {
     }
 
     pub fn generate() {
-        // PowerPC tests are failing on LLVM 13: https://github.com/rust-lang/rust/issues/88520
-        let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
-        if target_arch == "powerpc64" {
-            return;
-        }
-
         let files = fs::read_dir("src/math")
             .unwrap()
             .map(|f| f.unwrap().path())
