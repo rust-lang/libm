@@ -48,7 +48,12 @@ pub fn floor(x: f64) -> f64 {
     };
     /* special case because of non-nearest rounding modes */
     if e < 0x3ff {
-        force_eval!(y);
+        // FIXME: Using the black_box via force_eval! here prevents optimizations that prove this
+        // code is free of panics. Perhaps that means that the read_volatile is an insufficient
+        // optimization barrier. But we have no tests for that.
+        unsafe {
+            core::ptr::read_volatile(&y);
+        }
         return if (ui >> 63) != 0 { -1. } else { 0. };
     }
     if y > 0. {
