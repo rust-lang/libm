@@ -25,13 +25,6 @@ pub fn sincos(x: f64) -> (f64, f64) {
     if ix <= 0x3fe921fb {
         /* if |x| < 2**-27 * sqrt(2) */
         if ix < 0x3e46a09e {
-            /* raise inexact if x!=0 and underflow if subnormal */
-            let x1p120 = f64::from_bits(0x4770000000000000); // 0x1p120 == 2^120
-            if ix < 0x00100000 {
-                force_eval!(x / x1p120);
-            } else {
-                force_eval!(x + x1p120);
-            }
             return (x, 1.0);
         }
         return (k_sin(x, 0.0, 0), k_cos(x, 0.0));

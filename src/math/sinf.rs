@@ -28,8 +28,6 @@ const S4_PIO2: f64 = 4. * FRAC_PI_2; /* 0x401921FB, 0x54442D18 */
 pub fn sinf(x: f32) -> f32 {
     let x64 = x as f64;
 
-    let x1p120 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120
-
     let mut ix = x.to_bits();
     let sign = (ix >> 31) != 0;
     ix &= 0x7fffffff;
@@ -38,12 +36,6 @@ pub fn sinf(x: f32) -> f32 {
         /* |x| ~<= pi/4 */
         if ix < 0x39800000 {
             /* |x| < 2**-12 */
-            /* raise inexact if x!=0 and underflow if subnormal */
-            force_eval!(if ix < 0x00800000 {
-                x / x1p120
-            } else {
-                x + x1p120
-            });
             return x;
         }
         return k_sinf(x64);

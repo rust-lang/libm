@@ -38,14 +38,6 @@ pub fn sincosf(x: f32) -> (f32, f32) {
     if ix <= 0x3f490fda {
         /* |x| < 2**-12 */
         if ix < 0x39800000 {
-            /* raise inexact if x!=0 and underflow if subnormal */
-
-            let x1p120 = f32::from_bits(0x7b800000); // 0x1p120 == 2^120
-            if ix < 0x00100000 {
-                force_eval!(x / x1p120);
-            } else {
-                force_eval!(x + x1p120);
-            }
             return (x, 1.0);
         }
         return (k_sinf(x as f64), k_cosf(x as f64));

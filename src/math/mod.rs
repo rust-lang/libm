@@ -1,6 +1,6 @@
 macro_rules! force_eval {
     ($e:expr) => {
-        unsafe { ::core::ptr::read_volatile(&$e) }
+        core::hint::black_box($e)
     };
 }
 

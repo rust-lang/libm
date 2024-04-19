@@ -27,8 +27,6 @@ pub fn tanhf(mut x: f32) -> f32 {
         let t = expm1f(-2. * x);
         -t / (t + 2.)
     } else {
-        /* |x| is subnormal */
-        force_eval!(x * x);
         x
     };
     if sign {

@@ -95,10 +95,6 @@ pub fn log1p(x: f64) -> f64 {
         }
         if hx << 1 < 0x3ca00000 << 1 {
             /* |x| < 2**-53 */
-            /* underflow if subnormal */
-            if (hx & 0x7ff00000) == 0 {
-                force_eval!(x as f32);
-            }
             return x;
         }
         if hx <= 0xbfd2bec4 {
