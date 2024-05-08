@@ -26,10 +26,6 @@ pub fn asinh(mut x: f64) -> f64 {
     } else if e >= 0x3ff - 26 {
         /* |x| >= 0x1p-26, up to 1.6ulp error in [0.125,0.5] */
         x = log1p(x + x * x / (sqrt(x * x + 1.0) + 1.0));
-    } else {
-        /* |x| < 0x1p-26, raise inexact if x != 0 */
-        let x1p120 = f64::from_bits(0x4770000000000000);
-        force_eval!(x + x1p120);
     }
 
     if sign {

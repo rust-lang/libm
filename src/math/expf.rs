@@ -33,7 +33,6 @@ const P2: f32 = -2.7667332906e-3; /* -0xb55215.0p-32 */
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn expf(mut x: f32) -> f32 {
     let x1p127 = f32::from_bits(0x7f000000); // 0x1p127f === 2 ^ 127
-    let x1p_126 = f32::from_bits(0x800000); // 0x1p-126f === 2 ^ -126  /*original 0x1p-149f    ??????????? */
     let mut hx = x.to_bits();
     let sign = (hx >> 31) as i32; /* sign bit of x */
     let signb: bool = sign != 0;
@@ -53,8 +52,6 @@ pub fn expf(mut x: f32) -> f32 {
             return x;
         }
         if signb {
-            /* underflow */
-            force_eval!(-x1p_126 / x);
             if hx >= 0x42cff1b5 {
                 /* x <= -103.972084f */
                 return 0.;
@@ -84,8 +81,6 @@ pub fn expf(mut x: f32) -> f32 {
         hi = x;
         lo = 0.;
     } else {
-        /* raise inexact */
-        force_eval!(x1p127 + x);
         return 1. + x;
     }
 

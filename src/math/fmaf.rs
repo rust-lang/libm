@@ -26,7 +26,6 @@
  */
 
 use core::f32;
-use core::ptr::read_volatile;
 
 use super::fenv::{
     feclearexcept, fegetround, feraiseexcept, fetestexcept, FE_INEXACT, FE_TONEAREST, FE_UNDERFLOW,
@@ -74,7 +73,7 @@ pub fn fmaf(x: f32, y: f32, mut z: f32) -> f32 {
         if e < 0x3ff - 126 && e >= 0x3ff - 149 && fetestexcept(FE_INEXACT) != 0 {
             feclearexcept(FE_INEXACT);
             // prevent `xy + vz` from being CSE'd with `xy + z` above
-            let vz: f32 = unsafe { read_volatile(&z) };
+            let vz = force_eval!(z);
             result = xy + vz as f64;
             if fetestexcept(FE_INEXACT) != 0 {
                 feraiseexcept(FE_UNDERFLOW);

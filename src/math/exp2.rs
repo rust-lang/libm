@@ -336,7 +336,6 @@ pub fn exp2(mut x: f64) -> f64 {
     // union {double f; uint64_t i;} u = {x};
     // union {uint32_t u; int32_t i;} k;
     let x1p1023 = f64::from_bits(0x7fe0000000000000);
-    let x1p52 = f64::from_bits(0x4330000000000000);
     let _0x1p_149 = f64::from_bits(0xb6a0000000000000);
 
     /* Filter out exceptional cases. */
@@ -356,10 +355,6 @@ pub fn exp2(mut x: f64) -> f64 {
         }
         if ui >> 63 != 0 {
             /* x <= -1022 */
-            /* underflow */
-            if x <= -1075.0 || x - x1p52 + x1p52 != x {
-                force_eval!((_0x1p_149 / x) as f32);
-            }
             if x <= -1075.0 {
                 return 0.0;
             }

@@ -84,7 +84,6 @@ const P5: f64 = 4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn exp(mut x: f64) -> f64 {
     let x1p1023 = f64::from_bits(0x7fe0000000000000); // 0x1p1023 === 2 ^ 1023
-    let x1p_149 = f64::from_bits(0x36a0000000000000); // 0x1p-149 === 2 ^ -149
 
     let hi: f64;
     let lo: f64;
@@ -106,13 +105,10 @@ pub fn exp(mut x: f64) -> f64 {
             return x;
         }
         if x > 709.782712893383973096 {
-            /* overflow if x!=inf */
             x *= x1p1023;
             return x;
         }
         if x < -708.39641853226410622 {
-            /* underflow if x!=-inf */
-            force_eval!((-x1p_149 / x) as f32);
             if x < -745.13321910194110842 {
                 return 0.;
             }
@@ -137,8 +133,6 @@ pub fn exp(mut x: f64) -> f64 {
         hi = x;
         lo = 0.;
     } else {
-        /* inexact if x!=0 */
-        force_eval!(x1p1023 + x);
         return 1. + x;
     }
 

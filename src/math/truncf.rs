@@ -10,7 +10,6 @@ pub fn truncf(x: f32) -> f32 {
             return unsafe { ::core::intrinsics::truncf32(x) }
         }
     }
-    let x1p120 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120
 
     let mut i: u32 = x.to_bits();
     let mut e: i32 = (i >> 23 & 0xff) as i32 - 0x7f + 9;
@@ -26,7 +25,6 @@ pub fn truncf(x: f32) -> f32 {
     if (i & m) == 0 {
         return x;
     }
-    force_eval!(x + x1p120);
     i &= !m;
     f32::from_bits(i)
 }

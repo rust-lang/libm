@@ -50,10 +50,6 @@ pub fn log1pf(x: f32) -> f32 {
         }
         if ix << 1 < 0x33800000 << 1 {
             /* |x| < 2**-24 */
-            /* underflow if subnormal */
-            if (ix & 0x7f800000) == 0 {
-                force_eval!(x * x);
-            }
             return x;
         }
         if ix <= 0xbe95f619 {
