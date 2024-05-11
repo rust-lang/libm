@@ -85,7 +85,7 @@ pub fn expm1f(mut x: f32) -> f32 {
     } else if hx < 0x33000000 {
         /* when |x|<2**-25, return x */
         if hx < 0x00800000 {
-            force_eval!(x * x);
+            core::hint::black_box(x * x);
         }
         return x;
     } else {
@@ -115,7 +115,7 @@ pub fn expm1f(mut x: f32) -> f32 {
         return 1. + 2. * (x - e);
     }
     let twopk = f32::from_bits(((0x7f + k) << 23) as u32); /* 2^k */
-    if (k < 0) || (k > 56) {
+    if !(0..=56).contains(&k) {
         /* suffice to return exp(x)-1 */
         let mut y = x - e + 1.;
         if k == 128 {

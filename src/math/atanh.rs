@@ -18,7 +18,7 @@ pub fn atanh(x: f64) -> f64 {
         if e < 0x3ff - 32 {
             /* handle underflow */
             if e == 0 {
-                force_eval!(y as f32);
+                core::hint::black_box(y as f32);
             }
         } else {
             /* |x| < 0.5, up to 1.7ulp error */

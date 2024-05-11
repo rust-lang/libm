@@ -173,22 +173,16 @@ const SB6: f64 = 4.74528541206955367215e+02; /* 0x407DA874, 0xE79FE763 */
 const SB7: f64 = -2.24409524465858183362e+01; /* 0xC03670E2, 0x42712D62 */
 
 fn erfc1(x: f64) -> f64 {
-    let s: f64;
-    let p: f64;
-    let q: f64;
-
-    s = fabs(x) - 1.0;
-    p = PA0 + s * (PA1 + s * (PA2 + s * (PA3 + s * (PA4 + s * (PA5 + s * PA6)))));
-    q = 1.0 + s * (QA1 + s * (QA2 + s * (QA3 + s * (QA4 + s * (QA5 + s * QA6)))));
+    let s: f64 = fabs(x) - 1.0;
+    let p: f64 = PA0 + s * (PA1 + s * (PA2 + s * (PA3 + s * (PA4 + s * (PA5 + s * PA6)))));
+    let q: f64 = 1.0 + s * (QA1 + s * (QA2 + s * (QA3 + s * (QA4 + s * (QA5 + s * QA6)))));
 
     1.0 - ERX - p / q
 }
 
 fn erfc2(ix: u32, mut x: f64) -> f64 {
-    let s: f64;
     let r: f64;
     let big_s: f64;
-    let z: f64;
 
     if ix < 0x3ff40000 {
         /* |x| < 1.25 */
@@ -196,7 +190,7 @@ fn erfc2(ix: u32, mut x: f64) -> f64 {
     }
 
     x = fabs(x);
-    s = 1.0 / (x * x);
+    let s: f64 = 1.0 / (x * x);
     if ix < 0x4006db6d {
         /* |x| < 1/.35 ~ 2.85714 */
         r = RA0 + s * (RA1 + s * (RA2 + s * (RA3 + s * (RA4 + s * (RA5 + s * (RA6 + s * RA7))))));
@@ -209,7 +203,7 @@ fn erfc2(ix: u32, mut x: f64) -> f64 {
         big_s =
             1.0 + s * (SB1 + s * (SB2 + s * (SB3 + s * (SB4 + s * (SB5 + s * (SB6 + s * SB7))))));
     }
-    z = with_set_low_word(x, 0);
+    let z: f64 = with_set_low_word(x, 0);
 
     exp(-z * z - 0.5625) * exp((z - x) * (z + x) + r / big_s) / x
 }
@@ -226,10 +220,9 @@ pub fn erf(x: f64) -> f64 {
     let z: f64;
     let y: f64;
     let mut ix: u32;
-    let sign: usize;
 
     ix = get_high_word(x);
-    sign = (ix >> 31) as usize;
+    let sign: usize = (ix >> 31) as usize;
     ix &= 0x7fffffff;
     if ix >= 0x7ff00000 {
         /* erf(nan)=nan, erf(+-inf)=+-1 */
@@ -275,10 +268,9 @@ pub fn erfc(x: f64) -> f64 {
     let z: f64;
     let y: f64;
     let mut ix: u32;
-    let sign: usize;
 
     ix = get_high_word(x);
-    sign = (ix >> 31) as usize;
+    let sign: usize = (ix >> 31) as usize;
     ix &= 0x7fffffff;
     if ix >= 0x7ff00000 {
         /* erfc(nan)=nan, erfc(+-inf)=0,2 */

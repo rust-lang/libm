@@ -28,7 +28,7 @@ pub fn tanhf(mut x: f32) -> f32 {
         -t / (t + 2.)
     } else {
         /* |x| is subnormal */
-        force_eval!(x * x);
+        core::hint::black_box(x * x);
         x
     };
     if sign {

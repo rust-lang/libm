@@ -36,9 +36,7 @@ pub fn cbrt(x: f64) -> f64 {
 
     let mut ui: u64 = x.to_bits();
     let mut r: f64;
-    let s: f64;
     let mut t: f64;
-    let w: f64;
     let mut hx: u32 = (ui >> 32) as u32 & 0x7fffffff;
 
     if hx >= 0x7ff00000 {
@@ -104,9 +102,9 @@ pub fn cbrt(x: f64) -> f64 {
     t = f64::from_bits(ui);
 
     /* one step Newton iteration to 53 bits with error < 0.667 ulps */
-    s = t * t; /* t*t is exact */
+    let s: f64 = t * t; /* t*t is exact */
     r = x / s; /* error <= 0.5 ulps; |r| < |t| */
-    w = t + t; /* t+t is exact */
+    let w: f64 = t + t; /* t+t is exact */
     r = (r - t) / (w + r); /* r-t is exact; w+r ~= 3*t */
     t = t + t * r; /* error <= 0.5 + 0.5/3 + epsilon */
     t

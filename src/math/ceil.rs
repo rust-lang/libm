@@ -36,20 +36,19 @@ pub fn ceil(x: f64) -> f64 {
     }
     let u: u64 = x.to_bits();
     let e: i64 = (u >> 52 & 0x7ff) as i64;
-    let y: f64;
 
     if e >= 0x3ff + 52 || x == 0. {
         return x;
     }
     // y = int(x) - x, where int(x) is an integer neighbor of x
-    y = if (u >> 63) != 0 {
+    let y: f64 = if (u >> 63) != 0 {
         x - TOINT + TOINT - x
     } else {
         x + TOINT - TOINT - x
     };
     // special case because of non-nearest rounding modes
     if e < 0x3ff {
-        force_eval!(y);
+        core::hint::black_box(y);
         return if (u >> 63) != 0 { -0. } else { 1. };
     }
     if y < 0. {

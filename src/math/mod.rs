@@ -1,9 +1,3 @@
-macro_rules! force_eval {
-    ($e:expr) => {
-        unsafe { ::core::ptr::read_volatile(&$e) }
-    };
-}
-
 #[cfg(not(debug_assertions))]
 macro_rules! i {
     ($array:expr, $index:expr) => {

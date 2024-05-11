@@ -65,13 +65,8 @@ pub fn acos(x: f64) -> f64 {
     let z: f64;
     let w: f64;
     let s: f64;
-    let c: f64;
-    let df: f64;
-    let hx: u32;
-    let ix: u32;
-
-    hx = (x.to_bits() >> 32) as u32;
-    ix = hx & 0x7fffffff;
+    let hx: u32 = (x.to_bits() >> 32) as u32;
+    let ix: u32 = hx & 0x7fffffff;
     /* |x| >= 1 or nan */
     if ix >= 0x3ff00000 {
         let lx: u32 = x.to_bits() as u32;
@@ -104,9 +99,9 @@ pub fn acos(x: f64) -> f64 {
     z = (1.0 - x) * 0.5;
     s = sqrt(z);
     // Set the low 4 bytes to zero
-    df = f64::from_bits(s.to_bits() & 0xff_ff_ff_ff_00_00_00_00);
+    let df: f64 = f64::from_bits(s.to_bits() & 0xff_ff_ff_ff_00_00_00_00);
 
-    c = (z - df * df) / (s + df);
+    let c: f64 = (z - df * df) / (s + df);
     w = r(z) * s + c;
     2. * (df + w)
 }

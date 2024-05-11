@@ -264,9 +264,14 @@ mod tests {
 
     #[test]
     fn conformance_tests() {
-        let values = [3.14159265359, 10000.0, f64::from_bits(0x0000000f), INFINITY];
+        let values = [
+            core::f64::consts::PI,
+            10000.0,
+            f64::from_bits(0x0000000f),
+            INFINITY,
+        ];
         let results = [
-            4610661241675116657u64,
+            4610661241675116394u64,
             4636737291354636288u64,
             2197470602079456986u64,
             9218868437227405312u64,

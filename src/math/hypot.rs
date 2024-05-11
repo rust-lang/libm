@@ -5,13 +5,9 @@ use super::sqrt;
 const SPLIT: f64 = 134217728. + 1.; // 0x1p27 + 1 === (2 ^ 27) + 1
 
 fn sq(x: f64) -> (f64, f64) {
-    let xh: f64;
-    let xl: f64;
-    let xc: f64;
-
-    xc = x * SPLIT;
-    xh = x - xc + xc;
-    xl = x - xh;
+    let xc: f64 = x * SPLIT;
+    let xh: f64 = x - xc + xc;
+    let xl: f64 = x - xh;
     let hi = x * x;
     let lo = xh * xh - hi + 2. * xh * xl + xl * xl;
     (hi, lo)
@@ -25,8 +21,6 @@ pub fn hypot(mut x: f64, mut y: f64) -> f64 {
     let mut uxi = x.to_bits();
     let mut uyi = y.to_bits();
     let uti;
-    let ex: i64;
-    let ey: i64;
     let mut z: f64;
 
     /* arrange |x| >= |y| */
@@ -39,8 +33,8 @@ pub fn hypot(mut x: f64, mut y: f64) -> f64 {
     }
 
     /* special cases */
-    ex = (uxi >> 52) as i64;
-    ey = (uyi >> 52) as i64;
+    let ex: i64 = (uxi >> 52) as i64;
+    let ey: i64 = (uyi >> 52) as i64;
     x = f64::from_bits(uxi);
     y = f64::from_bits(uyi);
     /* note: hypot(inf,nan) == inf */
