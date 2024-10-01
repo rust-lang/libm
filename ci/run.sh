@@ -17,6 +17,8 @@ $cmd --release
 $cmd --features 'unstable'
 $cmd --release --features 'unstable'
 
-# also run the reference tests
-$cmd --features 'unstable libm-test/musl-bitwise-tests'
-$cmd --release --features 'unstable libm-test/musl-bitwise-tests'
+if [ "$(uname -a)" = "Linux" ]; then
+  # also run the reference tests
+  $cmd --features 'unstable libm-test/musl-bitwise-tests'
+  $cmd --release --features 'unstable libm-test/musl-bitwise-tests'
+fi

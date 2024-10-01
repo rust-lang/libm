@@ -8,32 +8,73 @@ env:
 jobs:
   docker:
     name: Docker
-    runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
-        target:
-        - aarch64-unknown-linux-gnu
-        - arm-unknown-linux-gnueabi
-        - arm-unknown-linux-gnueabihf
-        - armv7-unknown-linux-gnueabihf
-        # - i686-unknown-linux-gnu
-        # MIPS targets disabled since they are dropped to tier 3.
-        # See https://github.com/rust-lang/compiler-team/issues/648
-        #- mips-unknown-linux-gnu
-        #- mips64-unknown-linux-gnuabi64
-        #- mips64el-unknown-linux-gnuabi64
-        - powerpc-unknown-linux-gnu
-        - powerpc64-unknown-linux-gnu
-        - powerpc64le-unknown-linux-gnu
-        - x86_64-unknown-linux-gnu
+        include:
+        - target: aarch64-apple-darwin
+          os: macos-latest
+        - target: aarch64-unknown-linux-gnu
+          os: ubuntu-latest
+        - target: arm-unknown-linux-gnueabi
+          os: ubuntu-latest
+        - target: arm-unknown-linux-gnueabihf
+          os: ubuntu-latest
+        - target: armv7-unknown-linux-gnueabihf
+          os: ubuntu-latest
+        - target: i686-unknown-linux-gnu
+          os: ubuntu-latest
+        - target: powerpc-unknown-linux-gnu
+          os: ubuntu-latest
+        - target: powerpc64-unknown-linux-gnu
+          os: ubuntu-latest
+        - target: powerpc64le-unknown-linux-gnu
+          os: ubuntu-latest
+        - target: x86_64-unknown-linux-gnu
+          os: ubuntu-latest
+        - target: x86_64-apple-darwin
+          os: macos-13
+        # - target: i686-pc-windows-msvc
+        #   os: windows-latest
+        # - target: x86_64-pc-windows-msvc
+        #   os: windows-latest
+        - target: i686-pc-windows-gnu
+          os: windows-latest
+        - target: x86_64-pc-windows-gnu
+          os: windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: rustup update nightly && rustup default nightly
-    - run: rustup target add ${{ matrix.target }}
-    - run: rustup target add x86_64-unknown-linux-musl
-    - run: cargo generate-lockfile
-    - run: ./ci/run-docker.sh ${{ matrix.target }}
+    - name: Print runner information
+      run: uname -a
+    - uses: actions/checkout@v4
+    - name: Install Rust (rustup)
+      shell: bash
+      run: |
+        rustup update nightly --no-self-update
+        rustup default nightly
+        rustup target add ${{ matrix.target }}
+        rustup component add llvm-tools-preview
+    - uses: Swatinem/rust-cache@v2
+      with:
+        key: ${{ matrix.target }}
+
+    - name: Download musl source
+      run: ./ci/download-musl.sh
+      shell: bash
+
+    # Non-linux tests just use our raw script
+    - name: Run tests locally
+      run: ./ci/run.sh ${{ matrix.target }}
+      if: matrix.os != 'ubuntu-latest'
+      shell: bash
+
+    # Otherwise we use our docker containers to run builds
+    - name: Run in Docker
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        rustup target add x86_64-unknown-linux-musl
+        cargo generate-lockfile && ./ci/run-docker.sh ${{ matrix.target }}
 
   rustfmt:
     name: Rustfmt
@@ -41,7 +82,10 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Install Rust
-      run: rustup update stable && rustup default stable && rustup component add rustfmt
+      run: |
+        rustup update stable --no-self-update
+        rustup default stable
+        rustup component add rustfmt
     - run: cargo fmt -- --check
 
   wasm:
@@ -50,8 +94,10 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Install Rust
-      run: rustup update nightly && rustup default nightly
+      run: rustup update nightly --no-self-update && rustup default nightly
     - run: rustup target add wasm32-unknown-unknown
+    - name: Download MUSL source
+      run: ./ci/download-musl.sh
     - run: cargo build --target wasm32-unknown-unknown
 
   cb:
@@ -60,7 +106,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Install Rust
-      run: rustup update nightly && rustup default nightly
+      run: rustup update nightly --no-self-update && rustup default nightly
     - run: cargo build -p cb
 
   benchmarks:
@@ -69,7 +115,9 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Install Rust
-      run: rustup update nightly && rustup default nightly
+      run: rustup update nightly --no-self-update && rustup default nightly
+    - name: Download MUSL source
+      run: ./ci/download-musl.sh
     - run: cargo bench --all
 
   success:

@@ -1,6 +1,50 @@
+use std::fmt::Write;
+use std::path::PathBuf;
+use std::{env, fs};
+
 fn main() {
+    list_all_tests();
+    emit_optimization_cfg();
+
     #[cfg(feature = "musl-bitwise-tests")]
     musl_reference_tests::generate();
+}
+
+/// Some tests are extremely slow. Emit a config option to
+fn emit_optimization_cfg() {
+    println!("cargo::rustc-check-cfg=cfg(optimizations_enabled)");
+
+    let opt_level: u8 = env::var("OPT_LEVEL").unwrap().parse().unwrap();
+    if opt_level >= 2 {
+        println!("cargo::rustc-cfg=optimizations_enabled");
+    }
+}
+
+fn list_all_tests() {
+    let root_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let math_src = root_dir.join("../../src/math");
+
+    let mut files = fs::read_dir(math_src)
+        .unwrap()
+        .map(|f| f.unwrap().path())
+        .filter(|entry| entry.is_file())
+        .map(|f| f.file_stem().unwrap().to_str().unwrap().to_owned())
+        .collect::<Vec<_>>();
+    files.sort();
+
+    let mut s = "pub const MATH_FILES: &[&str] = &[".to_owned();
+    for f in files {
+        if f == "mod" {
+            // skip mod.rs
+            continue;
+        }
+        write!(s, "\"{f}\",").unwrap();
+    }
+    write!(s, "];").unwrap();
+
+    let outfile = out_dir.join("all_files.rs");
+    fs::write(outfile, s).unwrap();
 }
 
 #[cfg(feature = "musl-bitwise-tests")]
