@@ -7,7 +7,7 @@ RUN apt-get update && \
     qemu-system-riscv64
 
 ENV TOOLCHAIN_PREFIX=riscv64-linux-gnu-
-ENV CARGO_TARGET_RISCV64GC_UNKNOWN_LINUX_GNU_LINKER="$TOOLCHAIN_PREFIX"-gcc \
+ENV CARGO_TARGET_RISCV64GC_UNKNOWN_LINUX_GNU_LINKER="$TOOLCHAIN_PREFIX"gcc \
     CARGO_TARGET_RISCV64GC_UNKNOWN_LINUX_GNU_RUNNER=qemu-riscv64-static \
     AR_riscv64gc_unknown_linux_gnu="$TOOLCHAIN_PREFIX"ar \
     CC_riscv64gc_unknown_linux_gnu="$TOOLCHAIN_PREFIX"gcc \
