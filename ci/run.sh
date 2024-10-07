@@ -14,21 +14,24 @@ if [ -z "$target" ]; then
     target="$host_target"
 fi
 
-if [ "${NO_STD:-}" = "1" ]; then
-    cargo build --target "$target"
-    cargo build --target "$target" --features 'unstable'
+
+# We nceed to specifically skip tests for this crate on systems that can't
+# build musl since otherwise `--all` will activate it.
+case "$target" in
+  *msvc*) exclude_flag="--exclude musl-math-sys" ;;
+  *wasm*) exclude_flag="--exclude musl-math-sys" ;;
+  *thumb*) exclude_flag="--exclude musl-math-sys" ;;
+  *) exclude_flag="" ;;
+esac
+
+if [ "${BUILD_ONLY:-}" = "1" ]; then
+    cargo build --target "$target" "$exclude_flag"
+    cargo build --target "$target" "$exclude_flag" --features 'unstable'
 
     echo "no tests to run for no_std"
 else
-    cmd="cargo test --all --target $target"
+    cmd="cargo test --all --target $target $exclude_flag"
 
-    # We nceed to specifically skip tests for this crate on systems that can't
-    # build musl since otherwise `--all` will activate it.
-    case "$target" in
-      *msvc*) cmd="$cmd --exclude musl-math-sys" ;;
-      *wasm*) cmd="$cmd --exclude musl-math-sys" ;;
-      *thumb*) cmd="$cmd --exclude musl-math-sys" ;;
-    esac
 
     # stable by default
     $cmd

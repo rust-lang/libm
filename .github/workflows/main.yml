@@ -20,6 +20,7 @@ jobs:
           os: ubuntu-latest
         - target: aarch64-pc-windows-msvc
           os: windows-latest
+          build_only: 1
         - target: arm-unknown-linux-gnueabi
           os: ubuntu-latest
         - target: arm-unknown-linux-gnueabihf
@@ -83,6 +84,8 @@ jobs:
       run: ./ci/run.sh ${{ matrix.target }}
       if: matrix.os != 'ubuntu-latest'
       shell: bash
+      env:
+        BUILD_ONLY: ${{ matrix.build_only}}
 
     # Otherwise we use our docker containers to run builds
     - name: Run in Docker

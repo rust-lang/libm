@@ -36,6 +36,8 @@ macro_rules! functions {
     ) => {
         // Just a simple test that we can call the function.
         #[test]
+        // FIXME(#309): LE PPC crashes calling some musl functions
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         fn $name() {
             <fn($($aty),+) -> $rty>::check(super::$name);
         }

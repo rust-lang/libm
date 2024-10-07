@@ -5,4 +5,4 @@ RUN apt-get update && \
     gcc libc6-dev ca-certificates \
     gcc-arm-none-eabi \
     libnewlib-arm-none-eabi
-ENV NO_STD=1
+ENV BUILD_ONLY=1

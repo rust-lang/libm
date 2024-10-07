@@ -8,8 +8,6 @@ sha=a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4
 mkdir musl
 curl "https://musl.libc.org/releases/$fname" -O
 
-echo "$(uname -s)"
-
 case "$(uname -s)" in
   MINGW*)
     # Need to extract the second line because certutil does human output
