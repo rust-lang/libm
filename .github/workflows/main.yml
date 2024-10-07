@@ -79,6 +79,12 @@ jobs:
       run: ./ci/download-musl.sh
       shell: bash
 
+      # 'i686-w64-mingw32-gcc' does not seem to be in path by default
+    - name: Fix mingw path
+      if: matrix.os == 'i686-pc-windows-gnu'
+      shell: bash
+      run: echo "C:\msys64\mingw32\bin" >> $GITHUB_PATH
+
     # Non-linux tests just use our raw script
     - name: Run tests locally
       run: ./ci/run.sh ${{ matrix.target }}

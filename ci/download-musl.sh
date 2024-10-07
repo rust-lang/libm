@@ -1,4 +1,5 @@
 #!/bin/sh
+# Download the expected version of musl to a directory `musl`
 
 set -eux
 

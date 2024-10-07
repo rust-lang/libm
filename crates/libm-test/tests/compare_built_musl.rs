@@ -1,3 +1,13 @@
+//! Compare our implementations with `musl-math-sys`, which provides bindings to Musl
+//! functions.
+//!
+//! Currently this tests a number of randomized inputs from a deterministic RNG and compares the
+//! output from our `libm` implementation to that produce by Musl. In the future, this may be
+//! improved to test edge cases and/or run exhaustive tests.
+//!
+//! Note that being exactly accurate to Musl may not be always mean the function is as accurate as
+//! possible since Musl does not do correct rounding.
+
 // Targets that we can't compile musl for
 #![cfg(not(any(target_env = "msvc", target_family = "wasm")))]
 // These wind up with stack overflows
@@ -10,10 +20,7 @@
 use std::ffi::c_int;
 use std::sync::LazyLock;
 
-use libm_test::CheckOutput;
-use libm_test::GetVal;
-use libm_test::TestCases;
-use libm_test::TupleCall;
+use libm_test::{CheckOutput, GetVal, TestCases, TupleCall};
 use musl_math_sys as musl;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
@@ -24,10 +31,10 @@ const NTESTS: usize = if cfg!(optimizations_enabled) {
     1000
 } else {
     100
-} * if cfg!(target_pointer_width = "64") {
+} * if cfg!(target_pointer_width = "64") && !cfg!(target_arch = "powerpc64") {
     5
 } else {
-    // Tests can be pretty slow on non-64-bit targets
+    // Tests can be pretty slow on non-64-bit targets and, for some reason, ppc
     1
 };
 
@@ -36,6 +43,8 @@ const ALLOWED_ULP: u32 = 2;
 
 const ULP_OVERRIDES: &[(&str, u32)] = &[
     // The gamma functions deviate more from musl for whatever reason
+    #[cfg(x86_no_sse)]
+    ("asinhf", 6),
     ("lgamma", 6),
     ("lgamma_r", 6),
     ("lgammaf", 6),
@@ -204,7 +213,6 @@ make_tests! {
         acosf;
         acoshf;
         asinf;
-        #[cfg_attr(x86_no_sse, ignore)] // FIXME(precision): i586 exceeds minimum ULP
         asinhf;
         atanf;
         atanhf;

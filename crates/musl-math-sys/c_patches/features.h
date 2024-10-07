@@ -8,20 +8,20 @@
 #ifndef FEATURES_H
 #define FEATURES_H
 
-/* replace `#include "../../include/features.h"` since we can't use the
- * relative path. The C macros need double indirection to get a usable
+/* get the required `#include "../../include/features.h"` since we can't use
+ * the relative path. The C macros need double indirection to get a usable
  * string. */
 #define _stringify_inner(s) #s
 #define _stringify(s) _stringify_inner(s)
 #include _stringify(ROOT_INCLUDE_FEATURES)
 
 #if defined(__APPLE__)
-/* Can't define `weak` because that word gets used in `weak_alias` */
+#define weak __attribute__((__weak__))
 #define hidden __attribute__((__visibility__("hidden")))
 
 /* We _should_ be able to define this as:
  *     _Pragma(_stringify(weak musl_ ## new = musl_ ## old))
- * However, weak symbols aren't handled correctly [1]. So we do manually write
+ * However, weak symbols aren't handled correctly [1]. So we manually write
  * wrappers, which are in `alias.c`.
  *
  * [1]: https://github.com/llvm/llvm-project/issues/111321
