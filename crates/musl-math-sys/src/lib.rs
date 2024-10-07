@@ -1,15 +1,15 @@
 use std::ffi::{c_char, c_int, c_long};
 
-// /// Macro for exposing bindings. Included functions must be correct, otherwise this will be unsound.
+/// Macro for creating bindings and exposing a safe function (since the implementations have no
+/// preconditions). Included functions must have correct signatures, otherwise this will be
+/// unsound.
 macro_rules! functions {
     ( $(
         $pfx_name:ident: $name:ident( $($arg:ident: $aty:ty),+ ) -> $rty:ty;
     )* ) => {
-        $(
-            extern "C" {
-                fn $pfx_name( $($arg: $aty),+ ) -> $rty;
-            }
-        )*
+        extern "C" {
+            $( fn $pfx_name( $($arg: $aty),+ ) -> $rty; )*
+        }
 
         $(
             // Expose a safe version
@@ -22,6 +22,7 @@ macro_rules! functions {
         #[cfg(test)]
         mod tests {
             use super::*;
+            use test_support::CallTest;
 
             $( functions!(
                 @single_test
@@ -36,8 +37,6 @@ macro_rules! functions {
         // Just a simple test that we can call the function.
         #[test]
         fn $name() {
-            use test_support::QuickTest;
-
             <fn($($aty),+) -> $rty>::check(super::$name);
         }
     };
@@ -47,136 +46,96 @@ macro_rules! functions {
 mod test_support {
     use core::ffi::c_char;
 
-    pub trait QuickTest {
+    /// Just verify that we can call the function
+    pub trait CallTest {
         fn check(f: Self);
     }
 
-    impl QuickTest for fn(f32) -> f32 {
-        fn check(f: Self) {
-            f(0.0);
-        }
+    macro_rules! impl_calltest {
+        ($( ($($arg:ty),*) -> $ret:ty; )*) => {
+            $(
+                impl CallTest for fn($($arg),*) -> $ret {
+                    fn check(f: Self) {
+                        f($(1 as $arg),*);
+                    }
+                }
+            )*
+        };
     }
-    impl QuickTest for fn(f64) -> f64 {
-        fn check(f: Self) {
-            f(0.0);
-        }
+
+    impl_calltest! {
+        (f32) -> f32;
+        (f64) -> f64;
+        (f32, f32) -> f32;
+        (f64, f64) -> f64;
+        (i32, f32) -> f32;
+        (i32, f64) -> f64;
+        (f32, f32, f32) -> f32;
+        (f64, f64, f64) -> f64;
+        (f32, i32) -> f32;
+        (f32, i64) -> f32;
+        (f32) -> i32;
+        (f64) -> i32;
+        (f64, i32) -> f64;
+        (f64, i64) -> f64;
     }
-    impl QuickTest for fn(f32, f32) -> f32 {
-        fn check(f: Self) {
-            f(0.0, 0.0);
-        }
-    }
-    impl QuickTest for fn(f64, f64) -> f64 {
-        fn check(f: Self) {
-            f(0.0, 0.0);
-        }
-    }
-    impl QuickTest for fn(i32, f32) -> f32 {
-        fn check(f: Self) {
-            f(1, 0.0);
-        }
-    }
-    impl QuickTest for fn(i32, f64) -> f64 {
-        fn check(f: Self) {
-            f(1, 0.0);
-        }
-    }
-    impl QuickTest for fn(f32, f32, f32) -> f32 {
-        fn check(f: Self) {
-            f(0.0, 0.0, 0.0);
-        }
-    }
-    impl QuickTest for fn(f64, f64, f64) -> f64 {
-        fn check(f: Self) {
-            f(0.0, 0.0, 0.0);
-        }
-    }
-    impl QuickTest for fn(f32, i32) -> f32 {
-        fn check(f: Self) {
-            f(0.0, 1);
-        }
-    }
-    impl QuickTest for fn(f32, i64) -> f32 {
-        fn check(f: Self) {
-            f(0.0, 1);
-        }
-    }
-    impl QuickTest for fn(f32) -> i32 {
-        fn check(f: Self) {
-            f(0.0);
-        }
-    }
-    impl QuickTest for fn(f64) -> i32 {
-        fn check(f: Self) {
-            f(0.0);
-        }
-    }
-    impl QuickTest for fn(f64, i32) -> f64 {
-        fn check(f: Self) {
-            f(0.0, 1);
-        }
-    }
-    impl QuickTest for fn(f64, i64) -> f64 {
-        fn check(f: Self) {
-            f(0.0, 1);
-        }
-    }
-    impl QuickTest for fn(f32, &mut f32) -> f32 {
+
+    impl CallTest for fn(f32, &mut f32) -> f32 {
         fn check(f: Self) {
             let mut tmp = 0.0;
             f(0.0, &mut tmp);
         }
     }
-    impl QuickTest for fn(f64, &mut f64) -> f64 {
+    impl CallTest for fn(f64, &mut f64) -> f64 {
         fn check(f: Self) {
             let mut tmp = 0.0;
             f(0.0, &mut tmp);
         }
     }
-    impl QuickTest for fn(f32, &mut i32) -> f32 {
+    impl CallTest for fn(f32, &mut i32) -> f32 {
         fn check(f: Self) {
             let mut tmp = 1;
             f(0.0, &mut tmp);
         }
     }
-    impl QuickTest for fn(f64, &mut i32) -> f64 {
+    impl CallTest for fn(f64, &mut i32) -> f64 {
         fn check(f: Self) {
             let mut tmp = 1;
             f(0.0, &mut tmp);
         }
     }
-    impl QuickTest for fn(f32, f32, &mut i32) -> f32 {
+    impl CallTest for fn(f32, f32, &mut i32) -> f32 {
         fn check(f: Self) {
             let mut tmp = 1;
             f(0.0, 0.0, &mut tmp);
         }
     }
-    impl QuickTest for fn(f64, f64, &mut i32) -> f64 {
+    impl CallTest for fn(f64, f64, &mut i32) -> f64 {
         fn check(f: Self) {
             let mut tmp = 1;
             f(0.0, 0.0, &mut tmp);
         }
     }
-    impl QuickTest for fn(f32, &mut f32, &mut f32) {
+    impl CallTest for fn(f32, &mut f32, &mut f32) {
         fn check(f: Self) {
             let mut tmp1 = 1.0;
             let mut tmp2 = 1.0;
             f(0.0, &mut tmp1, &mut tmp2);
         }
     }
-    impl QuickTest for fn(f64, &mut f64, &mut f64) {
+    impl CallTest for fn(f64, &mut f64, &mut f64) {
         fn check(f: Self) {
             let mut tmp1 = 1.0;
             let mut tmp2 = 1.0;
             f(0.0, &mut tmp1, &mut tmp2);
         }
     }
-    impl QuickTest for fn(*const c_char) -> f32 {
+    impl CallTest for fn(*const c_char) -> f32 {
         fn check(f: Self) {
             f(c"1".as_ptr());
         }
     }
-    impl QuickTest for fn(*const c_char) -> f64 {
+    impl CallTest for fn(*const c_char) -> f64 {
         fn check(f: Self) {
             f(c"1".as_ptr());
         }
