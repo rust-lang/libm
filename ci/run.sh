@@ -3,6 +3,9 @@
 set -eux
 
 export RUST_BACKTRACE="${RUST_BACKTRACE:-full}"
+# Needed for no-panic to correct detect a lack of panics
+export RUSTFLAGS="$RUSTFLAGS -Ccodegen-units=1"
+
 target="${1:-}"
 
 if [ -z "$target" ]; then
@@ -11,10 +14,6 @@ if [ -z "$target" ]; then
     target="$host_target"
 fi
 
-
-# Needed for no-panic to correct detect a lack of panics
-export RUSTFLAGS="$RUSTFLAGS -Ccodegen-units=1"
-
 if [ "${NO_STD:-}" = "1" ]; then
     cargo build --target "$target"
     cargo build --target "$target" --features 'unstable'
@@ -22,6 +21,12 @@ if [ "${NO_STD:-}" = "1" ]; then
     echo "no tests to run for no_std"
 else
     cmd="cargo test --all --target $target"
+
+    # # We nceed to specif
+    # case "$target" in
+    #   *msvc*) cmd="$cmd --exclude musl-math-sys" ;;
+    #   *wasm*) cmd="$cmd --exclude musl-math-sys" ;;
+    # esac
 
     # stable by default
     $cmd

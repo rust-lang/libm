@@ -44,7 +44,8 @@ const MULTIPLE_SYMBOLS: &[(&str, &[&str])] = &[
 
 fn main() {
     let cfg = Config::from_env();
-    dbg!(&cfg);
+    println!("cargo::warning=CONFIG: {cfg:?}");
+
     if cfg.target_env == "msvc" || cfg.target_family == "wasm" {
         println!(
             "cargo::warning=Musl doesn't compile with the current \
