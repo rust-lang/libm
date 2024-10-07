@@ -122,7 +122,7 @@ macro_rules! make_tests {
     ( $(
         ($($arg:ty),+) => $retty:ty $(| ($($arg2:ty),+) => $retty2:ty)? {
             $(
-                $(#[$meta:meta])*
+                $(#[$meta:meta])* // applied to the test
                 $name:ident;
             )*
         };
@@ -160,6 +160,7 @@ macro_rules! make_tests {
     ) => {
         $(
             #[test]
+            $(#[$meta])*
             fn $name() {
                 let fname = stringify!($name);
                 let cases = if fname == "jn" || fname == "jnf" {
