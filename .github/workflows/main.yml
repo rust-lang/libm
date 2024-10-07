@@ -4,6 +4,7 @@ on: [push, pull_request]
 env:
   RUSTDOCFLAGS: -Dwarnings
   RUSTFLAGS: -Dwarnings
+  RUST_BACKTRACE: full
 
 jobs:
   docker:
