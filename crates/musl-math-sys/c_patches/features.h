@@ -28,19 +28,6 @@
  */
 #define weak_alias(old, new)
 
-
-#ifdef __x86_64__
-#define _alias_asm_expr(fn_name) __asm__("call " #fn_name "\nret");
-#else
-#define _alias_asm_expr(fn_name) __asm__("b " #fn_name "\nret");
-#endif
-
-#define naked_alias(old, new) \
-	__attribute__((naked)) \
-	void musl_ ## new() { \
-		_alias_asm_expr(_musl_ ## old) \
-	}
-
 #else
 #define weak __attribute__((__weak__))
 #define hidden __attribute__((__visibility__("hidden")))
@@ -49,5 +36,17 @@
 	__attribute__((__weak__, __alias__(_stringify(musl_ ## old))))
 
 #endif /* defined(__APPLE__) */
+
+#ifdef __aarch64__
+#define _alias_asm_expr(fn_name) __asm__("b " #fn_name "\nret");
+#else
+#define _alias_asm_expr(fn_name) __asm__("call " #fn_name "\nret");
+#endif
+
+#define naked_alias(old, new) \
+	__attribute__((naked)) \
+	void musl_ ## new() { \
+		_alias_asm_expr(_musl_ ## old) \
+	}
 
 #endif
