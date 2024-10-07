@@ -64,7 +64,10 @@ static TEST_CASES: LazyLock<TestCases> = LazyLock::new(|| make_test_cases(NTESTS
 /// The first argument to `jn` and `jnf` is the number of iterations. Make this a reasonable
 /// value.
 static TEST_CASES_JN: LazyLock<TestCases> = LazyLock::new(|| {
-    let iterations = if cfg!(target_pointer_width = "64") && cfg!(target_family = "unix") {
+    // It is easy to overflow the stack with these in debug mode
+    let iterations = if (cfg!(target_arch = "x86_64") || cfg!(target_arch = "aarch64"))
+        && cfg!(target_family = "unix")
+    {
         0xffff
     } else {
         0x0fff
