@@ -2,23 +2,38 @@
 
 set -eux
 
-target="$1"
+export RUST_BACKTRACE="${RUST_BACKTRACE:-full}"
+target="${1:-}"
 
-cmd="cargo test --all --target $target"
+if [ -z "$target" ]; then
+    host_target=$(rustc -vV | awk '/^host/ { print $2 }')
+    echo "Defaulted to host target $host_target"
+    target="$host_target"
+fi
+
 
 # Needed for no-panic to correct detect a lack of panics
 export RUSTFLAGS="$RUSTFLAGS -Ccodegen-units=1"
 
-# stable by default
-$cmd
-$cmd --release
+if [ "${NO_STD:-}" = "1" ]; then
+    cargo build --target "$target"
+    cargo build --target "$target" --features 'unstable'
 
-# unstable with a feature
-$cmd --features 'unstable'
-$cmd --release --features 'unstable'
+    echo "no tests to run for no_std"
+else
+    cmd="cargo test --all --target $target"
 
-if [ "$(uname -a)" = "Linux" ]; then
-  # also run the reference tests
-  $cmd --features 'unstable libm-test/musl-bitwise-tests'
-  $cmd --release --features 'unstable libm-test/musl-bitwise-tests'
+    # stable by default
+    $cmd
+    $cmd --release
+
+    # unstable with a feature
+    $cmd --features 'unstable'
+    $cmd --release --features 'unstable'
+
+    if [ "$(uname -a)" = "Linux" ]; then
+        # also run the reference tests when we can. requires a Linux host.
+        $cmd --features 'unstable libm-test/musl-bitwise-tests'
+        $cmd --release --features 'unstable libm-test/musl-bitwise-tests'
+    fi
 fi
