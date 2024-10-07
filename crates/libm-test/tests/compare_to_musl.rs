@@ -65,10 +65,10 @@ static TEST_CASES: LazyLock<TestCases> = LazyLock::new(|| make_test_cases(NTESTS
 /// value.
 static TEST_CASES_JN: LazyLock<TestCases> = LazyLock::new(|| {
     // It is easy to overflow the stack with these in debug mode
-    let iterations = if (cfg!(target_arch = "x86_64") || cfg!(target_arch = "aarch64"))
-        && cfg!(target_family = "unix")
-    {
+    let iterations = if cfg!(optimizations_enabled) && cfg!(target_pointer_width = "64") {
         0xffff
+    } else if cfg!(windows) {
+        0x00ff
     } else {
         0x0fff
     };
