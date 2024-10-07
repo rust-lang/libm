@@ -1,4 +1,9 @@
-#![cfg(not(any(target_env = "msvc", target_family = "wasm")))] // unsupported by musl
+// Targets that we can't compile musl for
+#![cfg(not(any(target_env = "msvc", target_family = "wasm")))]
+// FIXME(ppc,crash): LE PPC crashes calling the musl version of some of these and are disabled. It
+// seems like a qemu bug but should be investigated further at some point. See
+// <https://github.com/rust-lang/libm/issues/309>.
+#![cfg(not(all(target_arch = "powerpc64", target_endian = "little")))]
 
 use std::ffi::c_int;
 use std::sync::LazyLock;
@@ -192,10 +197,6 @@ macro_rules! make_tests {
 
 }
 
-// FIXME(ppc,crash): LE PPC crashes calling the musl version of some of these and are disabled. It
-// seems like a qemu bug but should be investigated further at some point. See
-// <https://github.com/rust-lang/libm/issues/309>.
-
 make_tests! {
     (f32) => f32 {
         acosf;
@@ -211,7 +212,6 @@ make_tests! {
         coshf;
         erff;
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         exp10f;
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp2f;
@@ -221,14 +221,11 @@ make_tests! {
         floorf;
         j0f;
         j1f;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgammaf;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log10f;
         log1pf;
         log2f;
         logf;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         rintf;
         roundf;
         sinf;
@@ -236,7 +233,6 @@ make_tests! {
         sqrtf;
         tanf;
         tanhf;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         tgammaf;
         truncf;
     };
@@ -246,7 +242,6 @@ make_tests! {
         acosh;
         asin;
         asinh;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         atan;
         atanh;
         cbrt;
@@ -255,8 +250,8 @@ make_tests! {
         cosh;
         erf;
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         exp10;
+        #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp2;
         exp;
         expm1;
@@ -264,25 +259,18 @@ make_tests! {
         floor;
         j0;
         j1;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgamma;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log10;
         log1p;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log2;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         rint;
         round;
         sin;
         sinh;
         sqrt;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         tan;
         tanh;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         tgamma;
         trunc;
     };
@@ -301,7 +289,6 @@ make_tests! {
     };
 
     (f64, f64) => f64 {
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         atan2;
         copysign;
         fdim;
@@ -353,20 +340,16 @@ make_tests! {
     };
 
     (f64, &mut f64) => f64 | (f64) => (f64, f64) {
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         modf;
     };
 
     (f32, &mut c_int) => f32 | (f32) => (f32, i32) {
         frexpf;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgammaf_r;
     };
 
     (f64, &mut c_int) => f64 | (f64) => (f64, i32) {
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         frexp;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgamma_r;
     };
 

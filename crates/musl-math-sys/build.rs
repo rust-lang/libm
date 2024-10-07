@@ -153,6 +153,7 @@ fn build_musl_math(cfg: &Config) {
     let mut cbuild = cc::Build::new();
     cbuild
         .extra_warnings(false)
+        .warnings(false)
         .flag_if_supported("-Wno-bitwise-op-parentheses")
         .flag_if_supported("-Wno-literal-range")
         .flag_if_supported("-Wno-parentheses")

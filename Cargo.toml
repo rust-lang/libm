@@ -23,6 +23,7 @@ unstable = []
 force-soft-floats = []
 
 [workspace]
+resolver = "2"
 members = [
   "crates/compiler-builtins-smoke-test",
   "crates/libm-bench",
