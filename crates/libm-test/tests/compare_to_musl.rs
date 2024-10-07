@@ -122,12 +122,12 @@ macro_rules! make_tests {
     ( $(
         ($($arg:ty),+) => $retty:ty $(| ($($arg2:ty),+) => $retty2:ty)? {
             $(
-                $(#[$meta:meta])* // applied to the test
+                $(#[$fn_meta:meta])* // applied to the test
                 $name:ident;
             )*
         };
     )* ) => {
-        const ALL_TESTS: &[&str] = &[
+        const TESTED_FUNCTIONS: &[&str] = &[
             $(
                 $( stringify!($name), )*
             )*
@@ -141,7 +141,7 @@ macro_rules! make_tests {
                 SysFnTy: fn($($arg),+) -> $retty,
                 CrateFnTy: make_tests!(@coalesce [fn($($arg),+) -> $retty] $([fn($($arg2),+) -> $retty2])?),
                 functions: [$( {
-                    attrs: [$($meta),*],
+                    attrs: [$($fn_meta),*],
                     fn_name: $name,
                 } ),*],
             }
@@ -154,13 +154,13 @@ macro_rules! make_tests {
         SysFnTy: $fnty_sys:ty,
         CrateFnTy: $fnty_crate:ty,
         functions: [$( {
-            attrs: [$($meta:meta),*],
+            attrs: [$($fn_meta:meta),*],
             fn_name: $name:ident,
         } ),*],
     ) => {
         $(
             #[test]
-            $(#[$meta])*
+            $(#[$fn_meta])*
             fn $name() {
                 let fname = stringify!($name);
                 let cases = if fname == "jn" || fname == "jnf" {
@@ -192,15 +192,15 @@ macro_rules! make_tests {
 
 }
 
+// FIXME(ppc,crash): LE PPC crashes calling the musl version of some of these and are disabled. It
+// seems like a qemu bug but should be investigated further at some point. See
+// <https://github.com/rust-lang/libm/issues/309>.
+
 make_tests! {
     (f32) => f32 {
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acosf;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acoshf;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         asinf;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(precision): i586 exceeds minimum ULP
         asinhf;
         atanf;
@@ -211,6 +211,7 @@ make_tests! {
         coshf;
         erff;
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         exp10f;
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp2f;
@@ -220,11 +221,14 @@ make_tests! {
         floorf;
         j0f;
         j1f;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgammaf;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log10f;
         log1pf;
         log2f;
         logf;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         rintf;
         roundf;
         sinf;
@@ -232,19 +236,17 @@ make_tests! {
         sqrtf;
         tanf;
         tanhf;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         tgammaf;
         truncf;
     };
 
     (f64) => f64 {
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acos;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acosh;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         asin;
-        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         asinh;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         atan;
         atanh;
         cbrt;
@@ -253,8 +255,8 @@ make_tests! {
         cosh;
         erf;
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         exp10;
-        #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp2;
         exp;
         expm1;
@@ -262,18 +264,25 @@ make_tests! {
         floor;
         j0;
         j1;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgamma;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log10;
         log1p;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log2;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         log;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         rint;
         round;
         sin;
         sinh;
         sqrt;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         tan;
         tanh;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         tgamma;
         trunc;
     };
@@ -292,6 +301,7 @@ make_tests! {
     };
 
     (f64, f64) => f64 {
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         atan2;
         copysign;
         fdim;
@@ -343,16 +353,20 @@ make_tests! {
     };
 
     (f64, &mut f64) => f64 | (f64) => (f64, f64) {
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         modf;
     };
 
     (f32, &mut c_int) => f32 | (f32) => (f32, i32) {
         frexpf;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgammaf_r;
     };
 
     (f64, &mut c_int) => f64 | (f64) => (f64, i32) {
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         frexp;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         lgamma_r;
     };
 
@@ -379,7 +393,7 @@ fn verify_everything_tested() {
     let mut missing = Vec::new();
 
     for f in libm_test::MATH_FILES {
-        if !ALL_TESTS.contains(f) && !ALLOWED_SKIPS.contains(f) {
+        if !TESTED_FUNCTIONS.contains(f) && !ALLOWED_SKIPS.contains(f) {
             missing.push(f)
         }
     }
