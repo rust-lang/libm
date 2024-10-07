@@ -17,6 +17,13 @@ fi
 
 # We nceed to specifically skip tests for this crate on systems that can't
 # build musl since otherwise `--all` will activate it.
+case "$target" in
+  *msvc*) exclude_flag="--exclude musl-math-sys" ;;
+  *wasm*) exclude_flag="--exclude musl-math-sys" ;;
+  *thumb*) exclude_flag="--exclude musl-math-sys" ;;
+  *) exclude_flag="" ;;
+esac
+
 if [ "${BUILD_ONLY:-}" = "1" ]; then
     cmd="cargo build --target $target --package libm"
     $cmd

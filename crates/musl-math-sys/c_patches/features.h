@@ -21,12 +21,12 @@
 
 /* We _should_ be able to define this as:
  *     _Pragma(_stringify(weak musl_ ## new = musl_ ## old))
- * However, weak symbols aren't handled correctly [1]. So we do something
- * extremely hacky and redefine a function that takes 
+ * However, weak symbols aren't handled correctly [1]. So we do manually write
+ * wrappers, which are in `alias.c`.
  *
  * [1]: https://github.com/llvm/llvm-project/issues/111321
  */
-#define weak_alias(old, new)
+#define weak_alias(old, new) /* nothing */
 
 #else
 #define weak __attribute__((__weak__))
