@@ -27,10 +27,18 @@
  * [1]: https://github.com/llvm/llvm-project/issues/111321
  */
 #define weak_alias(old, new)
+
+
+#ifdef __x86_64__
+#define _alias_asm_expr(fn_name) __asm__("call " #fn_name "\nret");
+#else
+#define _alias_asm_expr(fn_name) __asm__("b " #fn_name "\nret");
+#endif
+
 #define naked_alias(old, new) \
 	__attribute__((naked)) \
 	void musl_ ## new() { \
-	    __asm__("b " _stringify(_musl_ ## old) "\nret"); \
+		_alias_asm_expr(_musl_ ## old) \
 	}
 
 #else

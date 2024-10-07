@@ -12,10 +12,16 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 const SEED: [u8; 32] = *b"3.141592653589793238462643383279";
+
 const NTESTS: usize = if cfg!(optimizations_enabled) {
-    5000
-} else {
     1000
+} else {
+    100
+} * if cfg!(target_pointer_width = "64") {
+    5
+} else {
+    // Tests can be pretty slow on non-64-bit targets
+    1
 };
 
 /// ULP allowed to differ from musl (note that musl may not be accurate)

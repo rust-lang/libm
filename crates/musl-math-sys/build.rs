@@ -262,7 +262,7 @@ fn validate_archive_symbols(out_path: &Path) {
         // PIC and arch-specific
         ".TOC",
         "_GLOBAL_OFFSET_TABLE_",
-        "_x86.get_pc_thunk",
+        "__x86.get_pc_thunk",
         // gcc/compiler-rt/compiler-builtins symbols
         "__add",
         "__aeabi_",
