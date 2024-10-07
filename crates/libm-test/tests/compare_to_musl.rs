@@ -1,4 +1,4 @@
-#![cfg(not(target_env = "msvc"))] // we can't build musl on MSVC
+#![cfg(not(any(target_env = "msvc", target_family = "wasm")))] // unsupported by musl
 
 use std::ffi::c_int;
 use std::sync::LazyLock;

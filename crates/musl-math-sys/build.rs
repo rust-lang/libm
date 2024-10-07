@@ -44,8 +44,12 @@ const MULTIPLE_SYMBOLS: &[(&str, &[&str])] = &[
 
 fn main() {
     let cfg = Config::from_env();
-    if cfg.target_env == "msvc" {
-        println!("cargo::warning=Musl doesn't build well with MSVC, this will likely fail");
+    if cfg.target_env == "msvc" && cfg.target_family == "wasm" {
+        println!(
+            "cargo::warning=Musl doesn't build well with the current \
+            target {}. This will likely fail",
+            &cfg.target_string
+        );
     }
 
     build_musl_math(&cfg);
@@ -127,16 +131,21 @@ fn build_musl_math(cfg: &Config) {
     let obj_include = cfg.out_dir.join("musl_obj/include");
     fs::create_dir_all(&obj_include).unwrap();
     fs::create_dir_all(&obj_include.join("bits")).unwrap();
-    let generated = Command::new("sed")
+    let sed_stat = Command::new("sed")
         .arg("-f")
         .arg(musl_dir.join("tools/mkalltypes.sed"))
         .arg(arch_dir.join("bits/alltypes.h.in"))
         .arg(musl_dir.join("include/alltypes.h.in"))
         .stderr(Stdio::inherit())
         .output()
-        .unwrap()
-        .stdout;
-    fs::write(obj_include.join("bits/alltypes.h"), generated).unwrap();
+        .unwrap();
+    assert!(
+        sed_stat.status.success(),
+        "sed command failed: {:?}",
+        sed_stat.status
+    );
+
+    fs::write(obj_include.join("bits/alltypes.h"), sed_stat.stdout).unwrap();
 
     let mut cbuild = cc::Build::new();
     cbuild
