@@ -36,7 +36,7 @@ macro_rules! functions {
     (@single_test
         $name:ident( $($arg:ident: $aty:ty),+ ) -> $rty:ty
     ) => {
-        // Just a simple test that we can call the function.
+        // Run a simple check to ensure we can link and call the function without crashing.
         #[test]
         // FIXME(#309): LE PPC crashes calling some musl functions
         #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]

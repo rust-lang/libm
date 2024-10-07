@@ -1,4 +1,4 @@
-/** This is meant to override Musl's src/include/features.h
+/* This is meant to override Musl's src/include/features.h
  *
  * We use a separate file here to redefine some attributes that don't work on
  * all platforms that we would like to build on.
@@ -7,7 +7,7 @@
 #ifndef FEATURES_H
 #define FEATURES_H
 
-/* get the required `#include "../../include/features.h"` since we can't use
+/* Get the required `#include "../../include/features.h"` since we can't use
  * the relative path. The C macros need double indirection to get a usable
  * string. */
 #define _stringify_inner(s) #s
