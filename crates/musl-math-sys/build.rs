@@ -327,7 +327,11 @@ fn validate_archive_symbols(out_path: &Path) {
 
     let defined = str::from_utf8(&out.stdout).unwrap();
     let mut defined = defined.lines().collect::<Vec<_>>();
-    defined.retain(|sym| !(sym.starts_with("_musl_") || sym.starts_with("musl_")));
+    defined.retain(|sym| {
+        !(sym.starts_with("_musl_")
+            || sym.starts_with("musl_")
+            || sym.starts_with("__x86.get_pc_thunk"))
+    });
 
     assert!(defined.is_empty(), "found unprefixed symbols: {defined:#?}");
 }
