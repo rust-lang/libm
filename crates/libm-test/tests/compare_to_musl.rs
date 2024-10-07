@@ -35,6 +35,10 @@ const ULP_OVERRIDES: &[(&str, u32)] = &[
     ("lgammaf_r", 6),
     ("tanh", 4),
     ("tgamma", 8),
+    #[cfg(not(target_pointer_width = "64"))]
+    ("exp10", 4),
+    #[cfg(not(target_pointer_width = "64"))]
+    ("exp10f", 4),
 ];
 
 const ALLOWED_SKIPS: &[&str] = &[
@@ -60,12 +64,18 @@ static TEST_CASES: LazyLock<TestCases> = LazyLock::new(|| make_test_cases(NTESTS
 /// The first argument to `jn` and `jnf` is the number of iterations. Make this a reasonable
 /// value.
 static TEST_CASES_JN: LazyLock<TestCases> = LazyLock::new(|| {
+    let iterations = if cfg!(target_pointer_width = "64") && cfg!(target_family = "unix") {
+        0xffff
+    } else {
+        0x0fff
+    };
+
     let mut cases = (&*TEST_CASES).clone();
     for case in cases.inputs_i32_f32.iter_mut() {
-        case.0 = 0xffff;
+        case.0 = iterations;
     }
     for case in cases.inputs_i32_f64.iter_mut() {
-        case.0 = 0xffff;
+        case.0 = iterations;
     }
     cases
 });
