@@ -87,9 +87,11 @@ jobs:
         set -x
         echo "C:\msys64\mingw32\bin" >> $GITHUB_PATH
         printenv
+        sleep 5
         echo "finding"
-        find /mingw64 -name 'i686*gcc*'
-        find /msys64 -name 'i686*gcc*'
+        find /mingw64 -name '*gcc*'
+        ls /
+        find /msys64 -name '*gcc*'
         echo "done finding"
         ls /mingw64/mingw32/bin
         ls /msys64/mingw32/bin
