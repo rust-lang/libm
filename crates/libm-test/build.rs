@@ -3,27 +3,73 @@ use std::path::PathBuf;
 use std::{env, fs};
 
 fn main() {
-    list_all_tests();
-    emit_optimization_cfg();
+    let cfg = Config::from_env();
+
+    emit_optimization_cfg(&cfg);
+    emit_cfg_shorthands(&cfg);
+    list_all_tests(&cfg);
 
     #[cfg(feature = "musl-bitwise-tests")]
     musl_reference_tests::generate();
 }
 
+#[allow(dead_code)]
+struct Config {
+    manifest_dir: PathBuf,
+    out_dir: PathBuf,
+    opt_level: u8,
+    target_arch: String,
+    target_env: String,
+    target_family: String,
+    target_os: String,
+    target_string: String,
+    target_vendor: String,
+    target_features: Vec<String>,
+}
+
+impl Config {
+    fn from_env() -> Self {
+        let target_features = env::var("CARGO_CFG_TARGET_FEATURE")
+            .unwrap()
+            .split(',')
+            .map(ToOwned::to_owned)
+            .collect();
+
+        Self {
+            manifest_dir: PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()),
+            out_dir: PathBuf::from(env::var("OUT_DIR").unwrap()),
+            opt_level: env::var("OPT_LEVEL").unwrap().parse().unwrap(),
+            target_arch: env::var("CARGO_CFG_TARGET_ARCH").unwrap(),
+            target_env: env::var("CARGO_CFG_TARGET_ENV").unwrap(),
+            target_family: env::var("CARGO_CFG_TARGET_FAMILY").unwrap(),
+            target_os: env::var("CARGO_CFG_TARGET_OS").unwrap(),
+            target_string: env::var("TARGET").unwrap(),
+            target_vendor: env::var("CARGO_CFG_TARGET_VENDOR").unwrap(),
+            target_features,
+        }
+    }
+}
+
 /// Some tests are extremely slow. Emit a config option to
-fn emit_optimization_cfg() {
+fn emit_optimization_cfg(cfg: &Config) {
     println!("cargo::rustc-check-cfg=cfg(optimizations_enabled)");
 
-    let opt_level: u8 = env::var("OPT_LEVEL").unwrap().parse().unwrap();
-    if opt_level >= 2 {
+    if cfg.opt_level >= 2 {
         println!("cargo::rustc-cfg=optimizations_enabled");
     }
 }
 
-fn list_all_tests() {
-    let root_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let math_src = root_dir.join("../../src/math");
+/// Turn lengthy configuration into
+fn emit_cfg_shorthands(cfg: &Config) {
+    println!("cargo::rustc-check-cfg=cfg(x86_no_sse)");
+    if cfg.target_arch == "x86" && !cfg.target_features.iter().any(|f| f == "sse") {
+        // Shorthand to detect i586 targets
+        println!("cargo::rustc-cfg=x86_no_sse");
+    }
+}
+
+fn list_all_tests(cfg: &Config) {
+    let math_src = cfg.manifest_dir.join("../../src/math");
 
     let mut files = fs::read_dir(math_src)
         .unwrap()
@@ -43,7 +89,7 @@ fn list_all_tests() {
     }
     write!(s, "];").unwrap();
 
-    let outfile = out_dir.join("all_files.rs");
+    let outfile = cfg.out_dir.join("all_files.rs");
     fs::write(outfile, s).unwrap();
 }
 

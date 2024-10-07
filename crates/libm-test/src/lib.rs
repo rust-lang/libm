@@ -469,8 +469,11 @@ where
             .unwrap()
             .abs();
 
+        let ulp_u32 = u32::try_from(ulp_diff)
+            .unwrap_or_else(|e| panic!("{e:?}: ulp of {ulp_diff} exceeds u32::MAX"));
+
         assert!(
-            u32::try_from(ulp_diff).unwrap() <= allowed_ulp,
+            ulp_u32 <= allowed_ulp,
             "ulp {ulp_diff} > {allowed_ulp}: {}",
             make_msg()
         );
