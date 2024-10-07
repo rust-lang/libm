@@ -1,8 +1,8 @@
 // Targets that we can't compile musl for
 #![cfg(not(any(target_env = "msvc", target_family = "wasm")))]
-// These tests seem to overflow the stack pretty easily on Windows
-#![cfg(not(all(target_family = "windows", not(optimizations_enabled))))]
-// FIXME(ppc,crash): LE PPC crashes calling the musl version of some of these and are disabled. It
+// These wind up with stack overflows
+#![cfg(not(all(target_family = "windows", target_env = "gnu")))]
+// FIXME(#309): LE PPC crashes calling the musl version of some of these and are disabled. It
 // seems like a qemu bug but should be investigated further at some point. See
 // <https://github.com/rust-lang/libm/issues/309>.
 #![cfg(not(all(target_arch = "powerpc64", target_endian = "little")))]

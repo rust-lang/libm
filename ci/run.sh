@@ -25,8 +25,9 @@ case "$target" in
 esac
 
 if [ "${BUILD_ONLY:-}" = "1" ]; then
-    cargo build --target "$target" "$exclude_flag"
-    cargo build --target "$target" "$exclude_flag" --features 'unstable'
+    cmd="cargo build --target $target $exclude_flag"
+    $cmd
+    $cmd --features 'unstable'
 
     echo "no tests to run for no_std"
 else
