@@ -46,10 +46,11 @@ fn main() {
     let cfg = Config::from_env();
     if cfg.target_env == "msvc" && cfg.target_family == "wasm" {
         println!(
-            "cargo::warning=Musl doesn't build well with the current \
-            target {}. This will likely fail",
+            "cargo::warning=Musl doesn't compile with the current \
+            target {}; skipping build",
             &cfg.target_string
         );
+        return;
     }
 
     build_musl_math(&cfg);
