@@ -32,7 +32,7 @@ mod tests {
     fn spec_tests() {
         assert!(fabs(NAN).is_nan());
         for f in [0.0, -0.0].iter().copied() {
-            assert_eq!(fabs(f), 0.0);
+            assert_eq!(fabs(f).total_cmp(&0.0), core::cmp::Ordering::Equal);
         }
         for f in [INFINITY, NEG_INFINITY].iter().copied() {
             assert_eq!(fabs(f), INFINITY);
