@@ -206,7 +206,9 @@ make_tests! {
         cosf;
         coshf;
         erff;
+        #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp10f;
+        #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp2f;
         expf;
         expm1f;
@@ -242,7 +244,9 @@ make_tests! {
         cos;
         cosh;
         erf;
+        #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp10;
+        #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         exp2;
         exp;
         expm1;

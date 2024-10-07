@@ -45,7 +45,7 @@ const MULTIPLE_SYMBOLS: &[(&str, &[&str])] = &[
 fn main() {
     let cfg = Config::from_env();
     dbg!(&cfg);
-    if cfg.target_env == "msvc" && cfg.target_family == "wasm" {
+    if cfg.target_env == "msvc" || cfg.target_family == "wasm" {
         println!(
             "cargo::warning=Musl doesn't compile with the current \
             target {}; skipping build",
