@@ -22,11 +22,12 @@ if [ "${NO_STD:-}" = "1" ]; then
 else
     cmd="cargo test --all --target $target"
 
-    # # We nceed to specif
-    # case "$target" in
-    #   *msvc*) cmd="$cmd --exclude musl-math-sys" ;;
-    #   *wasm*) cmd="$cmd --exclude musl-math-sys" ;;
-    # esac
+    # We nceed to specifically skip tests for this crate on systems that can't
+    # build musl since otherwise `--all` will activate it.
+    case "$target" in
+      *msvc*) cmd="$cmd --exclude musl-math-sys" ;;
+      *wasm*) cmd="$cmd --exclude musl-math-sys" ;;
+    esac
 
     # stable by default
     $cmd
