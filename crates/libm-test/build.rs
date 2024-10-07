@@ -10,7 +10,7 @@ fn main() {
     list_all_tests(&cfg);
 
     #[cfg(feature = "musl-bitwise-tests")]
-    musl_reference_tests::generate();
+    musl_serialized_tests::generate();
 }
 
 #[allow(dead_code)]
@@ -48,7 +48,7 @@ impl Config {
     }
 }
 
-/// Some tests are extremely slow. Emit a config option to
+/// Some tests are extremely slow. Emit a config option based on optimization level.
 fn emit_optimization_cfg(cfg: &Config) {
     println!("cargo::rustc-check-cfg=cfg(optimizations_enabled)");
 
@@ -57,7 +57,7 @@ fn emit_optimization_cfg(cfg: &Config) {
     }
 }
 
-/// Turn lengthy configuration into
+/// Provide an alias for common longer config combinations.
 fn emit_cfg_shorthands(cfg: &Config) {
     println!("cargo::rustc-check-cfg=cfg(x86_no_sse)");
     if cfg.target_arch == "x86" && !cfg.target_features.iter().any(|f| f == "sse") {
@@ -66,6 +66,9 @@ fn emit_cfg_shorthands(cfg: &Config) {
     }
 }
 
+/// Create a list of all source files in an array. This can be used for making sure that
+/// all functions are tested or otherwise covered in some way.
+// FIXME: it would probably be better to use rustdoc JSON output to get public functions.
 fn list_all_tests(cfg: &Config) {
     let math_src = cfg.manifest_dir.join("../../src/math");
 
@@ -91,8 +94,13 @@ fn list_all_tests(cfg: &Config) {
     fs::write(outfile, s).unwrap();
 }
 
+/// At build time, generate the output of what the corresponding `*musl` target does with a range
+/// of inputs.
+///
+/// Serialize that target's output, run the same thing with our symbols, then load and compare
+/// the resulting values.
 #[cfg(feature = "musl-bitwise-tests")]
-mod musl_reference_tests {
+mod musl_serialized_tests {
     use rand::seq::SliceRandom;
     use rand::Rng;
     use std::env;
