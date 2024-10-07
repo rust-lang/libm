@@ -50,7 +50,7 @@ macro_rules! functions {
 mod test_support {
     use core::ffi::c_char;
 
-    /// Just verify that we can call the function
+    /// Just verify that we are able to call the function.
     pub trait CallTest {
         fn check(f: Self);
     }

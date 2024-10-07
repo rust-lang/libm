@@ -1,5 +1,5 @@
-/* On platforms that don't support weak symbols, define the aliases
- * manually. See comments in `features.h` for more.
+/* On platforms that don't support weak symbols, define required aliases
+ * as wrappers. See comments in `features.h` for more.
  */
 #if defined(__APPLE__) || defined(__MINGW32__)
 

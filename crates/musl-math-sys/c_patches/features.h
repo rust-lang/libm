@@ -1,8 +1,7 @@
 /** This is meant to override Musl's src/include/features.h
  *
- * We 
  * We use a separate file here to redefine some attributes that don't work on
- * all platforms that we would like to build on
+ * all platforms that we would like to build on.
  */
 
 #ifndef FEATURES_H
