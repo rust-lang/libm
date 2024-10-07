@@ -30,10 +30,8 @@ struct Config {
 impl Config {
     fn from_env() -> Self {
         let target_features = env::var("CARGO_CFG_TARGET_FEATURE")
-            .unwrap()
-            .split(',')
-            .map(ToOwned::to_owned)
-            .collect();
+            .map(|feats| feats.split(',').map(ToOwned::to_owned).collect())
+            .unwrap_or_default();
 
         Self {
             manifest_dir: PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()),

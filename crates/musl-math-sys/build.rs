@@ -44,6 +44,7 @@ const MULTIPLE_SYMBOLS: &[(&str, &[&str])] = &[
 
 fn main() {
     let cfg = Config::from_env();
+    dbg!(&cfg);
     if cfg.target_env == "msvc" && cfg.target_family == "wasm" {
         println!(
             "cargo::warning=Musl doesn't compile with the current \
@@ -57,6 +58,7 @@ fn main() {
 }
 
 #[allow(dead_code)]
+#[derive(Debug)]
 struct Config {
     manifest_dir: PathBuf,
     out_dir: PathBuf,
