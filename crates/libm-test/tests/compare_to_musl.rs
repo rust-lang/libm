@@ -194,9 +194,13 @@ macro_rules! make_tests {
 
 make_tests! {
     (f32) => f32 {
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acosf;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acoshf;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         asinf;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(precision): i586 exceeds minimum ULP
         asinhf;
         atanf;
@@ -233,9 +237,13 @@ make_tests! {
     };
 
     (f64) => f64 {
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acos;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         acosh;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         asin;
+        #[cfg_attr(all(target_arch = "powerpc64", target_endian = "little"), ignore)]
         asinh;
         atan;
         atanh;
