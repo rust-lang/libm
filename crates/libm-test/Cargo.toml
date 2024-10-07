@@ -15,7 +15,7 @@ musl-bitwise-tests = ["rand"]
 libm = { path = "../.." }
 
 # We can't build musl on MSVC or wasm
-[target.'cfg(not(any(target_env = "msvc", target_family = "wasm")))'.dependencies]
+[target.'cfg(not(any(target_env = "msvc", target_family = "wasm", target_feature = "thumb-mode")))'.dependencies]
 musl-math-sys = { path = "../musl-math-sys" }
 
 [dev-dependencies]

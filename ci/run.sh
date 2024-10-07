@@ -27,6 +27,7 @@ else
     case "$target" in
       *msvc*) cmd="$cmd --exclude musl-math-sys" ;;
       *wasm*) cmd="$cmd --exclude musl-math-sys" ;;
+      *thumb*) cmd="$cmd --exclude musl-math-sys" ;;
     esac
 
     # stable by default

@@ -46,7 +46,10 @@ fn main() {
     let cfg = Config::from_env();
     println!("cargo::warning=CONFIG: {cfg:?}");
 
-    if cfg.target_env == "msvc" || cfg.target_family == "wasm" {
+    if cfg.target_env == "msvc"
+        || cfg.target_family == "wasm"
+        || cfg.target_features.iter().any(|f| f == "thumb-mode")
+    {
         println!(
             "cargo::warning=Musl doesn't compile with the current \
             target {}; skipping build",
@@ -71,11 +74,15 @@ struct Config {
     target_os: String,
     target_string: String,
     target_vendor: String,
+    target_features: Vec<String>,
 }
 
 impl Config {
     fn from_env() -> Self {
         let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+        let target_features = env::var("CARGO_CFG_TARGET_FEATURE")
+            .map(|feats| feats.split(',').map(ToOwned::to_owned).collect())
+            .unwrap_or_default();
 
         // Default to the `{workspace_root}/musl` if not specified
         let musl_dir = env::var("MUSL_SOURCE_DIR")
@@ -114,6 +121,7 @@ impl Config {
             target_os: env::var("CARGO_CFG_TARGET_OS").unwrap(),
             target_string: env::var("TARGET").unwrap(),
             target_vendor: env::var("CARGO_CFG_TARGET_VENDOR").unwrap(),
+            target_features,
         }
     }
 }
