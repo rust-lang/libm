@@ -95,7 +95,7 @@ jobs:
         ls /
         # find /msys64 -name '*gcc*'
         echo "done finding"
-        ls /mingw64/mingw32/bin
+        # ls /mingw64/mingw32/bin
         # ls /msys64/mingw32/bin
 
     # Non-linux tests just use our raw script
