@@ -46,6 +46,12 @@ fn main() {
     let cfg = Config::from_env();
     println!("cargo::warning=CONFIG: {cfg:?}");
 
+    println!("cargo::warning=ENV START");
+    for e in std::env::vars() {
+        println!("cargo::warning={e:?}");
+    }
+    println!("cargo::warning=ENV END");
+
     if cfg.target_env == "msvc"
         || cfg.target_family == "wasm"
         || cfg.target_features.iter().any(|f| f == "thumb-mode")
