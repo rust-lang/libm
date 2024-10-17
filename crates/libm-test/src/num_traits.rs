@@ -124,6 +124,29 @@ macro_rules! impl_int {
                 format!("{self:#0width$x}", width = ((Self::BITS / 8) + 2) as usize)
             }
         }
+
+        impl<Input: Hex + fmt::Debug> $crate::CheckOutput<Input> for $ty {
+            fn validate<'a>(
+                self,
+                expected: Self,
+                input: Input,
+                _allowed_ulp: u32,
+            ) -> anyhow::Result<()> {
+                anyhow::ensure!(
+                    self == expected,
+                    "\
+                    \n    input:    {input:?} {ibits}\
+                    \n    expected: {expected:<22?} {expbits}\
+                    \n    actual:   {self:<22?} {actbits}\
+                    ",
+                    actbits = self.hex(),
+                    expbits = expected.hex(),
+                    ibits = input.hex(),
+                );
+
+                Ok(())
+            }
+        }
     }
 }
 

@@ -12,6 +12,7 @@ default = []
 musl-bitwise-tests = ["rand"]
 
 [dependencies]
+anyhow = "1.0.90"
 libm = { path = "../.." }
 libm-macros = { path = "../libm-macros" }
 
