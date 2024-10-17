@@ -14,6 +14,7 @@
 #![allow(clippy::assign_op_pattern)]
 
 mod libm_helper;
+mod macros;
 mod math;
 
 use core::{f32, f64};
