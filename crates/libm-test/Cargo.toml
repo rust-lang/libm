@@ -13,6 +13,15 @@ musl-bitwise-tests = ["rand"]
 
 [dependencies]
 libm = { path = "../..", features = ["_internal-features"] }
+paste = "1.0.15"
+
+# We can't build musl on MSVC or wasm
+[target.'cfg(not(any(target_env = "msvc", target_family = "wasm", target_feature = "thumb-mode")))'.dependencies]
+musl-math-sys = { path = "../musl-math-sys" }
+
+[dev-dependencies]
+rand = "0.8.5"
+rand_chacha = "0.3.1"
 
 [build-dependencies]
 rand = { version = "0.8.5", optional = true }
