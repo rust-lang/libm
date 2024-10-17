@@ -113,6 +113,20 @@ macro_rules! impl_int {
                 format!("{self:#0width$x}", width = ((Self::BITS / 8) + 2) as usize)
             }
         }
+
+        impl<Input: Hex + fmt::Debug> $crate::CheckOutput<Input> for $ty {
+            fn validate(self, expected: Self, input: Input, _allowed_ulp: u32)
+            {
+                assert_eq!(
+                    self,
+                    expected,
+                    "expected {expected:?} crate {self:?} ({expbits}, {actbits}) input {input:?} ({ibits})",
+                    expbits = expected.hex(),
+                    actbits = self.hex(),
+                    ibits = input.hex()
+                );
+            }
+        }
     }
 }
 
