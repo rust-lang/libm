@@ -38,7 +38,10 @@ pub struct CheckCtx {
 
 /// Possible items to test against
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum CheckBasis {}
+pub enum CheckBasis {
+    /// Check against Musl's math sources.
+    Musl,
+}
 
 /// A trait to implement on any output type so we can verify it in a generic way.
 pub trait CheckOutput<Input>: Sized {
@@ -137,6 +140,10 @@ where
     fn validate<'a>(self, expected: Self, input: Input, ctx: &CheckCtx) -> anyhow::Result<()> {
         // Create a wrapper function so we only need to `.with_context` once.
         let inner = || -> anyhow::Result<()> {
+            if crate::xfail(self, expected, ctx) {
+                return Ok(());
+            }
+
             // Check when both are NaNs
             if self.is_nan() && expected.is_nan() {
                 ensure!(
