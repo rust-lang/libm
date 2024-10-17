@@ -12,7 +12,7 @@ default = []
 musl-bitwise-tests = ["rand"]
 
 [dependencies]
-libm = { path = "../.." }
+libm = { path = "../..", features = ["_internal-features"] }
 
 [build-dependencies]
 rand = { version = "0.8.5", optional = true }
