@@ -145,7 +145,7 @@ libm_macros::for_each_function! {
     skip: [],
     attributes: [
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
-        [exp10f, exp2f]
+        [exp10, exp10f, exp2, exp2f]
     ],
     extra: [],
 }
