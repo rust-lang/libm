@@ -1,21 +1,12 @@
-#![allow(unused)]
-
 mod parse;
 use parse::{Invocation, StructuredInput};
 
-use std::{collections::BTreeMap, sync::LazyLock};
+use std::sync::LazyLock;
 
 use proc_macro as pm;
 use proc_macro2::{self as pm2, Span};
-use quote::{quote, ToTokens, TokenStreamExt};
-use syn::{
-    bracketed,
-    parse::{Parse, ParseStream, Parser},
-    punctuated::Punctuated,
-    spanned::Spanned,
-    token::Comma,
-    Attribute, Expr, ExprArray, ExprPath, Ident, Meta, PatPath, Path, Token,
-};
+use quote::{quote, ToTokens};
+use syn::Ident;
 
 const ALL_FUNCTIONS: &[(Signature, Option<Signature>, &[&str])] = &[
     (
@@ -257,6 +248,7 @@ const ALL_FUNCTIONS: &[(Signature, Option<Signature>, &[&str])] = &[
 ];
 
 /// A type used in a function signature.
+#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 enum Ty {
     F16,
@@ -327,40 +319,62 @@ static ALL_FUNCTIONS_FLAT: LazyLock<Vec<FunctionInfo>> = LazyLock::new(|| {
     ret
 });
 
-/*
-
-Invoke as:
-
-
-```
-macro_rules! foo {
-    (
-        fn_name: $fn_name:ident,
-        extra: [],
-        CFn: $CFn:ty,
-        CArgs: $CArgs:ty,
-        CRet: $CRet:ty,
-        RustFn: $RustFn:ty,
-        RustArgs: $RustArgs:ty,
-        RustRet: $RustRet:ty,
-        attrs: [$($meta:meta)*]
-    ) => { };
-}
-
-for_each_function! {
-    callback: foo,
-    skip: [sin, cos],
-    attributes: [
-        #[meta1]
-        #[meta2]
-        [sinf],
-    ]
-}
-```
-
-*/
-
-///  
+/// Do something for each function present in this crate.
+///
+/// Takes a callback macro and invokes it multiple times, once for each function that
+/// this crate exports. This makes it easy to create generic tests, benchmarks, or other checks
+/// and apply it to each symbol.
+///
+/// Invoke as:
+///
+/// ```
+/// // Macro that is invoked once per function
+/// macro_rules! callback_macro {
+///     (
+///         // Name of that function
+///         fn_name: $fn_name:ident,
+///         // Function signature of the C version (e.g. `fn(f32, &mut f32) -> f32`)
+///         CFn: $CFn:ty,
+///         // A tuple representing the C version's arguments (e.g. `(f32, &mut f32)`)
+///         CArgs: $CArgs:ty,
+///         // The C version's return type (e.g. `f32`)
+///         CRet: $CRet:ty,
+///         // Function signature of the Rust version (e.g. `fn(f32) -> (f32, f32)`)
+///         RustFn: $RustFn:ty,
+///         // A tuple representing the Rust version's arguments (e.g. `(f32,)`)
+///         RustArgs: $RustArgs:ty,
+///         // The Rust version's return type (e.g. `(f32, f32)`)
+///         RustRet: $RustRet:ty,
+///         // Attributes for the current function, if any
+///         attrs: [$($meta:meta)*]
+///         // Extra tokens passed directly (if any)
+///         extra: [$extra:ident],
+///     ) => { };
+/// }
+///
+/// libm_macros::for_each_function! {
+///     // The macro to invoke as a callback
+///     callback: callback_macro,
+///     // Functions to skip, i.e. `callback` shouldn't be called at all for these.
+///     //
+///     // This is an optional field.
+///     skip: [sin, cos],
+///     // Attributes passed as `attrs` for specific functions. For example, here the invocation
+///     // with `sinf` and that with `cosf` will both get `meta1` and `meta2`, but no others will.
+///     //
+///     // This is an optional field.
+///     attributes: [
+///         #[meta1]
+///         #[meta2]
+///         [sinf, cosf],
+///     ],
+///     // Any tokens that should be passed directly to all invocations of the callback. This can
+///     // be used to pass local variables or other things the macro needs access to.
+///     //
+///     // This is an optional field.
+///     extra: [foo]
+/// }
+/// ```
 #[proc_macro]
 pub fn for_each_function(tokens: pm::TokenStream) -> pm::TokenStream {
     let input = syn::parse_macro_input!(tokens as Invocation);
@@ -376,13 +390,14 @@ pub fn for_each_function(tokens: pm::TokenStream) -> pm::TokenStream {
     expand(structured).into()
 }
 
+/// Check for any input that is structurally correct but has other problems.
 fn validate(input: &StructuredInput) -> Option<syn::Error> {
-    let mentioned_functions = input.skip.iter().chain(
-        input
-            .attributes
-            .iter()
-            .flat_map(|attr_map| attr_map.names.iter()),
-    );
+    let attr_mentions = input
+        .attributes
+        .iter()
+        .flat_map(|map_list| map_list.iter())
+        .flat_map(|attr_map| attr_map.names.iter());
+    let mentioned_functions = input.skip.iter().chain(attr_mentions);
 
     for mentioned in mentioned_functions {
         if !ALL_FUNCTIONS_FLAT.iter().any(|func| mentioned == func.name) {
@@ -400,7 +415,11 @@ fn validate(input: &StructuredInput) -> Option<syn::Error> {
 fn expand(input: StructuredInput) -> pm2::TokenStream {
     let mut out = pm2::TokenStream::new();
     let callback = input.callback;
-    let extra = input.extra;
+
+    let extra_field = match input.extra {
+        Some(extra) => quote! { extra: #extra, },
+        None => pm2::TokenStream::new(),
+    };
 
     for func in ALL_FUNCTIONS_FLAT.iter() {
         let fn_name = Ident::new(func.name, Span::call_site());
@@ -410,11 +429,16 @@ fn expand(input: StructuredInput) -> pm2::TokenStream {
             continue;
         }
 
-        let mut meta = input
-            .attributes
-            .iter()
-            .filter(|map| map.names.contains(&fn_name))
-            .flat_map(|map| &map.meta);
+        let meta_field = match &input.attributes {
+            Some(attrs) => {
+                let meta = attrs
+                    .iter()
+                    .filter(|map| map.names.contains(&fn_name))
+                    .flat_map(|map| &map.meta);
+                quote! { attrs: [ #( #meta )* ]  }
+            }
+            None => pm2::TokenStream::new(),
+        };
 
         let c_args = func.c_sig.args;
         let c_ret = func.c_sig.returns;
@@ -424,16 +448,14 @@ fn expand(input: StructuredInput) -> pm2::TokenStream {
         let new = quote! {
             #callback! {
                 fn_name: #fn_name,
-                extra: #extra,
                 CFn: fn( #(#c_args),* ,) -> ( #(#c_ret),* ),
                 CArgs: ( #(#c_args),* ,),
                 CRet: ( #(#c_ret),* ),
                 RustFn: fn( #(#rust_args),* ,) -> ( #(#rust_ret),* ),
                 RustArgs: ( #(#rust_args),* ,),
                 RustRet: ( #(#rust_ret),* ),
-                attrs: [
-                    #( #meta )*
-                ]
+                #meta_field
+                #extra_field
             }
         };
 

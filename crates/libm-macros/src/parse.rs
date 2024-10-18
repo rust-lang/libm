@@ -1,15 +1,14 @@
-use proc_macro as pm;
-use proc_macro2::{self as pm2, Span};
+use proc_macro2::Span;
 use quote::ToTokens;
 use syn::{
     bracketed,
-    parse::{self, Parse, ParseStream, Parser},
+    parse::{Parse, ParseStream, Parser},
     punctuated::Punctuated,
-    spanned::Spanned,
     token::Comma,
-    Attribute, Expr, ExprArray, ExprPath, Ident, Meta, PatPath, Path, Token,
+    Attribute, Expr, Ident, Meta, Token,
 };
 
+/// The input to our macro; just a list of `field: value` items.
 #[derive(Debug)]
 pub struct Invocation {
     fields: Punctuated<Mapping, Comma>,
@@ -27,7 +26,7 @@ impl Parse for Invocation {
 #[derive(Debug)]
 struct Mapping {
     name: Ident,
-    sep: Token![:],
+    _sep: Token![:],
     expr: Expr,
 }
 
@@ -35,28 +34,28 @@ impl Parse for Mapping {
     fn parse(input: ParseStream) -> syn::Result<Self> {
         Ok(Self {
             name: input.parse()?,
-            sep: input.parse()?,
+            _sep: input.parse()?,
             expr: input.parse()?,
         })
     }
 }
 
-/// The input provided to our proc macro.
+/// The input provided to our proc macro, after parsing into the form we expect.
 #[derive(Debug)]
 pub struct StructuredInput {
     pub callback: Ident,
     pub skip: Vec<Ident>,
-    pub attributes: Vec<AttributeMap>,
-    pub extra: Expr,
+    pub attributes: Option<Vec<AttributeMap>>,
+    pub extra: Option<Expr>,
 }
 
 impl StructuredInput {
     pub fn from_fields(input: Invocation) -> syn::Result<Self> {
         let mut map: Vec<_> = input.fields.into_iter().collect();
         let cb_expr = expect_field(&mut map, "callback")?;
-        let skip_expr = expect_field(&mut map, "skip")?;
-        let attr_expr = expect_field(&mut map, "attributes")?;
-        let extra = expect_field(&mut map, "extra")?;
+        let skip_expr = expect_field(&mut map, "skip").ok();
+        let attr_expr = expect_field(&mut map, "attributes").ok();
+        let extra = expect_field(&mut map, "extra").ok();
 
         if !map.is_empty() {
             Err(syn::Error::new(
@@ -65,13 +64,23 @@ impl StructuredInput {
             ))?
         }
 
-        let skip = Parser::parse2(parse_ident_array, skip_expr.into_token_stream())?;
-        let attr_exprs = Parser::parse2(parse_expr_array, attr_expr.into_token_stream())?;
-        let mut attributes = Vec::new();
+        let skip = match skip_expr {
+            Some(expr) => Parser::parse2(parse_ident_array, expr.into_token_stream())?,
+            None => Vec::new(),
+        };
 
-        for attr in attr_exprs {
-            attributes.push(syn::parse2(attr.into_token_stream())?);
-        }
+        let attributes = match attr_expr {
+            Some(expr) => {
+                let mut attributes = Vec::new();
+                let attr_exprs = Parser::parse2(parse_expr_array, expr.into_token_stream())?;
+
+                for attr in attr_exprs {
+                    attributes.push(syn::parse2(attr.into_token_stream())?);
+                }
+                Some(attributes)
+            }
+            None => None,
+        };
 
         Ok(Self {
             callback: expect_ident(cb_expr)?,

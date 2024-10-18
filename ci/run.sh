@@ -21,7 +21,7 @@ case "$target" in
     *msvc*) exclude_flag="--exclude musl-math-sys" ;;
     *wasm*) exclude_flag="--exclude musl-math-sys" ;;
     *thumb*) exclude_flag="--exclude musl-math-sys" ;;
-    # `STATUS_DLL_NOT_FOUND` on CI for some reason
+    # FIXME: `STATUS_DLL_NOT_FOUND` on CI for some reason
     # <https://github.com/rust-lang/rust/issues/128944>
     *windows-gnu) exclude_flag="--exclude libm-macros" ;;
     *) exclude_flag="" ;;

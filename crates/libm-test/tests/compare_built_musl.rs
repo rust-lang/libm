@@ -105,7 +105,6 @@ fn make_test_cases(ntests: usize) -> CachedInput {
 macro_rules! musl_rand_tests {
     (
         fn_name: $fn_name:ident,
-        extra: [],
         CFn: $CFn:ty,
         CArgs: $CArgs:ty,
         CRet: $CRet:ty,
@@ -147,5 +146,4 @@ libm_macros::for_each_function! {
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         [exp10, exp10f, exp2, exp2f]
     ],
-    extra: [],
 }

@@ -22,9 +22,13 @@ const ALLOWED_SKIPS: &[&str] = &[
 macro_rules! callback {
     (
         fn_name: $name:ident,
+        CFn: $_CFn:ty,
+        CArgs: $_CArgs:ty,
+        CRet: $_CRet:ty,
+        RustFn: $_RustFn:ty,
+        RustArgs: $_RustArgs:ty,
+        RustRet: $_RustRet:ty,
         extra: [$push_to:ident],
-        $($_rest:tt)*
-
     ) => {
         $push_to.push(stringify!($name));
     };
@@ -37,8 +41,6 @@ fn test_for_each_function_all_included() {
 
     libm_macros::for_each_function! {
         callback: callback,
-        skip: [],
-        attributes: [],
         extra: [included],
     };
 
