@@ -1,13 +1,16 @@
 #![allow(unused)]
 
+mod parse;
+use parse::{Invocation, StructuredInput};
+
 use std::{collections::BTreeMap, sync::LazyLock};
 
 use proc_macro as pm;
 use proc_macro2::{self as pm2, Span};
-use quote::ToTokens;
+use quote::{quote, ToTokens, TokenStreamExt};
 use syn::{
     bracketed,
-    parse::{self, Parse, ParseStream, Parser},
+    parse::{Parse, ParseStream, Parser},
     punctuated::Punctuated,
     spanned::Spanned,
     token::Comma,
@@ -320,143 +323,47 @@ for_each_function! {
 #[proc_macro]
 pub fn for_each_function(tokens: pm::TokenStream) -> pm::TokenStream {
     let input = syn::parse_macro_input!(tokens as Invocation);
-    let structured = match Structured::from_fields(input) {
+    let structured = match StructuredInput::from_fields(input) {
         Ok(v) => v,
         Err(e) => return e.into_compile_error().into(),
     };
 
-    panic!("{structured:#?}");
-
-    todo!();
-    tokens
+    expand(structured).into()
 }
 
-// fn inner(input: Invocation) -> syn::Result<pm::TokenStream> {
+fn expand(input: StructuredInput) -> pm2::TokenStream {
+    let callback = input.callback;
+    let mut out = pm2::TokenStream::new();
 
-// }
+    for func in ALL_FUNCTIONS_FLAT.iter() {
+        let fn_name = Ident::new(func.name, Span::call_site());
 
-#[derive(Debug)]
-struct Invocation {
-    fields: Punctuated<Field, Comma>,
-}
-
-impl Parse for Invocation {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        Ok(Self {
-            fields: input.parse_terminated(Field::parse, Token![,])?,
-        })
-    }
-}
-
-#[derive(Debug)]
-struct Field {
-    name: Ident,
-    sep: Token![:],
-    expr: Expr,
-}
-
-impl Parse for Field {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        Ok(Self {
-            name: input.parse()?,
-            sep: input.parse()?,
-            expr: input.parse()?,
-        })
-    }
-}
-
-#[derive(Debug)]
-struct Structured {
-    callback: Ident,
-    skip: Vec<Ident>,
-    attributes: Vec<AttributeMap>,
-}
-
-impl Structured {
-    fn from_fields(input: Invocation) -> syn::Result<Self> {
-        let mut map: Vec<_> = input.fields.into_iter().collect();
-        let cb_expr = expect_field(&mut map, "callback")?;
-        let skip_expr = expect_field(&mut map, "skip")?;
-        let attr_expr = expect_field(&mut map, "attributes")?;
-
-        if !map.is_empty() {
-            Err(syn::Error::new(
-                map.first().unwrap().name.span(),
-                format!("unexpected fields {map:?}"),
-            ))?
+        // No output on functions that should be skipped
+        if input.skip.contains(&fn_name) {
+            continue;
         }
 
-        let skip = Parser::parse2(parse_ident_array, skip_expr.into_token_stream())?;
-        let attr_exprs = Parser::parse2(parse_expr_array, attr_expr.into_token_stream())?;
-        let mut attributes = Vec::new();
+        let mut meta = input
+            .attributes
+            .iter()
+            .filter(|map| map.names.contains(&fn_name))
+            .flat_map(|map| &map.meta);
 
-        for attr in attr_exprs {
-            attributes.push(syn::parse2(attr.into_token_stream())?);
-        }
+        let new = quote! {
+            #callback! {
+                fn_name: #fn_name,
+                CArgsTuple: f32,
+                RustArgsTuple: f32,
+                CFnTy: f32,
+                RustFnTy: f32,
+                attrs: [
+                    #( #meta )*
+                ]
+            }
+        };
 
-        Ok(Self {
-            callback: expect_ident(cb_expr)?,
-            skip,
-            attributes,
-        })
+        out.extend(new);
     }
-}
 
-/// Extract a named field from a map, raising an error if it doesn't exist.
-fn expect_field(v: &mut Vec<Field>, name: &str) -> syn::Result<Expr> {
-    let pos = v.iter().position(|v| v.name == name).ok_or_else(|| {
-        syn::Error::new(
-            Span::call_site(),
-            format!("missing expected field `{name}`"),
-        )
-    })?;
-
-    Ok(v.remove(pos).expr)
-}
-
-/// Coerce an expression into a simple identifier.
-fn expect_ident(expr: Expr) -> syn::Result<Ident> {
-    syn::parse2(expr.into_token_stream())
-}
-
-/// Parse an array of expressions.
-fn parse_expr_array(input: ParseStream) -> syn::Result<Vec<Expr>> {
-    let content;
-    let _ = bracketed!(content in input);
-    let fields = content.parse_terminated(Expr::parse, Token![,])?;
-    Ok(fields.into_iter().collect())
-}
-
-/// Parse an array of idents, e.g. `[foo, bar, baz]`.
-fn parse_ident_array(input: ParseStream) -> syn::Result<Vec<Ident>> {
-    let content;
-    let _ = bracketed!(content in input);
-    let fields = content.parse_terminated(Ident::parse, Token![,])?;
-    Ok(fields.into_iter().collect())
-}
-
-/// A mapping of attributes to identifiers (just a simplified `Expr`).
-///
-/// Expressed as:
-///
-/// ```ignore
-/// #[meta1]
-/// #[meta2]
-/// [foo, bar, baz]
-/// ```
-#[derive(Debug)]
-struct AttributeMap {
-    meta: Vec<Meta>,
-    names: Vec<Ident>,
-}
-
-impl Parse for AttributeMap {
-    fn parse(input: ParseStream) -> syn::Result<Self> {
-        let attrs = input.call(Attribute::parse_outer)?;
-
-        Ok(Self {
-            meta: attrs.into_iter().map(|a| a.meta).collect(),
-            names: parse_ident_array(input)?,
-        })
-    }
+    out
 }
