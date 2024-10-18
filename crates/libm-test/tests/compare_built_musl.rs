@@ -15,7 +15,6 @@
 // <https://github.com/rust-lang/libm/issues/309>.
 #![cfg(not(all(target_arch = "powerpc64", target_endian = "little")))]
 
-use std::ffi::c_int;
 use std::sync::LazyLock;
 
 use libm_test::gen::CachedInput;
@@ -104,44 +103,49 @@ fn make_test_cases(ntests: usize) -> CachedInput {
 }
 
 macro_rules! musl_rand_tests {
-    (@each_signature
-        SysArgsTupleTy: $_sys_argty:ty,
-        RustArgsTupleTy: $argty:ty,
-        SysFnTy: $fnty_sys:ty,
-        RustFnTy: $fnty_rust:ty,
-        functions: [$( {
-            attrs: [$($fn_meta:meta),*],
-            fn_name: $name:ident,
-        } ),*],
+    (
+        fn_name: $fn_name:ident,
+        extra: [],
+        CFn: $CFn:ty,
+        CArgs: $CArgs:ty,
+        CRet: $CRet:ty,
+        RustFn: $RustFn:ty,
+        RustArgs: $RustArgs:ty,
+        RustRet: $RustRet:ty,
+        attrs: [$($meta:meta)*]
     ) => { paste::paste! {
-        $(
-            #[test]
-            $(#[$fn_meta])*
-            fn [< musl_random_ $name >]() {
-                let fname = stringify!($name);
-                let inputs = if fname == "jn" || fname == "jnf" {
-                    &TEST_CASES_JN
-                } else {
-                    &TEST_CASES
-                };
+        #[test]
+        $(#[$meta])*
+        fn [< musl_random_ $fn_name >]() {
+            let fname = stringify!($fn_name);
+            let inputs = if fname == "jn" || fname == "jnf" {
+                &TEST_CASES_JN
+            } else {
+                &TEST_CASES
+            };
 
-                let ulp = match ULP_OVERRIDES.iter().find(|(name, _val)| name == &fname) {
-                    Some((_name, val)) => *val,
-                    None => ALLOWED_ULP,
-                };
+            let ulp = match ULP_OVERRIDES.iter().find(|(name, _val)| name == &fname) {
+                Some((_name, val)) => *val,
+                None => ALLOWED_ULP,
+            };
 
-                let cases = <CachedInput as GenerateInput<$argty>>::get_cases(inputs);
-                for input in cases {
-                    let mres = input.call(musl::$name as $fnty_sys);
-                    let cres = input.call(libm::$name as $fnty_rust);
+            let cases = <CachedInput as GenerateInput<$RustArgs>>::get_cases(inputs);
+            for input in cases {
+                let mres = input.call(musl::$fn_name as $CFn);
+                let cres = input.call(libm::$fn_name as $RustFn);
 
-                    mres.validate(cres, input, ulp);
-                }
+                mres.validate(cres, input, ulp);
             }
-        )*
+        }
     } };
-
-    (@all_items$($tt:tt)*) => {};
 }
 
-libm::for_each_function!(musl_rand_tests);
+libm_macros::for_each_function! {
+    callback: musl_rand_tests,
+    skip: [],
+    attributes: [
+        #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
+        [exp10f, exp2f]
+    ],
+    extra: [],
+}
