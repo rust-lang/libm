@@ -1,23 +1,38 @@
 macro_rules! basic {
     (
         fn_name: $fn_name:ident,
-        CArgsTuple: $CArgsTuple:ty,
-        RustArgsTuple: $RustArgsTuple:ty,
-        CFnTy: $CFnTy:ty,
-        RustFnTy: $RustFnTy:ty,
+        CFn: $CFn:ty,
+        CArgs: $CArgs:ty,
+        CRet: $CRet:ty,
+        RustFn: $RustFn:ty,
+        RustArgs: $RustArgs:ty,
+        RustRet: $RustRet:ty,
         attrs: [$($meta:meta)*]
-        
+
     ) => {
-        
+        $(#[$meta])*
+        mod $fn_name {
+            #[allow(unused)]
+            type CFnTy = $CFn;
+            // type CArgsTy<'_> = $CArgs;
+            // type CRetTy<'_> = $CRet;
+            #[allow(unused)]
+            type RustFnTy = $RustFn;
+            #[allow(unused)]
+            type RustArgsTy = $RustArgs;
+            #[allow(unused)]
+            type RustRetTy = $RustRet;
+        }
     };
 }
 
 libm_macros::for_each_function! {
     callback: basic,
-    skip: [foo, bar],
+    skip: [sin, cos],
     attributes: [
-        #[meta1]
-        #[meta2]
-        [baz, corge]
+        // just some random attributes
+        #[allow(clippy::pedantic)]
+        #[allow(dead_code)]
+        [sinf, cosf]
     ],
 }

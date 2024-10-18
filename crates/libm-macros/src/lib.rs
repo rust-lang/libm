@@ -29,7 +29,7 @@ const ALL_FUNCTIONS: &[(Signature, Option<Signature>, &[&str])] = &[
             "acosf", "acoshf", "asinf", "asinhf", "atanf", "atanhf", "cbrtf", "ceilf", "cosf",
             "coshf", "erff", "exp10f", "exp2f", "expf", "expm1f", "fabsf", "floorf", "j0f", "j1f",
             "lgammaf", "log10f", "log1pf", "log2f", "logf", "rintf", "roundf", "sinf", "sinhf",
-            "sqrtf", "tanf", "tanhf", "tgammaf", "trunc",
+            "sqrtf", "tanf", "tanhf", "tgammaf", "truncf",
         ],
     ),
     (
@@ -256,8 +256,8 @@ const ALL_FUNCTIONS: &[(Signature, Option<Signature>, &[&str])] = &[
     ),
 ];
 
-/// A type used in a function signature
-#[derive(Debug, Clone)]
+/// A type used in a function signature.
+#[derive(Debug, Clone, Copy)]
 enum Ty {
     F16,
     F32,
@@ -273,6 +273,27 @@ enum Ty {
     MutCInt,
 }
 
+impl ToTokens for Ty {
+    fn to_tokens(&self, tokens: &mut pm2::TokenStream) {
+        let ts = match self {
+            Ty::F16 => quote! { f16  },
+            Ty::F32 => quote! { f32  },
+            Ty::F64 => quote! { f64  },
+            Ty::F128 => quote! { f128  },
+            Ty::I32 => quote! { i32  },
+            Ty::CInt => quote! { ::core::ffi::c_int  },
+            Ty::MutF16 => quote! { &mut f16  },
+            Ty::MutF32 => quote! { &mut f32  },
+            Ty::MutF64 => quote! { &mut f64  },
+            Ty::MutF128 => quote! { &mut f128  },
+            Ty::MutI32 => quote! { &mut i32  },
+            Ty::MutCInt => quote! { &mut core::ffi::c_int },
+        };
+
+        tokens.extend(ts);
+    }
+}
+
 /// Representation of e.g. `(f32, f32) -> f32`
 #[derive(Debug, Clone)]
 struct Signature {
@@ -280,21 +301,23 @@ struct Signature {
     returns: &'static [Ty],
 }
 
+/// Combined information about a function implementation.
 #[derive(Debug, Clone)]
-struct ApiSignature {
-    sys_sig: Signature,
-    rust_sig: Signature,
+struct FunctionInfo {
     name: &'static str,
+    c_sig: Signature,
+    rust_sig: Signature,
 }
 
-static ALL_FUNCTIONS_FLAT: LazyLock<Vec<ApiSignature>> = LazyLock::new(|| {
+/// A flat representation of `ALL_FUNCTIONS`.
+static ALL_FUNCTIONS_FLAT: LazyLock<Vec<FunctionInfo>> = LazyLock::new(|| {
     let mut ret = Vec::new();
 
     for (rust_sig, c_sig, names) in ALL_FUNCTIONS {
         for name in *names {
-            let api = ApiSignature {
+            let api = FunctionInfo {
                 rust_sig: rust_sig.clone(),
-                sys_sig: c_sig.clone().unwrap_or_else(|| rust_sig.clone()),
+                c_sig: c_sig.clone().unwrap_or_else(|| rust_sig.clone()),
                 name,
             };
             ret.push(api);
@@ -328,7 +351,32 @@ pub fn for_each_function(tokens: pm::TokenStream) -> pm::TokenStream {
         Err(e) => return e.into_compile_error().into(),
     };
 
+    if let Some(e) = validate(&structured) {
+        return e.into_compile_error().into();
+    }
+
     expand(structured).into()
+}
+
+fn validate(input: &StructuredInput) -> Option<syn::Error> {
+    let mentioned_functions = input.skip.iter().chain(
+        input
+            .attributes
+            .iter()
+            .flat_map(|attr_map| attr_map.names.iter()),
+    );
+
+    for mentioned in mentioned_functions {
+        if !ALL_FUNCTIONS_FLAT.iter().any(|func| mentioned == func.name) {
+            let e = syn::Error::new(
+                mentioned.span(),
+                format!("unrecognized function name `{mentioned}`"),
+            );
+            return Some(e);
+        }
+    }
+
+    None
 }
 
 fn expand(input: StructuredInput) -> pm2::TokenStream {
@@ -349,13 +397,20 @@ fn expand(input: StructuredInput) -> pm2::TokenStream {
             .filter(|map| map.names.contains(&fn_name))
             .flat_map(|map| &map.meta);
 
+        let c_args = func.c_sig.args;
+        let c_ret = func.c_sig.returns;
+        let rust_args = func.rust_sig.args;
+        let rust_ret = func.rust_sig.returns;
+
         let new = quote! {
             #callback! {
                 fn_name: #fn_name,
-                CArgsTuple: f32,
-                RustArgsTuple: f32,
-                CFnTy: f32,
-                RustFnTy: f32,
+                CFn: fn( #(#c_args),* ,) -> ( #(#c_ret),* ),
+                CArgs: ( #(#c_args),* ,),
+                CRet: ( #(#c_ret),* ),
+                RustFn: fn( #(#rust_args),* ,) -> ( #(#rust_ret),* ),
+                RustArgs: ( #(#rust_args),* ,),
+                RustRet: ( #(#rust_ret),* ),
                 attrs: [
                     #( #meta )*
                 ]
