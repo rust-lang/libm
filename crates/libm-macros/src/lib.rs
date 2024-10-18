@@ -380,8 +380,9 @@ fn validate(input: &StructuredInput) -> Option<syn::Error> {
 }
 
 fn expand(input: StructuredInput) -> pm2::TokenStream {
-    let callback = input.callback;
     let mut out = pm2::TokenStream::new();
+    let callback = input.callback;
+    let extra = input.extra;
 
     for func in ALL_FUNCTIONS_FLAT.iter() {
         let fn_name = Ident::new(func.name, Span::call_site());
@@ -405,6 +406,7 @@ fn expand(input: StructuredInput) -> pm2::TokenStream {
         let new = quote! {
             #callback! {
                 fn_name: #fn_name,
+                extra: #extra,
                 CFn: fn( #(#c_args),* ,) -> ( #(#c_ret),* ),
                 CArgs: ( #(#c_args),* ,),
                 CRet: ( #(#c_ret),* ),

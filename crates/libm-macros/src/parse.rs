@@ -47,6 +47,7 @@ pub struct StructuredInput {
     pub callback: Ident,
     pub skip: Vec<Ident>,
     pub attributes: Vec<AttributeMap>,
+    pub extra: Expr,
 }
 
 impl StructuredInput {
@@ -55,6 +56,7 @@ impl StructuredInput {
         let cb_expr = expect_field(&mut map, "callback")?;
         let skip_expr = expect_field(&mut map, "skip")?;
         let attr_expr = expect_field(&mut map, "attributes")?;
+        let extra = expect_field(&mut map, "extra")?;
 
         if !map.is_empty() {
             Err(syn::Error::new(
@@ -75,6 +77,7 @@ impl StructuredInput {
             callback: expect_ident(cb_expr)?,
             skip,
             attributes,
+            extra,
         })
     }
 }

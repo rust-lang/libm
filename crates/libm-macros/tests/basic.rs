@@ -1,6 +1,7 @@
 macro_rules! basic {
     (
         fn_name: $fn_name:ident,
+        extra: [$($extra_tt:tt)*],
         CFn: $CFn:ty,
         CArgs: $CArgs:ty,
         CRet: $CRet:ty,
@@ -22,6 +23,8 @@ macro_rules! basic {
             type RustArgsTy = $RustArgs;
             #[allow(unused)]
             type RustRetTy = $RustRet;
+            #[allow(unused)]
+            const A: &[&str] = &[$($extra_tt)*];
         }
     };
 }
@@ -35,4 +38,5 @@ libm_macros::for_each_function! {
         #[allow(dead_code)]
         [sinf, cosf]
     ],
+    extra: ["foo", "bar"],
 }

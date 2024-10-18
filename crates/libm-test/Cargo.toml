@@ -13,6 +13,7 @@ musl-bitwise-tests = ["rand"]
 
 [dependencies]
 libm = { path = "../..", features = ["_internal-features"] }
+libm-macros = { path = "../libm-macros" }
 paste = "1.0.15"
 
 # We can't build musl on MSVC or wasm

@@ -19,24 +19,31 @@ const ALLOWED_SKIPS: &[&str] = &[
     "rem_pio2f",
 ];
 
-macro_rules! function_names {
+macro_rules! callback {
     (
-        @all_items
-        fn_names: [ $( $name:ident ),* ]
-    ) => {
-        const INCLUDED_FUNCTIONS: &[&str] = &[ $( stringify!($name) ),* ];
-    };
-    (@each_signature $($tt:tt)*) => {};
-}
+        fn_name: $name:ident,
+        extra: [$push_to:ident],
+        $($_rest:tt)*
 
-libm::for_each_function!(function_names);
+    ) => {
+        $push_to.push(stringify!($name));
+    };
+}
 
 #[test]
 fn test_for_each_function_all_included() {
+    let mut included = Vec::new();
     let mut missing = Vec::new();
 
+    libm_macros::for_each_function! {
+        callback: callback,
+        skip: [],
+        attributes: [],
+        extra: [included],
+    };
+
     for f in libm_test::ALL_FUNCTIONS {
-        if !INCLUDED_FUNCTIONS.contains(f) && !ALLOWED_SKIPS.contains(f) {
+        if !included.contains(f) && !ALLOWED_SKIPS.contains(f) {
             missing.push(f)
         }
     }
@@ -44,8 +51,8 @@ fn test_for_each_function_all_included() {
     if !missing.is_empty() {
         panic!(
             "missing tests for the following: {missing:#?} \
-            \nmake sure any new functions are entered in the \
-            `for_each_function` macro definition."
+            \nmake sure any new functions are entered in \
+            `ALL_FUNCTIONS` (in `libm-macros`)."
         );
     }
 }

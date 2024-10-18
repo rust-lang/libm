@@ -36,6 +36,7 @@ members = [
 ]
 default-members = [
   ".",
+  "crates/libm-macros",
   "crates/libm-test",
 ]
 
