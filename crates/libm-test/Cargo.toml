@@ -12,7 +12,7 @@ default = []
 musl-bitwise-tests = ["rand"]
 
 [dependencies]
-libm = { path = "../..", features = ["_internal-features"] }
+libm = { path = "../.." }
 libm-macros = { path = "../libm-macros" }
 paste = "1.0.15"
 

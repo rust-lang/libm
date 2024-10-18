@@ -22,9 +22,6 @@ unstable = []
 # Used to prevent using any intrinsics or arch-specific code.
 force-soft-floats = []
 
-# Features that aren't meant to be part of the public API
-_internal-features = []
-
 [workspace]
 resolver = "2"
 members = [
