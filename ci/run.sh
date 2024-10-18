@@ -23,7 +23,7 @@ case "$target" in
     *thumb*) exclude_flag="--exclude musl-math-sys" ;;
     # `STATUS_DLL_NOT_FOUND` on CI for some reason
     # <https://github.com/rust-lang/rust/issues/128944>
-    *windows-gnu) exclude_flags="--exclude libm-macros" ;;
+    *windows-gnu) exclude_flag="--exclude libm-macros" ;;
     *) exclude_flag="" ;;
 esac
 

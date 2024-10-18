@@ -331,18 +331,36 @@ static ALL_FUNCTIONS_FLAT: LazyLock<Vec<FunctionInfo>> = LazyLock::new(|| {
 
 Invoke as:
 
+
+```
+macro_rules! foo {
+    (
+        fn_name: $fn_name:ident,
+        extra: [],
+        CFn: $CFn:ty,
+        CArgs: $CArgs:ty,
+        CRet: $CRet:ty,
+        RustFn: $RustFn:ty,
+        RustArgs: $RustArgs:ty,
+        RustRet: $RustRet:ty,
+        attrs: [$($meta:meta)*]
+    ) => { };
+}
+
 for_each_function! {
-    callback: some_macro,
-    skip: [foo, bar],
+    callback: foo,
+    skip: [sin, cos],
     attributes: [
         #[meta1]
         #[meta2]
-        [baz, qux],
+        [sinf],
     ]
 }
+```
 
 */
 
+///  
 #[proc_macro]
 pub fn for_each_function(tokens: pm::TokenStream) -> pm::TokenStream {
     let input = syn::parse_macro_input!(tokens as Invocation);
