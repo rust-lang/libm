@@ -1,11 +1,14 @@
+use std::collections::BTreeMap;
+
 use proc_macro2::Span;
 use quote::ToTokens;
 use syn::{
     bracketed,
     parse::{Parse, ParseStream, Parser},
     punctuated::Punctuated,
+    spanned::Spanned,
     token::Comma,
-    Attribute, Expr, Ident, Meta, Token,
+    Arm, Attribute, Expr, ExprMatch, Ident, Meta, Token,
 };
 
 /// The input to our macro; just a list of `field: value` items.
@@ -47,6 +50,9 @@ pub struct StructuredInput {
     pub skip: Vec<Ident>,
     pub attributes: Option<Vec<AttributeMap>>,
     pub extra: Option<Expr>,
+    pub fn_extra: Option<BTreeMap<Ident, Expr>>,
+    // For diagnostics
+    pub fn_extra_span: Option<Span>,
 }
 
 impl StructuredInput {
@@ -56,6 +62,7 @@ impl StructuredInput {
         let skip_expr = expect_field(&mut map, "skip").ok();
         let attr_expr = expect_field(&mut map, "attributes").ok();
         let extra = expect_field(&mut map, "extra").ok();
+        let fn_extra = expect_field(&mut map, "fn_extra").ok();
 
         if !map.is_empty() {
             Err(syn::Error::new(
@@ -82,12 +89,90 @@ impl StructuredInput {
             None => None,
         };
 
+        let fn_extra_span = fn_extra.as_ref().map(|expr| expr.span());
+        let fn_extra = match fn_extra {
+            Some(expr) => Some(extract_fn_extra_field(expr)?),
+            None => None,
+        };
+
         Ok(Self {
             callback: expect_ident(cb_expr)?,
             skip,
             attributes,
             extra,
+            fn_extra,
+            fn_extra_span,
         })
+    }
+}
+
+fn extract_fn_extra_field(expr: Expr) -> syn::Result<BTreeMap<Ident, Expr>> {
+    let Expr::Match(mexpr) = expr else {
+        let e = syn::Error::new(expr.span(), "`fn_extra` expects a match expression");
+        return Err(e);
+    };
+
+    let ExprMatch {
+        attrs,
+        match_token: _,
+        expr,
+        brace_token: _,
+        arms,
+    } = mexpr;
+
+    expect_empty_attrs(&attrs)?;
+
+    let match_on = expect_ident(*expr)?;
+    if match_on != "MACRO_FN_NAME" {
+        let e = syn::Error::new(match_on.span(), "only allowed to match on `MACRO_FN_NAME`");
+        return Err(e);
+    }
+
+    let mut res = BTreeMap::new();
+
+    for arm in arms {
+        let Arm {
+            attrs,
+            pat,
+            guard,
+            fat_arrow_token: _,
+            body,
+            comma: _,
+        } = arm;
+
+        expect_empty_attrs(&attrs)?;
+
+        let keys = match pat {
+            syn::Pat::Wild(w) => vec![Ident::new("_", w.span())],
+            _ => Parser::parse2(parse_ident_array, pat.into_token_stream())?,
+        };
+
+        if let Some(guard) = guard {
+            let e = syn::Error::new(guard.0.span(), "no guards allowed in this position");
+            return Err(e);
+        }
+
+        for key in keys {
+            let inserted = res.insert(key.clone(), *body.clone());
+            if inserted.is_some() {
+                let e = syn::Error::new(key.span(), format!("key `{key}` specified twice"));
+                return Err(e);
+            }
+        }
+    }
+
+    Ok(res)
+}
+
+fn expect_empty_attrs(attrs: &[Attribute]) -> syn::Result<()> {
+    if !attrs.is_empty() {
+        let e = syn::Error::new(
+            attrs.first().unwrap().span(),
+            "no attributes allowed in this position",
+        );
+        Err(e)
+    } else {
+        Ok(())
     }
 }
 

@@ -6,7 +6,7 @@ use std::sync::LazyLock;
 use proc_macro as pm;
 use proc_macro2::{self as pm2, Span};
 use quote::{quote, ToTokens};
-use syn::Ident;
+use syn::{visit_mut::VisitMut, Ident};
 
 const ALL_FUNCTIONS: &[(Signature, Option<Signature>, &[&str])] = &[
     (
@@ -349,6 +349,8 @@ static ALL_FUNCTIONS_FLAT: LazyLock<Vec<FunctionInfo>> = LazyLock::new(|| {
 ///         attrs: [$($meta:meta)*]
 ///         // Extra tokens passed directly (if any)
 ///         extra: [$extra:ident],
+///         // Extra function-tokens passed directly (if any)
+///         fn_extra: $fn_extra:expr,
 ///     ) => { };
 /// }
 ///
@@ -372,54 +374,91 @@ static ALL_FUNCTIONS_FLAT: LazyLock<Vec<FunctionInfo>> = LazyLock::new(|| {
 ///     // be used to pass local variables or other things the macro needs access to.
 ///     //
 ///     // This is an optional field.
-///     extra: [foo]
+///     extra: [foo],
+///     // Similar to `extra`, but allow providing a pattern for only specific functions. Uses
+///     // a simplified match-like syntax.
+///     fn_extra: match MACRO_FN_NAME {
+///         [hypot, hypotf] => |x| x.hypot(),
+///         _ => |x| x,
+///     },
 /// }
 /// ```
 #[proc_macro]
 pub fn for_each_function(tokens: pm::TokenStream) -> pm::TokenStream {
     let input = syn::parse_macro_input!(tokens as Invocation);
-    let structured = match StructuredInput::from_fields(input) {
-        Ok(v) => v,
-        Err(e) => return e.into_compile_error().into(),
-    };
 
-    if let Some(e) = validate(&structured) {
-        return e.into_compile_error().into();
+    let res = StructuredInput::from_fields(input)
+        .and_then(|v| {
+            validate(&v)?;
+            Ok(v)
+        })
+        .and_then(|v| expand(v));
+
+    match res {
+        Ok(ts) => ts.into(),
+        Err(e) => e.into_compile_error().into(),
     }
-
-    expand(structured).into()
 }
 
 /// Check for any input that is structurally correct but has other problems.
-fn validate(input: &StructuredInput) -> Option<syn::Error> {
+fn validate(input: &StructuredInput) -> syn::Result<()> {
     let attr_mentions = input
         .attributes
         .iter()
         .flat_map(|map_list| map_list.iter())
         .flat_map(|attr_map| attr_map.names.iter());
-    let mentioned_functions = input.skip.iter().chain(attr_mentions);
+    let fn_extra_mentions = input
+        .fn_extra
+        .iter()
+        .flat_map(|v| v.keys())
+        .filter(|name| *name != "_");
+    let mentioned_fns = input
+        .skip
+        .iter()
+        .chain(attr_mentions)
+        .chain(fn_extra_mentions);
 
-    for mentioned in mentioned_functions {
+    // Make sure that every function mentioned is a real function
+    for mentioned in mentioned_fns {
         if !ALL_FUNCTIONS_FLAT.iter().any(|func| mentioned == func.name) {
             let e = syn::Error::new(
                 mentioned.span(),
                 format!("unrecognized function name `{mentioned}`"),
             );
-            return Some(e);
+            return Err(e);
         }
     }
 
-    None
+    if let Some(map) = &input.fn_extra {
+        // If no default is provided, make sure
+        if !map.keys().any(|key| key == "_") {
+            let mut fns_not_covered = Vec::new();
+            for name in ALL_FUNCTIONS_FLAT.iter().map(|func| func.name) {
+                if map.keys().any(|key| key == name) {
+                    fns_not_covered.push(name);
+                }
+            }
+
+            if !fns_not_covered.is_empty() {
+                let e = syn::Error::new(
+                    input.fn_extra_span.unwrap(),
+                    format!(
+                        "`fn_extra`: no default `_` pattern specified and the following \
+                         patterns are not covered: {fns_not_covered:#?}"
+                    ),
+                );
+                return Err(e);
+            }
+        }
+    };
+
+    Ok(())
 }
 
-fn expand(input: StructuredInput) -> pm2::TokenStream {
+fn expand(input: StructuredInput) -> syn::Result<pm2::TokenStream> {
     let mut out = pm2::TokenStream::new();
+    let default_ident = Ident::new("_", Span::call_site());
     let callback = input.callback;
-
-    let extra_field = match input.extra {
-        Some(extra) => quote! { extra: #extra, },
-        None => pm2::TokenStream::new(),
-    };
 
     for func in ALL_FUNCTIONS_FLAT.iter() {
         let fn_name = Ident::new(func.name, Span::call_site());
@@ -440,6 +479,34 @@ fn expand(input: StructuredInput) -> pm2::TokenStream {
             None => pm2::TokenStream::new(),
         };
 
+        let extra_field = match input.extra.clone() {
+            Some(mut extra) => {
+                let mut v = MacroReplace::new(func.name);
+                v.visit_expr_mut(&mut extra);
+                v.finish()?;
+
+                quote! { extra: #extra, }
+            }
+            None => pm2::TokenStream::new(),
+        };
+
+        let fn_extra_field = match input.fn_extra {
+            Some(ref map) => {
+                let mut fn_extra = map
+                    .get(&fn_name)
+                    .or_else(|| map.get(&default_ident))
+                    .unwrap()
+                    .clone();
+
+                let mut v = MacroReplace::new(func.name);
+                v.visit_expr_mut(&mut fn_extra);
+                v.finish()?;
+
+                quote! { fn_extra: #fn_extra, }
+            }
+            None => pm2::TokenStream::new(),
+        };
+
         let c_args = func.c_sig.args;
         let c_ret = func.c_sig.returns;
         let rust_args = func.rust_sig.args;
@@ -456,11 +523,68 @@ fn expand(input: StructuredInput) -> pm2::TokenStream {
                 RustRet: ( #(#rust_ret),* ),
                 #meta_field
                 #extra_field
+                #fn_extra_field
             }
         };
 
         out.extend(new);
     }
 
-    out
+    Ok(out)
+}
+
+/// Visitor to replace "magic" identifiers that we allow: `MACRO_FN_NAME` and
+/// `MACRO_FN_NAME_NORMALIZED`.
+struct MacroReplace {
+    fn_name: &'static str,
+    /// Remove the trailing `f` or `f128` to make
+    norm_name: String,
+    error: Option<syn::Error>,
+}
+
+impl MacroReplace {
+    fn new(name: &'static str) -> Self {
+        let norm_name = name
+            .strip_suffix("f")
+            .ok_or_else(|| name.strip_suffix("f128"))
+            .unwrap_or(name);
+
+        Self {
+            fn_name: name,
+            norm_name: norm_name.to_owned(),
+            error: None,
+        }
+    }
+
+    fn finish(self) -> syn::Result<()> {
+        match self.error {
+            Some(e) => Err(e),
+            None => Ok(()),
+        }
+    }
+
+    fn visit_ident_inner(&mut self, i: &mut Ident) {
+        let s = i.to_string();
+        if !s.starts_with("MACRO") || self.error.is_some() {
+            return;
+        }
+
+        match s.as_str() {
+            "MACRO_FN_NAME" => *i = Ident::new(&self.fn_name, i.span()),
+            "MACRO_FN_NAME_NORMALIZED" => *i = Ident::new(&self.norm_name, i.span()),
+            _ => {
+                self.error = Some(syn::Error::new(
+                    i.span(),
+                    "unrecognized meta expression `{s}`",
+                ))
+            }
+        }
+    }
+}
+
+impl VisitMut for MacroReplace {
+    fn visit_ident_mut(&mut self, i: &mut Ident) {
+        self.visit_ident_inner(i);
+        syn::visit_mut::visit_ident_mut(self, i);
+    }
 }

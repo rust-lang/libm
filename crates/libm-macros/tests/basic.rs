@@ -12,7 +12,7 @@ macro_rules! basic {
         RustRet: $RustRet:ty,
         attrs: [$($meta:meta)*]
         extra: [$($extra_tt:tt)*],
-
+        fn_extra: $fn_extra:expr,
     ) => {
         $(#[$meta])*
         mod $fn_name {
@@ -28,6 +28,8 @@ macro_rules! basic {
             type RustRetTy = $RustRet;
             #[allow(unused)]
             const A: &[&str] = &[$($extra_tt)*];
+            #[allow(unused)]
+            const B: u32 = $fn_extra;
         }
     };
 }
@@ -43,6 +45,10 @@ mod test_basic {
             [sinf, cosf]
         ],
         extra: ["foo", "bar"],
+        fn_extra: match MACRO_FN_NAME {
+            [sin] => 2 + 2,
+            _ => 100
+        }
     }
 }
 
