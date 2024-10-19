@@ -268,17 +268,17 @@ enum Ty {
 impl ToTokens for Ty {
     fn to_tokens(&self, tokens: &mut pm2::TokenStream) {
         let ts = match self {
-            Ty::F16 => quote! { f16  },
-            Ty::F32 => quote! { f32  },
-            Ty::F64 => quote! { f64  },
-            Ty::F128 => quote! { f128  },
-            Ty::I32 => quote! { i32  },
-            Ty::CInt => quote! { ::core::ffi::c_int  },
-            Ty::MutF16 => quote! { &mut f16  },
-            Ty::MutF32 => quote! { &mut f32  },
-            Ty::MutF64 => quote! { &mut f64  },
-            Ty::MutF128 => quote! { &mut f128  },
-            Ty::MutI32 => quote! { &mut i32  },
+            Ty::F16 => quote! { f16 },
+            Ty::F32 => quote! { f32 },
+            Ty::F64 => quote! { f64 },
+            Ty::F128 => quote! { f128 },
+            Ty::I32 => quote! { i32 },
+            Ty::CInt => quote! { ::core::ffi::c_int },
+            Ty::MutF16 => quote! { &mut f16 },
+            Ty::MutF32 => quote! { &mut f32 },
+            Ty::MutF64 => quote! { &mut f64 },
+            Ty::MutF128 => quote! { &mut f128 },
+            Ty::MutI32 => quote! { &mut i32 },
             Ty::MutCInt => quote! { &mut core::ffi::c_int },
         };
 
@@ -324,6 +324,12 @@ static ALL_FUNCTIONS_FLAT: LazyLock<Vec<FunctionInfo>> = LazyLock::new(|| {
 /// Takes a callback macro and invokes it multiple times, once for each function that
 /// this crate exports. This makes it easy to create generic tests, benchmarks, or other checks
 /// and apply it to each symbol.
+///
+/// Additionally, the `extra` and `fn_extra` patterns can make use of magic identifiers:
+///
+/// - `MACRO_FN_NAME`: gets replaced with the name of the function on that invocation.
+/// - `MACRO_FN_NAME_NORMALIZED`: similar to the above, but removes sufixes so e.g. `sinf` becomes
+///   `sin`, `cosf128` becomes `cos`, etc.
 ///
 /// Invoke as:
 ///
@@ -388,11 +394,8 @@ pub fn for_each_function(tokens: pm::TokenStream) -> pm::TokenStream {
     let input = syn::parse_macro_input!(tokens as Invocation);
 
     let res = StructuredInput::from_fields(input)
-        .and_then(|v| {
-            validate(&v)?;
-            Ok(v)
-        })
-        .and_then(|v| expand(v));
+        .and_then(|v| validate(&v).map(|_| v))
+        .and_then(expand);
 
     match res {
         Ok(ts) => ts.into(),
@@ -455,6 +458,7 @@ fn validate(input: &StructuredInput) -> syn::Result<()> {
     Ok(())
 }
 
+/// Expand our structured macro input into invocations of the callback macro.
 fn expand(input: StructuredInput) -> syn::Result<pm2::TokenStream> {
     let mut out = pm2::TokenStream::new();
     let default_ident = Ident::new("_", Span::call_site());
@@ -468,6 +472,7 @@ fn expand(input: StructuredInput) -> syn::Result<pm2::TokenStream> {
             continue;
         }
 
+        // Prepare attributes in an `attrs: ...` field
         let meta_field = match &input.attributes {
             Some(attrs) => {
                 let meta = attrs
@@ -479,6 +484,7 @@ fn expand(input: StructuredInput) -> syn::Result<pm2::TokenStream> {
             None => pm2::TokenStream::new(),
         };
 
+        // Prepare extra in an `extra: ...` field, running the replacer
         let extra_field = match input.extra.clone() {
             Some(mut extra) => {
                 let mut v = MacroReplace::new(func.name);
@@ -490,6 +496,7 @@ fn expand(input: StructuredInput) -> syn::Result<pm2::TokenStream> {
             None => pm2::TokenStream::new(),
         };
 
+        // Prepare function-specific extra in a `fn_extra: ...` field, running the replacer
         let fn_extra_field = match input.fn_extra {
             Some(ref map) => {
                 let mut fn_extra = map
@@ -570,13 +577,13 @@ impl MacroReplace {
         }
 
         match s.as_str() {
-            "MACRO_FN_NAME" => *i = Ident::new(&self.fn_name, i.span()),
+            "MACRO_FN_NAME" => *i = Ident::new(self.fn_name, i.span()),
             "MACRO_FN_NAME_NORMALIZED" => *i = Ident::new(&self.norm_name, i.span()),
             _ => {
                 self.error = Some(syn::Error::new(
                     i.span(),
                     "unrecognized meta expression `{s}`",
-                ))
+                ));
             }
         }
     }

@@ -29,7 +29,9 @@ macro_rules! basic {
             #[allow(unused)]
             const A: &[&str] = &[$($extra_tt)*];
             #[allow(unused)]
-            const B: u32 = $fn_extra;
+            fn foo(a: f32) -> f32 {
+                $fn_extra(a)
+            }
         }
     };
 }
@@ -46,8 +48,9 @@ mod test_basic {
         ],
         extra: ["foo", "bar"],
         fn_extra: match MACRO_FN_NAME {
-            [sin] => 2 + 2,
-            _ => 100
+            [sin] => |x| x + 2.0,
+            [cos, cosf] => |x: f32| x.MACRO_FN_NAME_NORMALIZED(),
+            _ => |_x| 100.0
         }
     }
 }

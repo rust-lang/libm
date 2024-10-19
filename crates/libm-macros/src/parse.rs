@@ -68,7 +68,7 @@ impl StructuredInput {
             Err(syn::Error::new(
                 map.first().unwrap().name.span(),
                 format!("unexpected fields {map:?}"),
-            ))?
+            ))?;
         }
 
         let skip = match skip_expr {
@@ -165,15 +165,15 @@ fn extract_fn_extra_field(expr: Expr) -> syn::Result<BTreeMap<Ident, Expr>> {
 }
 
 fn expect_empty_attrs(attrs: &[Attribute]) -> syn::Result<()> {
-    if !attrs.is_empty() {
-        let e = syn::Error::new(
-            attrs.first().unwrap().span(),
-            "no attributes allowed in this position",
-        );
-        Err(e)
-    } else {
-        Ok(())
+    if attrs.is_empty() {
+        return Ok(());
     }
+
+    let e = syn::Error::new(
+        attrs.first().unwrap().span(),
+        "no attributes allowed in this position",
+    );
+    Err(e)
 }
 
 /// Extract a named field from a map, raising an error if it doesn't exist.
