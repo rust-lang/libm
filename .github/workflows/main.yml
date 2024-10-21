@@ -142,7 +142,7 @@ jobs:
       run: rustup update nightly --no-self-update && rustup default nightly
     - name: Download MUSL source
       run: ./ci/download-musl.sh
-    - run: cargo bench --all
+    - run: cargo bench --all --features libm-test/short-benchmarks,libm-test/build-musl
 
   success:
     needs:
