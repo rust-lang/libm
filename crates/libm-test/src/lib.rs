@@ -1,4 +1,6 @@
 pub mod gen;
+#[cfg(feature = "multiprecision-tests")]
+pub mod mpfloat;
 mod num_traits;
 mod test_traits;
 mod xfail;
