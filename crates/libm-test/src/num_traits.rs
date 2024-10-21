@@ -6,6 +6,8 @@ pub trait Float: Copy + fmt::Display + fmt::Debug + PartialEq<Self> {
     type Int: Int<OtherSign = Self::SignedInt, Unsigned = Self::Int>;
     type SignedInt: Int + Int<OtherSign = Self::Int, Unsigned = Self::Int>;
 
+    const ZERO: Self;
+
     /// The bitwidth of the float type
     const BITS: u32;
 
@@ -28,6 +30,7 @@ macro_rules! impl_float {
                 type Int = $ui;
                 type SignedInt = $si;
 
+                const ZERO: Self = 0.0;
                 const BITS: u32 = <$ui>::BITS;
                 const SIGNIFICAND_BITS: u32 = $significand_bits;
 

@@ -25,10 +25,23 @@ pub trait IgnoreCase<Input> {
 
 impl IgnoreCase<(f32,)> for XFail {
     fn xfail_float<F: Float>(input: (f32,), actual: F, expected: F, ctx: &CheckCtx) -> bool {
+        let outputs_nan = all_nan(&[actual, expected]);
+
         match &ctx.basis {
             CheckBasis::Musl => match ctx.fname {
                 // We return +NaN, Musl returns -NaN
                 "tgammaf" => input.0 < 0.0,
+                _ => false,
+            },
+            CheckBasis::MultiPrecision => match ctx.fname {
+                // For almost everything we return -NaN but MPFR does +NaN
+                _ if (input.0.is_nan() || input.0.is_infinite()) && outputs_nan => true,
+                // x86 MacOS NaN doesn't seem to depend on input sign
+                _ if cfg!(x86_macos) && outputs_nan => true,
+                // Out of domain we return +NaN, MPFR returns -NaN
+                "atanhf" => input.0 < -1.0 && outputs_nan,
+                // We return -NaN, MPFR says +NaN
+                "tgammaf" => input.0 < 0.0 && outputs_nan,
                 _ => false,
             },
         }
@@ -37,16 +50,30 @@ impl IgnoreCase<(f32,)> for XFail {
     fn xfail_int<I: Int>(input: (f32,), actual: I, expected: I, ctx: &CheckCtx) -> bool {
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => match ctx.fname {
+                // We set -1, MPFR sets +1
+                "lgammaf_r" => input.0 == f32::NEG_INFINITY && actual.abs() == expected.abs(),
+                _ => false,
+            },
         }
     }
 }
 
 impl IgnoreCase<(f64,)> for XFail {
     fn xfail_float<F: Float>(input: (f64,), actual: F, expected: F, ctx: &CheckCtx) -> bool {
+        let outputs_nan = all_nan(&[actual, expected]);
+
         // See the `f32` version for notes about what is skipped
         match &ctx.basis {
             CheckBasis::Musl => match ctx.fname {
                 "tgamma" => input.0 < 0.0,
+                _ => false,
+            },
+            CheckBasis::MultiPrecision => match ctx.fname {
+                _ if (input.0.is_nan() || input.0.is_infinite()) && outputs_nan => true,
+                _ if cfg!(x86_macos) && outputs_nan => true,
+                "atanh" => input.0 < -1.0 && outputs_nan,
+                "tgamma" => input.0 < 0.0 && outputs_nan,
                 _ => false,
             },
         }
@@ -56,22 +83,36 @@ impl IgnoreCase<(f64,)> for XFail {
         // See the `f32` version for notes about what is skipped
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => match ctx.fname {
+                "lgamma_r" => input.0 == f64::NEG_INFINITY && actual.abs() == expected.abs(),
+                _ => false,
+            },
         }
     }
 }
 
 impl IgnoreCase<(f32, f32)> for XFail {
     fn xfail_float<F: Float>(input: (f32, f32), actual: F, expected: F, ctx: &CheckCtx) -> bool {
+        let outputs_nan = all_nan(&[actual, expected]);
+
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => {
+                (all_nan(&[input.0, input.1]) && outputs_nan) || (cfg!(x86_macos) && outputs_nan)
+            }
         }
     }
 }
 
 impl IgnoreCase<(f64, f64)> for XFail {
     fn xfail_float<F: Float>(input: (f64, f64), actual: F, expected: F, ctx: &CheckCtx) -> bool {
+        let outputs_nan = all_nan(&[actual, expected]);
+
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => {
+                (all_nan(&[input.0, input.1]) && outputs_nan) || (cfg!(x86_macos) && outputs_nan)
+            }
         }
     }
 }
@@ -83,8 +124,14 @@ impl IgnoreCase<(f32, f32, f32)> for XFail {
         expected: F,
         ctx: &CheckCtx,
     ) -> bool {
+        let outputs_nan = all_nan(&[actual, expected]);
+
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => {
+                (all_nan(&[input.0, input.1, input.2]) && outputs_nan)
+                    || (cfg!(x86_macos) && outputs_nan)
+            }
         }
     }
 }
@@ -95,8 +142,14 @@ impl IgnoreCase<(f64, f64, f64)> for XFail {
         expected: F,
         ctx: &CheckCtx,
     ) -> bool {
+        let outputs_nan = all_nan(&[actual, expected]);
+
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => {
+                (all_nan(&[input.0, input.1, input.2]) && outputs_nan)
+                    || (cfg!(x86_macos) && outputs_nan)
+            }
         }
     }
 }
@@ -105,6 +158,12 @@ impl IgnoreCase<(i32, f32)> for XFail {
     fn xfail_float<F: Float>(input: (i32, f32), actual: F, expected: F, ctx: &CheckCtx) -> bool {
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => match ctx.fname {
+                _ if input.1.is_nan() && all_nan(&[actual, expected]) => true,
+                // We return +0.0, MPFR returns -0.0
+                "jnf" => input.1 == f32::NEG_INFINITY && actual == F::ZERO && expected == F::ZERO,
+                _ => false,
+            },
         }
     }
 }
@@ -113,6 +172,11 @@ impl IgnoreCase<(i32, f64)> for XFail {
     fn xfail_float<F: Float>(input: (i32, f64), actual: F, expected: F, ctx: &CheckCtx) -> bool {
         match &ctx.basis {
             CheckBasis::Musl => false,
+            CheckBasis::MultiPrecision => match ctx.fname {
+                _ if input.1.is_nan() && all_nan(&[actual, expected]) => true,
+                "jn" => input.1 == f64::NEG_INFINITY && actual == F::ZERO && expected == F::ZERO,
+                _ => false,
+            },
         }
     }
 }

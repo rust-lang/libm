@@ -41,6 +41,8 @@ pub struct CheckCtx {
 pub enum CheckBasis {
     /// Check against Musl's math sources.
     Musl,
+    /// Check against infinite precision (MPFR).
+    MultiPrecision,
 }
 
 /// A trait to implement on any output type so we can verify it in a generic way.
