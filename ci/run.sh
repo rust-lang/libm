@@ -62,4 +62,8 @@ else
     # unstable with a feature
     $cmd --features 'unstable'
     $cmd --release --features 'unstable'
+
+    # Make sure benchmarks have correct results
+    $cmd --benches
+    $cmd --benches --release
 fi
