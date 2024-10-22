@@ -9,7 +9,7 @@
 // There are some targets we can't build musl for
 #![cfg(feature = "build-musl")]
 
-use libm_test::gen::random;
+use libm_test::gen::{edge_cases, random};
 use libm_test::musl_allowed_ulp;
 use libm_test::{CheckBasis, CheckCtx, CheckOutput, TupleCall};
 use musl_math_sys as musl;
@@ -31,6 +31,26 @@ macro_rules! musl_rand_tests {
             let fname = stringify!($fn_name);
             let ulp = musl_allowed_ulp(fname);
             let cases = random::get_test_cases::<$RustArgs>(fname);
+            let ctx = CheckCtx {
+                ulp,
+                fname,
+                basis: CheckBasis::Musl
+            };
+
+            for input in cases {
+                let musl_res = input.call(musl::$fn_name as $CFn);
+                let crate_res = input.call(libm::$fn_name as $RustFn);
+
+                musl_res.validate(crate_res, input, &ctx).unwrap();
+            }
+        }
+
+        #[test]
+        $(#[$meta])*
+        fn [< musl_edge_cases_ $fn_name >]() {
+            let fname = stringify!($fn_name);
+            let ulp = musl_allowed_ulp(fname);
+            let cases = edge_cases::get_test_cases::<$RustArgs>(fname);
             let ctx = CheckCtx {
                 ulp,
                 fname,

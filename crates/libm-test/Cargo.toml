@@ -14,6 +14,9 @@ musl-bitwise-tests = ["rand"]
 # Build our own musl for testing and benchmarks
 build-musl = ["dep:musl-math-sys"]
 
+# Enable tests that are exhaustive or extensive
+test-exhaustive = []
+
 [dependencies]
 anyhow = "1.0.90"
 libm = { path = "../.." }

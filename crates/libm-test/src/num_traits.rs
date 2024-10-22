@@ -1,4 +1,5 @@
 use std::fmt;
+use std::ops;
 
 /// Common types and methods for floating point numbers.
 pub trait Float: Copy + fmt::Display + fmt::Debug + PartialEq<Self> {
@@ -14,10 +15,30 @@ pub trait Float: Copy + fmt::Display + fmt::Debug + PartialEq<Self> {
     /// The bitwidth of the exponent
     const EXPONENT_BITS: u32 = Self::BITS - Self::SIGNIFICAND_BITS - 1;
 
+    /// The saturated value of the exponent (infinite representation), in the rightmost postiion.
+    const EXPONENT_MAX: u32 = (1 << Self::EXPONENT_BITS) - 1;
+
+    /// The exponent bias value
+    const EXPONENT_BIAS: u32 = Self::EXPONENT_MAX >> 1;
+
+    /// A mask for the sign bit
+    const SIGN_MASK: Self::Int;
+
+    /// A mask for the significand
+    const SIGNIFICAND_MASK: Self::Int;
+
+    /// The implicit bit of the float format
+    const IMPLICIT_BIT: Self::Int;
+
+    /// A mask for the exponent
+    const EXPONENT_MASK: Self::Int;
+
     fn is_nan(self) -> bool;
     fn to_bits(self) -> Self::Int;
     fn from_bits(bits: Self::Int) -> Self;
     fn signum(self) -> Self;
+    /// Constructs a `Self` from its parts. Inputs are treated as bits and shifted into position.
+    fn from_parts(sign: bool, exponent: Self::Int, significand: Self::Int) -> Self;
 }
 
 macro_rules! impl_float {
@@ -30,6 +51,11 @@ macro_rules! impl_float {
                 const BITS: u32 = <$ui>::BITS;
                 const SIGNIFICAND_BITS: u32 = $significand_bits;
 
+                const SIGN_MASK: Self::Int = 1 << (Self::BITS - 1);
+                const SIGNIFICAND_MASK: Self::Int = (1 << Self::SIGNIFICAND_BITS) - 1;
+                const IMPLICIT_BIT: Self::Int = 1 << Self::SIGNIFICAND_BITS;
+                const EXPONENT_MASK: Self::Int = !(Self::SIGN_MASK | Self::SIGNIFICAND_MASK);
+
                 fn is_nan(self) -> bool {
                     self.is_nan()
                 }
@@ -41,6 +67,13 @@ macro_rules! impl_float {
                 }
                 fn signum(self) -> Self {
                     self.signum()
+                }
+                fn from_parts(sign: bool, exponent: Self::Int, significand: Self::Int) -> Self {
+                    Self::from_bits(
+                        ((sign as Self::Int) << (Self::BITS - 1))
+                            | ((exponent << Self::SIGNIFICAND_BITS) & Self::EXPONENT_MASK)
+                            | (significand & Self::SIGNIFICAND_MASK),
+                    )
                 }
             }
 
@@ -59,11 +92,34 @@ impl_float!(
 );
 
 /// Common types and methods for integers.
-pub trait Int: Copy + fmt::Display + fmt::Debug + PartialEq<Self> {
+pub trait Int:
+    Copy
+    + fmt::Display
+    + fmt::Debug
+    + PartialEq<Self>
+    + ops::Add<Output = Self>
+    + ops::Sub<Output = Self>
+    + ops::Mul<Output = Self>
+    + ops::Div<Output = Self>
+    + ops::Shr<u32, Output = Self>
+    + ops::Shl<u32, Output = Self>
+    + 'static
+{
+    /// Type with the same width but other signedness
     type OtherSign: Int;
+    /// Unsigned version of Self
     type Unsigned: Int;
-    const BITS: u32;
+
+    /// If `Self` is a signed integer
     const SIGNED: bool;
+
+    /// The bitwidth of the int type
+    const BITS: u32;
+
+    const ZERO: Self;
+    const ONE: Self;
+    const MIN: Self;
+    const MAX: Self;
 
     fn signed(self) -> <Self::Unsigned as Int>::OtherSign;
     fn unsigned(self) -> Self::Unsigned;
@@ -77,8 +133,14 @@ macro_rules! impl_int {
             impl Int for $ui {
                 type OtherSign = $si;
                 type Unsigned = Self;
-                const BITS: u32 = <$ui>::BITS;
+
                 const SIGNED: bool = false;
+                const BITS: u32 = <$ui>::BITS;
+                const ZERO: Self = 0;
+                const ONE: Self = 1;
+                const MIN: Self = Self::MIN;
+                const MAX: Self = Self::MAX;
+
                 fn signed(self) -> Self::OtherSign {
                     self as $si
                 }
@@ -96,8 +158,14 @@ macro_rules! impl_int {
             impl Int for $si {
                 type OtherSign = $ui;
                 type Unsigned = $ui;
-                const BITS: u32 = <$ui>::BITS;
+
                 const SIGNED: bool = true;
+                const BITS: u32 = <$ui>::BITS;
+                const ZERO: Self = 0;
+                const ONE: Self = 1;
+                const MIN: Self = Self::MIN;
+                const MAX: Self = Self::MAX;
+
                 fn signed(self) -> Self {
                     self
                 }
