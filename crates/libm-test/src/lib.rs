@@ -1,22 +1,30 @@
 pub mod gen;
+#[cfg(feature = "multiprecision-tests")]
+pub mod mpfloat;
 mod num_traits;
 mod test_traits;
+mod xfail;
 
 pub use num_traits::{Float, Hex, Int};
 pub use test_traits::{CheckBasis, CheckCtx, CheckOutput, GenerateInput, TupleCall};
+pub use xfail::{IgnoreCase, XFail};
 
 // List of all files present in libm's source
 include!(concat!(env!("OUT_DIR"), "/all_files.rs"));
 
-/// ULP allowed to differ from musl (note that musl itself may not be accurate).
+/// Default ULP allowed to differ from musl (note that musl itself may not be accurate).
 const MUSL_DEFAULT_ULP: u32 = 2;
 
-/// Certain functions have different allowed ULP (consider these xfail).
+/// Default ULP allowed to differ from multiprecision (i.e. infinite) results.
+const MULTIPREC_DEFAULT_ULP: u32 = 1;
+
+/// ULP allowed to differ from muls results.
 ///
-/// Currently this includes:
+/// Current overrides includes:
 /// - gamma functions that have higher errors
 /// - 32-bit functions fall back to a less precise algorithm.
 pub fn musl_allowed_ulp(name: &str) -> u32 {
+    // Consider overrides xfail
     match name {
         #[cfg(x86_no_sse)]
         "asinh" | "asinhf" => 6,
@@ -31,12 +39,18 @@ pub fn musl_allowed_ulp(name: &str) -> u32 {
     }
 }
 
-/// If only a few checks are incorrect, xfail them here rather than skipping the entire test.
-pub fn xfail<F: Float>(actual: F, expected: F, ctx: &CheckCtx) -> bool {
-    match (&ctx.basis, ctx.fname) {
-        // FIXME(correctness): for large negative inputs (e.g.
-        // -1.7976931348623157e308), we return -NaN but musl says +NaN
-        (CheckBasis::Musl, "tgamma" | "tgammaf") if actual.is_nan() && expected.is_nan() => true,
-        _ => false,
+/// ULP allowed to differ from multiprecision results.
+pub fn multiprec_allowed_ulp(name: &str) -> u32 {
+    // Consider overrides xfail
+    match name {
+        "asinh" | "asinhf" => 2,
+        "atanh" | "atanhf" => 2,
+        "exp10" | "exp10f" => 3,
+        "j0" | "j0f" => 2,
+        "lgamma" | "lgammaf" | "lgamma_r" | "lgammaf_r" => 2,
+        "sinh" | "sinhf" => 2,
+        "tanh" | "tanhf" => 2,
+        "tgamma" => 6,
+        _ => MULTIPREC_DEFAULT_ULP,
     }
 }

@@ -7,7 +7,7 @@
 //! - `CheckOutput`: implemented on anything that is an output type for validation against an
 //!   expected value.
 
-use crate::{Float, Hex, Int};
+use crate::{Float, Hex, IgnoreCase, Int, XFail};
 use anyhow::{bail, ensure, Context};
 use std::fmt;
 
@@ -41,6 +41,8 @@ pub struct CheckCtx {
 pub enum CheckBasis {
     /// Check against Musl's math sources.
     Musl,
+    /// Check against infinite precision (MPFR).
+    MultiPrecision,
 }
 
 /// A trait to implement on any output type so we can verify it in a generic way.
@@ -136,11 +138,12 @@ where
     F: Float + Hex,
     Input: Hex + fmt::Debug,
     u32: TryFrom<F::SignedInt, Error: fmt::Debug>,
+    XFail: IgnoreCase<Input>,
 {
     fn validate<'a>(self, expected: Self, input: Input, ctx: &CheckCtx) -> anyhow::Result<()> {
         // Create a wrapper function so we only need to `.with_context` once.
         let inner = || -> anyhow::Result<()> {
-            if crate::xfail(self, expected, ctx) {
+            if XFail::xfail_float(input, self, expected, ctx) {
                 return Ok(());
             }
 
@@ -198,17 +201,28 @@ where
 macro_rules! impl_tuples {
     ($(($a:ty, $b:ty);)*) => {
         $(
-            impl<Input: Hex + fmt::Debug> CheckOutput<Input> for ($a, $b) {
+            impl<Input> CheckOutput<Input> for ($a, $b)
+            where
+                Input: Hex + fmt::Debug,
+                XFail: IgnoreCase<Input>,
+              {
                 fn validate<'a>(
                     self,
                     expected: Self,
                     input: Input,
                     ctx: &CheckCtx,
                 ) -> anyhow::Result<()> {
-                    self.0.validate(expected.0, input, ctx,)
+                    self.0.validate(expected.0, input, ctx)
                         .and_then(|()| self.1.validate(expected.1, input, ctx))
                         .with_context(|| format!(
-                            "full input {input:?} full actual {self:?} expected {expected:?}"
+                            "full context:\
+                            \n    input:    {input:?} {ibits}\
+                            \n    expected: {expected:?} {expbits}\
+                            \n    actual:   {self:?} {actbits}\
+                            ",
+                            actbits = self.hex(),
+                            expbits = expected.hex(),
+                            ibits = input.hex(),
                         ))
                 }
             }

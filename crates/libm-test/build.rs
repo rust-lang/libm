@@ -64,6 +64,11 @@ fn emit_cfg_shorthands(cfg: &Config) {
         // Shorthand to detect i586 targets
         println!("cargo::rustc-cfg=x86_no_sse");
     }
+
+    println!("cargo::rustc-check-cfg=cfg(x86_macos)");
+    if cfg.target_arch == "x86_64" && cfg.target_vendor == "apple" {
+        println!("cargo::rustc-cfg=x86_macos");
+    }
 }
 
 /// Create a list of all source files in an array. This can be used for making sure that
