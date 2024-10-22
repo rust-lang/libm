@@ -1,9 +1,11 @@
 pub mod gen;
 mod num_traits;
 mod test_traits;
+mod xfail;
 
 pub use num_traits::{Float, Hex, Int};
 pub use test_traits::{CheckBasis, CheckCtx, CheckOutput, GenerateInput, TupleCall};
+pub use xfail::{IgnoreCase, XFail};
 
 // List of all files present in libm's source
 include!(concat!(env!("OUT_DIR"), "/all_files.rs"));
@@ -28,15 +30,5 @@ pub fn musl_allowed_ulp(name: &str) -> u32 {
         #[cfg(not(target_pointer_width = "64"))]
         "exp10f" => 4,
         _ => MUSL_DEFAULT_ULP,
-    }
-}
-
-/// If only a few checks are incorrect, xfail them here rather than skipping the entire test.
-pub fn xfail<F: Float>(actual: F, expected: F, ctx: &CheckCtx) -> bool {
-    match (&ctx.basis, ctx.fname) {
-        // FIXME(correctness): for large negative inputs (e.g.
-        // -1.7976931348623157e308), we return -NaN but musl says +NaN
-        (CheckBasis::Musl, "tgamma" | "tgammaf") if actual.is_nan() && expected.is_nan() => true,
-        _ => false,
     }
 }

@@ -1,3 +1,4 @@
+use crate::{IgnoreCase, XFail};
 use std::fmt;
 
 /// Common types and methods for floating point numbers.
@@ -125,13 +126,21 @@ macro_rules! impl_int {
             }
         }
 
-        impl<Input: Hex + fmt::Debug> $crate::CheckOutput<Input> for $ty {
+        impl<Input> $crate::CheckOutput<Input> for $ty
+        where
+            Input: Hex + fmt::Debug,
+            XFail: IgnoreCase<Input>,
+        {
             fn validate<'a>(
                 self,
                 expected: Self,
                 input: Input,
-                _ctx: &$crate::CheckCtx,
+                ctx: &$crate::CheckCtx,
             ) -> anyhow::Result<()> {
+                if XFail::xfail_int(input, self, expected, ctx) {
+                    return Ok(());
+                }
+
                 anyhow::ensure!(
                     self == expected,
                     "\
