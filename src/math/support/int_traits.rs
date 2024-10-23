@@ -1,4 +1,4 @@
-use core::{fmt, ops};
+use core::{cmp, fmt, ops};
 
 /// Minimal integer implementations needed on all integer types, including wide integers.
 #[allow(dead_code)]
@@ -31,6 +31,8 @@ pub trait MinInt:
 pub trait Int:
     MinInt
     + fmt::Display
+    + fmt::Binary
+    + fmt::LowerHex
     + PartialEq
     + PartialOrd
     + ops::AddAssign
@@ -47,6 +49,8 @@ pub trait Int:
     + ops::Shr<u32, Output = Self>
     + ops::BitXor<Output = Self>
     + ops::BitAnd<Output = Self>
+    + cmp::Ord
+    + CastInto<usize>
 {
     fn signed(self) -> <Self::Unsigned as MinInt>::OtherSign;
     fn unsigned(self) -> Self::Unsigned;

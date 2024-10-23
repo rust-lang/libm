@@ -16,13 +16,13 @@ macro_rules! multiprec_rand_tests {
             #[test]
             $(#[$meta])*
             fn [< multiprec_random_ $fn_name >]() {
-                test_one::<libm_test::op::$fn_name::Routine>();
+                test_one_random::<libm_test::op::$fn_name::Routine>();
             }
         }
     };
 }
 
-fn test_one<Op>()
+fn test_one_random<Op>()
 where
     Op: MathOp + MpOp,
     CachedInput: GenerateInput<Op::RustArgs>,
@@ -37,6 +37,28 @@ where
 
         crate_res.validate(mp_res, input, &ctx).unwrap();
     }
+}
+
+// TODO: wire up
+#[expect(unused)]
+fn test_one_domain<Op>()
+where
+    Op: MathOp + MpOp,
+    CachedInput: GenerateInput<Op::RustArgs>,
+{
+    let name = Op::NAME_STR;
+
+    let ulp = multiprec_allowed_ulp(name);
+    let mut mp_vals = Op::new_mp();
+    let ctx = CheckCtx::new(ulp, name, CheckBasis::Mpfr);
+    // let cases = random::get_test_cases::<Op::RustArgs>(&ctx);
+
+    // for input in cases {
+    //     let mp_res = Op::run(&mut mp_vals, input);
+    //     let crate_res = input.call(Op::ROUTINE);
+
+    //     crate_res.validate(mp_res, input, &ctx).unwrap();
+    // }
 }
 
 libm_macros::for_each_function! {
