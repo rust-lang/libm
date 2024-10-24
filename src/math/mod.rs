@@ -74,16 +74,7 @@ macro_rules! div {
     };
 }
 
-macro_rules! llvm_intrinsically_optimized {
-    (#[cfg($($clause:tt)*)] $e:expr) => {
-        #[cfg(all(feature = "unstable", not(feature = "force-soft-floats"), $($clause)*))]
-        {
-            if true { // thwart the dead code lint
-                $e
-            }
-        }
-    };
-}
+mod arch;
 
 // Public modules
 mod acos;

@@ -1,5 +1,4 @@
 //! libm in pure Rust
-#![deny(warnings)]
 #![no_std]
 #![cfg_attr(feature = "unstable", allow(internal_features))]
 #![cfg_attr(feature = "unstable", feature(core_intrinsics))]
@@ -13,6 +12,8 @@
 #![allow(clippy::eq_op)]
 #![allow(clippy::assign_op_pattern)]
 
+#[macro_use]
+mod macros;
 mod libm_helper;
 mod math;
 
