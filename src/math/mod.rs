@@ -123,6 +123,20 @@ use self::rem_pio2f::rem_pio2f;
 #[allow(unused_imports)]
 use self::support::{CastFrom, CastInto, DInt, Float, HInt, Int, MinInt};
 
+#[allow(unused)]
+macro_rules! hf32 {
+    ($s:literal) => {
+        const { $crate::math::hex_float::hf32($s) }
+    };
+}
+
+#[allow(unused)]
+macro_rules! hf64 {
+    ($s:literal) => {
+        const { $crate::math::hex_float::hf64($s) }
+    };
+}
+
 // Public modules
 mod acos;
 mod acosf;
@@ -368,4 +382,236 @@ fn with_set_low_word(f: f64, lo: u32) -> f64 {
 #[inline]
 fn combine_words(hi: u32, lo: u32) -> f64 {
     f64::from_bits(((hi as u64) << 32) | lo as u64)
+}
+
+pub mod hex_float {
+    pub const fn hf32(s: &str) -> f32 {
+        f32::from_bits(parse_any(s, 32, 23) as u32)
+    }
+
+    pub const fn hf64(s: &str) -> f64 {
+        f64::from_bits(parse_any(s, 64, 52) as u64)
+    }
+
+    const fn parse_any(s: &str, bits: u32, sig_bits: u32) -> u128 {
+        let exp_bits: u32 = bits - sig_bits - 1;
+        let exp_max: i32 = (1 << exp_bits) - 2;
+        let exp_bias: i32 = (1 << (exp_bits - 1)) - 1;
+
+        let b = s.as_bytes();
+
+        let mut exp: i32 = parse_exp(b) + exp_bias;
+        assert!(exp <= exp_max);
+
+        // Out of range exponents are subnormal, this changes
+        // how we shift bits in.
+        let subnorm_shift = if exp <= 0 {
+            let tmp = -exp + 1;
+            exp = 0;
+            tmp
+        } else {
+            0
+        };
+
+        let mut i;
+        let mut next_i = 0;
+        let mut sig: u128 = 0;
+        let mut neg: u128 = 0;
+
+        // Position relative to digits
+        let mut digit_idx = 0;
+        let mut start_0x = 0;
+        let mut start_digits;
+        let mut maybe_zero = true;
+
+        while next_i < b.len() {
+            next_i += 1;
+            i = next_i - 1;
+            let c = b[i];
+
+            if i == 0 && c == b'-' {
+                neg = 1;
+                start_0x += 1;
+                continue;
+            } else if i == 0 && c == b'+' {
+                start_0x += 1;
+                continue;
+            }
+
+            start_digits = start_0x + 2;
+
+            if (i - start_0x) == 0 {
+                assert!(c == b'0');
+                continue;
+            } else if (i - start_0x) == 1 {
+                assert!(c == b'x');
+                continue;
+            }
+
+            if c == b'p' {
+                break;
+            } else if (i - start_digits) == 0 {
+                if c == b'0' {
+                    exp -= 1;
+                } else {
+                    assert!(c == b'1');
+                    maybe_zero = false;
+                }
+            } else if (i - start_digits) == 1 {
+                assert!(c == b'.');
+                continue;
+            } else {
+                digit_idx += 1;
+            }
+
+            let nibbles = digit_idx * 4;
+            let shift = sig_bits as i32 - subnorm_shift - nibbles;
+            let d = hex_digit(c);
+            if d != 0 {
+                maybe_zero = false;
+            }
+
+            if shift > 0 {
+                // Shift the hex digits into the mantissa
+                // Note: the implicit bit is included and needs to be cleared
+                // later (leading `1.` gets parsed as the implicit bit)
+                sig |= (d as u128) << shift;
+            } else if shift > -4 {
+                // Shift right up to 4 bits
+                sig |= (d as u128) >> -shift;
+            }
+        }
+
+        if maybe_zero {
+            sig = 0;
+            exp = 0;
+        }
+
+        // Clear the implicit bit
+        sig = (sig << (128 - sig_bits)) >> (128 - sig_bits);
+
+        // Construct a float
+        (neg << (bits - 1)) | ((exp as u128) << sig_bits) | sig
+    }
+
+    const fn parse_exp(b: &[u8]) -> i32 {
+        let mut i = 0;
+        while i < b.len() {
+            if b[i] == b'p' {
+                i += 1;
+                break;
+            }
+            i += 1;
+        }
+
+        let mut ret: i32 = 0;
+        let mut neg = false;
+        let mut next_i = i;
+        let start = i;
+
+        while next_i < b.len() {
+            next_i += 1;
+            i = next_i - 1;
+            let c = b[i];
+
+            if i == start && c == b'-' {
+                neg = true;
+                continue;
+            } else if i == start && c == b'+' {
+                continue;
+            }
+
+            let d = dec_digit(c);
+            ret *= 10;
+            ret += d as i32;
+        }
+
+        if neg {
+            ret *= -1;
+        }
+
+        ret
+    }
+
+    const fn hex_digit(c: u8) -> u8 {
+        match (c as char).to_digit(16) {
+            Some(v) => v as u8,
+            None => panic!("bad char"),
+        }
+    }
+
+    const fn dec_digit(c: u8) -> u8 {
+        match (c as char).to_digit(10) {
+            Some(v) => v as u8,
+            None => panic!("bad char"),
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        extern crate std;
+        use super::*;
+        use std::println;
+
+        #[test]
+        fn test_f32() {
+            let checks = [
+                ("0x1.ffep+8", 0x43fff000),
+                ("+0x1.ffep+8", 0x43fff000),
+                ("0x1p+0", 0x3f800000),
+                ("0x1.99999ap-4", 0x3dcccccd),
+                ("0x1.9p+6", 0x42c80000),
+                ("0x1.2d5ed2p+20", 0x4996af69),
+                ("-0x1.348eb8p+10", 0xc49a475c),
+                ("-0x1.33dcfep-33", 0xaf19ee7f),
+                ("0x0.0p0", 0.0f32.to_bits()),
+                ("-0x0.0p0", (-0.0f32).to_bits()),
+                ("0x1.0p0", 1.0f32.to_bits()),
+                ("0x1.99999ap-4", (0.1f32).to_bits()),
+                ("-0x1.99999ap-4", (-0.1f32).to_bits()),
+                ("0x1.111114p-127", 0x00444445),
+                ("0x1.23456p-130", 0x00091a2b),
+                ("0x1p-149", 0x00000001),
+            ];
+            for (s, exp) in checks {
+                println!("parsing {s}");
+                let act = hf32(s).to_bits();
+                assert_eq!(
+                    act, exp,
+                    "parsing {s}: {act:#010x} != {exp:#010x}\nact: {act:#034b}\nexp: {exp:#034b}"
+                );
+            }
+        }
+
+        #[test]
+        fn test_f64() {
+            let checks = [
+                ("0x1.ffep+8", 0x407ffe0000000000),
+                ("0x1p+0", 0x3ff0000000000000),
+                ("0x1.999999999999ap-4", 0x3fb999999999999a),
+                ("0x1.9p+6", 0x4059000000000000),
+                ("0x1.2d5ed1fe1da7bp+20", 0x4132d5ed1fe1da7b),
+                ("-0x1.348eb851eb852p+10", 0xc09348eb851eb852),
+                ("-0x1.33dcfe54a3803p-33", 0xbde33dcfe54a3803),
+                ("0x1.0p0", 1.0f64.to_bits()),
+                ("0x0.0p0", 0.0f64.to_bits()),
+                ("-0x0.0p0", (-0.0f64).to_bits()),
+                ("0x1.999999999999ap-4", 0.1f64.to_bits()),
+                ("0x1.999999999998ap-4", (0.1f64 - f64::EPSILON).to_bits()),
+                ("-0x1.999999999999ap-4", (-0.1f64).to_bits()),
+                ("-0x1.999999999998ap-4", (-0.1f64 + f64::EPSILON).to_bits()),
+                ("0x0.8000000000001p-1022", 0x0008000000000001),
+                ("0x0.123456789abcdp-1022", 0x000123456789abcd),
+                ("0x0.0000000000002p-1022", 0x0000000000000002),
+            ];
+            for (s, exp) in checks {
+                println!("parsing {s}");
+                let act = hf64(s).to_bits();
+                assert_eq!(
+                    act, exp,
+                    "parsing {s}: {act:#018x} != {exp:#018x}\nact: {act:#066b}\nexp: {exp:#066b}"
+                );
+            }
+        }
+    }
 }
