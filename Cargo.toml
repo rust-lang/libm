@@ -21,13 +21,16 @@ arch = []
 
 # This tells the compiler to assume that a Nightly toolchain is being used and
 # that it should activate any useful Nightly things accordingly.
-unstable = ["unstable-intrinsics"]
+unstable = ["unstable-intrinsics", "unstable-float"]
 
 # Enable calls to functions in `core::intrinsics`
 unstable-intrinsics = []
 
 # Make some internal things public for testing.
 unstable-test-support = []
+
+# Enable the nightly-only `f16` and `f128`.
+unstable-float = []
 
 # Used to prevent using any intrinsics or arch-specific code.
 #
@@ -36,6 +39,13 @@ unstable-test-support = []
 # Rust dependencies. Setting this overrides all features that may enable
 # hard float operations.
 force-soft-floats = []
+
+# Workaround for codegen backends which haven't yet implemented `f16` and
+# `f128` support. Disables any functions which use those types.
+#
+# HACK: like the above, this is a negative feature that we would rather not
+# have, but we need to be consistent with compiler-builtins.
+no-f16-f128 = []
 
 [workspace]
 resolver = "2"
