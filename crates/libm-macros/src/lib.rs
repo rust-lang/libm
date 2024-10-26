@@ -13,6 +13,13 @@ use syn::{Ident, ItemEnum};
 
 const ALL_FUNCTIONS: &[(Ty, Signature, Option<Signature>, &[&str])] = &[
     (
+        // `fn(f16) -> f16`
+        Ty::F16,
+        Signature { args: &[Ty::F16], returns: &[Ty::F16] },
+        None,
+        &["fabsf16"],
+    ),
+    (
         // `fn(f32) -> f32`
         Ty::F32,
         Signature { args: &[Ty::F32], returns: &[Ty::F32] },
@@ -35,6 +42,20 @@ const ALL_FUNCTIONS: &[(Ty, Signature, Option<Signature>, &[&str])] = &[
             "log1p", "log2", "log", "rint", "round", "sin", "sinh", "sqrt", "tan", "tanh",
             "tgamma", "trunc",
         ],
+    ),
+    (
+        // `fn(f128) -> f128`
+        Ty::F128,
+        Signature { args: &[Ty::F128], returns: &[Ty::F128] },
+        None,
+        &["fabsf128"],
+    ),
+    (
+        // `(f16, f16) -> f16`
+        Ty::F16,
+        Signature { args: &[Ty::F16, Ty::F16], returns: &[Ty::F16] },
+        None,
+        &["copysignf16"],
     ),
     (
         // `(f32, f32) -> f32`
@@ -71,6 +92,13 @@ const ALL_FUNCTIONS: &[(Ty, Signature, Option<Signature>, &[&str])] = &[
             "pow",
             "remainder",
         ],
+    ),
+    (
+        // `(f128, f128) -> f128`
+        Ty::F128,
+        Signature { args: &[Ty::F128, Ty::F128], returns: &[Ty::F128] },
+        None,
+        &["copysignf128"],
     ),
     (
         // `(f32, f32, f32) -> f32`
