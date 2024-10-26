@@ -165,7 +165,7 @@ fn cr_hypot(mut x: f64, mut y: f64) -> f64 {
     ey = tld;
     ex &= 0x7ff_u64 << 52;
     let aidr: u64 = ey + (0x3fe_u64 << 52) - ex;
-    let mid: u64 = (aidr - 0x3c90000000000000 + 16) >> 5;
+    let mid: u64 = (aidr.wrapping_sub(0x3c90000000000000) + 16) >> 5;
     if __builtin_expect(
         mid == 0 || aidr < 0x39b0000000000000_u64 || aidr > 0x3c9fffffffffff80_u64,
         false,
