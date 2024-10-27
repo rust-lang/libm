@@ -133,7 +133,7 @@ pub fn log(mut x: f64) -> f64 {
 
 fn cr_log(x: f64) -> f64 {
     let mut v = x.to_bits();
-    let mut e: i32 = ((v >> 52) - 0x3ff) as i32;
+    let mut e: i32 = (v >> 52).wrapping_sub(0x3ff) as i32;
     if e >= 0x400 || e == -0x3ff {
         /* x <= 0 or NaN/Inf or subnormal */
         if x <= 0.0 {
