@@ -15,6 +15,7 @@
 
 use super::{fabsf, j0f, j1f, logf, y0f, y1f};
 
+/// Integer order of the Bessel function of the first kind.
 pub fn jnf(n: i32, mut x: f32) -> f32 {
     let mut ix: u32;
     let mut nm1: i32;
@@ -191,6 +192,7 @@ pub fn jnf(n: i32, mut x: f32) -> f32 {
     if sign { -b } else { b }
 }
 
+/// Integer order of the Bessel function of the second kind.
 pub fn ynf(n: i32, x: f32) -> f32 {
     let mut ix: u32;
     let mut ib: u32;
