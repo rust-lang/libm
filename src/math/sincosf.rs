@@ -131,14 +131,6 @@ pub fn sincosf(x: f32) -> (f32, f32) {
 #[cfg(test)]
 mod tests {
     use super::sincosf;
-    // use crate::_eqf;
-
-    // #[test]
-    // fn with_pi() {
-    //     let (s, c) = sincosf(core::f32::consts::PI);
-    //     _eqf(s.abs(), 0.0).unwrap();
-    //     _eqf(c, -1.0).unwrap();
-    // }
 
     #[test]
     fn rotational_symmetry() {
