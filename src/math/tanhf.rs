@@ -1,6 +1,6 @@
 use super::expm1f;
 
-/// The hyperboloc tangent of `x` (f32).
+/// The hyperbolic tangent of `x` (f32).
 /// 
 /// `x` is specified in radians.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]

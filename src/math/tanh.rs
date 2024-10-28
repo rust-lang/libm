@@ -5,7 +5,7 @@ use super::expm1;
  *         = (1 - exp(-2*x))/(exp(-2*x) - 1 + 2)
  */
 
-/// The hyperboloc tangent of `x` (f64).
+/// The hyperbolic tangent of `x` (f64).
 /// 
 /// `x` is specified in radians.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
