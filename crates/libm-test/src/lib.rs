@@ -1,3 +1,4 @@
+mod func;
 pub mod gen;
 mod num_traits;
 mod special_case;

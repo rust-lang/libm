@@ -1,12 +1,14 @@
 mod parse;
 use std::sync::LazyLock;
 
+use heck::ToUpperCamelCase;
 use parse::{Invocation, StructuredInput};
 use proc_macro as pm;
 use proc_macro2::{self as pm2, Span};
 use quote::{ToTokens, quote};
-use syn::Ident;
+use syn::spanned::Spanned;
 use syn::visit_mut::VisitMut;
+use syn::{Fields, Ident, ItemEnum, Variant};
 
 const ALL_FUNCTIONS: &[(Signature, Option<Signature>, &[&str])] = &[
     (
@@ -237,6 +239,30 @@ static ALL_FUNCTIONS_FLAT: LazyLock<Vec<FunctionInfo>> = LazyLock::new(|| {
     ret.sort_by_key(|item| item.name);
     ret
 });
+
+/// Create an enum with each variant as a function, in upper camel case.
+///
+/// The macro body takes an empty macro with visibility and attributes as relevant.
+#[proc_macro]
+pub fn populate_enum(tokens: pm::TokenStream) -> pm::TokenStream {
+    let mut input = syn::parse_macro_input!(tokens as ItemEnum);
+
+    if !input.variants.is_empty() {
+        return syn::Error::new(input.variants.span(), "expected an empty enum")
+            .into_compile_error()
+            .into();
+    }
+
+    for func in ALL_FUNCTIONS_FLAT.iter() {
+        let ident = Ident::new(&func.name.to_upper_camel_case(), Span::call_site());
+        let variant =
+            Variant { attrs: Vec::new(), ident, fields: Fields::Unit, discriminant: None };
+
+        input.variants.push(variant);
+    }
+
+    input.into_token_stream().into()
+}
 
 /// Do something for each function present in this crate.
 ///
