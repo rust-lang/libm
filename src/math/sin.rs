@@ -42,7 +42,7 @@ use super::{k_cos, k_sin, rem_pio2};
 //      TRIG(x) returns trig(x) nearly rounded
 
 /// The sine of `x` (f64).
-/// 
+///
 /// `x` is specified in radians.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn sin(x: f64) -> f64 {

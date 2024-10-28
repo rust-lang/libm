@@ -25,7 +25,7 @@ const T3_PIO2: f64 = 3. * FRAC_PI_2; /* 0x4012D97C, 0x7F3321D2 */
 const T4_PIO2: f64 = 4. * FRAC_PI_2; /* 0x401921FB, 0x54442D18 */
 
 /// The tangent of `x` (f32).
-/// 
+///
 /// `x` is specified in radians.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn tanf(x: f32) -> f32 {

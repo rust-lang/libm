@@ -159,7 +159,6 @@ const V0: [f64; 5] = [
     1.66559246207992079114e-11, /* 0x3DB25039, 0xDACA772A */
 ];
 
-
 /// First order of the Bessel function of the second kind (f64).
 pub fn y1(x: f64) -> f64 {
     let z: f64;

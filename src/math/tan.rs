@@ -41,7 +41,7 @@ use super::{k_tan, rem_pio2};
 //      TRIG(x) returns trig(x) nearly rounded
 
 /// The tangent of `x` (f64).
-/// 
+///
 /// `x` is specified in radians.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn tan(x: f64) -> f64 {

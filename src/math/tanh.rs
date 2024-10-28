@@ -6,7 +6,7 @@ use super::expm1;
  */
 
 /// The hyperbolic tangent of `x` (f64).
-/// 
+///
 /// `x` is specified in radians.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn tanh(mut x: f64) -> f64 {
