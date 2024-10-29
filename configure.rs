@@ -105,7 +105,8 @@ fn emit_f16_f128_cfg(cfg: &Config) {
     // `unstable-float` enables these features. Either `no-f16-f128` or `force-soft-floats`
     // will disable them.
     if !cfg!(feature = "unstable-float")
-        && (cfg!(feature = "no-f16-f128") || cfg!(feature = "force-soft-floats"))
+        || cfg!(feature = "no-f16-f128")
+        || cfg!(feature = "force-soft-floats")
     {
         return;
     }

@@ -8,7 +8,7 @@ publish = false
 default = ["unstable-float"]
 
 # Propagated from libm because this affects which functions we test.
-unstable-float = ["libm/unstable-float"]
+unstable-float = ["libm/unstable-float", "rug?/nightly-float"]
 
 # Generate tests which are random inputs and the outputs are calculated with
 # musl libc.
@@ -27,6 +27,7 @@ short-benchmarks = []
 [dependencies]
 anyhow = "1.0.90"
 az = { version = "1.2.1", optional = true }
+cfg-if = "1.0.0"
 libm = { path = "../..", features = ["unstable-test-support"] }
 libm-macros = { path = "../libm-macros" }
 musl-math-sys = { path = "../musl-math-sys", optional = true }
