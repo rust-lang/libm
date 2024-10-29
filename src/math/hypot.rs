@@ -143,8 +143,8 @@ fn cr_hypot(mut x: f64, mut y: f64) -> f64 {
     }
 
     let off: i64 = (0x3ff_i64 << 52) - (xd & emsk) as i64;
-    xd += off as u64;
-    yd += off as u64;
+    xd = xd.wrapping_mul(off as u64);
+    yd = yd.wrapping_mul(off as u64);
     x = f64::from_bits(xd);
     y = f64::from_bits(yd);
     let x2: f64 = x * x;
