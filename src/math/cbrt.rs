@@ -203,11 +203,7 @@ fn cr_cbrt(x: f64) -> f64 {
                 ];
                 for i in 0..7 {
                     if azz == wlist[i].0 {
-                        let tmp = if rm as u64 + sign == 2 {
-                            hf64!("0x1p-52")
-                        } else {
-                            0.0
-                        };
+                        let tmp = if rm as u64 + sign == 2 { hf64!("0x1p-52") } else { 0.0 };
                         y1 = __builtin_copysign(wlist[i].1 + tmp, zz);
                     }
                 }

@@ -125,16 +125,18 @@ use self::support::{CastFrom, CastInto, DInt, Float, HInt, Int, MinInt};
 
 #[allow(unused)]
 macro_rules! hf32 {
-    ($s:literal) => {
-        const { $crate::math::hex_float::hf32($s) }
-    };
+    ($s:literal) => {{
+        const X: f32 = $crate::math::hex_float::hf32($s);
+        X
+    }};
 }
 
 #[allow(unused)]
 macro_rules! hf64 {
-    ($s:literal) => {
-        const { $crate::math::hex_float::hf64($s) }
-    };
+    ($s:literal) => {{
+        const X: f64 = $crate::math::hex_float::hf64($s);
+        X
+    }};
 }
 
 // Public modules
@@ -550,8 +552,9 @@ pub mod hex_float {
     #[cfg(test)]
     mod tests {
         extern crate std;
-        use super::*;
         use std::println;
+
+        use super::*;
 
         #[test]
         fn test_f32() {

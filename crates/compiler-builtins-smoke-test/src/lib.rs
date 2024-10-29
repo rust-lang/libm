@@ -10,3 +10,7 @@
 #[allow(clippy::all)] // We don't get `libm`'s list of `allow`s, so just ignore Clippy.
 #[path = "../../../src/math/mod.rs"]
 pub mod libm;
+
+mod math {
+    pub(crate) use super::libm::*;
+}
