@@ -1,5 +1,6 @@
 use core::f32;
 
+/// Rounds the number toward 0 to an integral value (f32).
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn truncf(x: f32) -> f32 {
     select_implementation! {
