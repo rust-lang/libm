@@ -9,3 +9,7 @@
 
 #[path = "../../../src/math/mod.rs"]
 pub mod libm;
+
+mod math {
+    pub(crate) use super::libm::*;
+}
