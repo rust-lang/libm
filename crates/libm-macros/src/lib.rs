@@ -377,6 +377,8 @@ pub fn base_name_enum(attributes: pm::TokenStream, tokens: pm::TokenStream) -> p
 ///     skip: [sin, cos],
 ///     // Attributes passed as `attrs` for specific functions. For example, here the invocation
 ///     // with `sinf` and that with `cosf` will both get `meta1` and `meta2`, but no others will.
+///     // Note that `f16_enabled` and `f128_enabled` will always get emitted regardless of whether
+///     // or not this is specified.
 ///     attributes: [
 ///         #[meta1]
 ///         #[meta2]
