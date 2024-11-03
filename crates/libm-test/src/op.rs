@@ -84,6 +84,7 @@ macro_rules! do_thing {
         attrs: [$($meta:meta)*],
     ) => {
         paste::paste! {
+            $(#[$meta])*
             pub mod $fn_name {
                 use super::*;
                 pub struct Routine;
