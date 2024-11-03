@@ -40,13 +40,6 @@ unstable-float = []
 # hard float operations.
 force-soft-floats = []
 
-# Workaround for codegen backends which haven't yet implemented `f16` and
-# `f128` support. Disables any functions which use those types.
-#
-# HACK: like the above, this is a negative feature that we would rather not
-# have, but we need to be consistent with compiler-builtins.
-no-f16-f128 = []
-
 [workspace]
 resolver = "2"
 members = [

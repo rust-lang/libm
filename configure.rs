@@ -102,12 +102,8 @@ fn emit_f16_f128_cfg(cfg: &Config) {
     println!("cargo:rustc-check-cfg=cfg(f16_enabled)");
     println!("cargo:rustc-check-cfg=cfg(f128_enabled)");
 
-    // `unstable-float` enables these features. Either `no-f16-f128` or `force-soft-floats`
-    // will disable them.
-    if !cfg!(feature = "unstable-float")
-        || cfg!(feature = "no-f16-f128")
-        || cfg!(feature = "force-soft-floats")
-    {
+    // `unstable-float` enables these features.
+    if !cfg!(feature = "unstable-float") {
         return;
     }
 
