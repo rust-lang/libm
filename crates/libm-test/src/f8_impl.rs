@@ -63,7 +63,7 @@ impl Float for f8 {
     }
 
     fn exp(self) -> Self::ExpInt {
-        todo!()
+        unimplemented!()
     }
 
     fn from_bits(a: Self::Int) -> Self {
@@ -71,7 +71,7 @@ impl Float for f8 {
     }
 
     fn normalize(_significand: Self::Int) -> (i32, Self::Int) {
-        todo!()
+        unimplemented!()
     }
 }
 
@@ -357,26 +357,26 @@ impl f8 {
 impl ops::Add for f8 {
     type Output = Self;
     fn add(self, _rhs: Self) -> Self::Output {
-        todo!()
+        unimplemented!()
     }
 }
 
 impl ops::Sub for f8 {
     type Output = Self;
     fn sub(self, _rhs: Self) -> Self::Output {
-        todo!()
+        unimplemented!()
     }
 }
 impl ops::Mul for f8 {
     type Output = Self;
     fn mul(self, _rhs: Self) -> Self::Output {
-        todo!()
+        unimplemented!()
     }
 }
 impl ops::Div for f8 {
     type Output = Self;
     fn div(self, _rhs: Self) -> Self::Output {
-        todo!()
+        unimplemented!()
     }
 }
 
@@ -390,25 +390,25 @@ impl ops::Neg for f8 {
 impl ops::Rem for f8 {
     type Output = Self;
     fn rem(self, _rhs: Self) -> Self::Output {
-        todo!()
+        unimplemented!()
     }
 }
 
 impl ops::AddAssign for f8 {
     fn add_assign(&mut self, _rhs: Self) {
-        todo!()
+        unimplemented!()
     }
 }
 
 impl ops::SubAssign for f8 {
     fn sub_assign(&mut self, _rhs: Self) {
-        todo!()
+        unimplemented!()
     }
 }
 
 impl ops::MulAssign for f8 {
     fn mul_assign(&mut self, _rhs: Self) {
-        todo!()
+        unimplemented!()
     }
 }
 
@@ -459,7 +459,7 @@ impl cmp::PartialOrd for f8 {
 }
 impl fmt::Display for f8 {
     fn fmt(&self, _f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        unimplemented!()
     }
 }
 
