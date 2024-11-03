@@ -6,6 +6,10 @@ export RUST_BACKTRACE="${RUST_BACKTRACE:-full}"
 # Needed for no-panic to correct detect a lack of panics
 export RUSTFLAGS="${RUSTFLAGS:-} -Ccodegen-units=1"
 
+# MPFR tests consume a lot of stack and often overflow. Default to 20 MiB (10x
+# the default)
+export RUST_MIN_STACK="${RUST_MIN_STACK:-20971520}"
+
 target="${1:-}"
 
 if [ -z "$target" ]; then
@@ -62,7 +66,7 @@ if [ "$(uname -a)" = "Linux" ]; then
     extra_flags="$extra_flags --features libm-test/test-musl-serialized"
 fi
 
-# Make sure we can build with overriding features. We test the indibidual
+# Make sure we can build with overriding features. We test the individual
 # features it controls separately.
 cargo check --no-default-features
 cargo check --features "force-soft-floats"
@@ -74,6 +78,10 @@ if [ "${BUILD_ONLY:-}" = "1" ]; then
 
     echo "can't run tests on $target; skipping"
 else
+    # Check `force-soft-floats` again, this time including test crates.
+    cargo check --all --target "$target" $extra_flags \
+        --features "force-soft-floats" --all-targets
+
     cmd="cargo test --all --target $target $extra_flags"
 
     # stable by default

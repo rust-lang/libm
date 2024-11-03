@@ -1,3 +1,6 @@
+#![cfg_attr(f128_enabled, feature(f128))]
+#![cfg_attr(f16_enabled, feature(f16))]
+
 pub mod gen;
 #[cfg(feature = "test-multiprecision")]
 pub mod mpfloat;

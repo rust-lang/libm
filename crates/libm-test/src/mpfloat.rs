@@ -50,8 +50,10 @@ macro_rules! impl_mp_op {
     (
         fn_name: $fn_name:ident,
         RustFn: fn($_fty:ty,) -> $_ret:ty,
+        attrs: [$($meta:meta),*],
         fn_extra: $fn_name_normalized:expr,
     ) => {
+        $(#[$meta])*
         paste::paste! {
             impl MpOp for crate::op::$fn_name::Routine {
                 type MpTy = MpFloat;
@@ -72,8 +74,10 @@ macro_rules! impl_mp_op {
     (
         fn_name: $fn_name:ident,
         RustFn: fn($_fty:ty, $_fty2:ty,) -> $_ret:ty,
+        attrs: [$($meta:meta),*],
         fn_extra: $fn_name_normalized:expr,
     ) => {
+        $(#[$meta])*
         paste::paste! {
             impl MpOp for crate::op::$fn_name::Routine {
                 type MpTy = (MpFloat, MpFloat);
@@ -95,9 +99,11 @@ macro_rules! impl_mp_op {
     (
         fn_name: $fn_name:ident,
         RustFn: fn($_fty:ty, $_fty2:ty, $_fty3:ty,) -> $_ret:ty,
+        attrs: [$($meta:meta),*],
         fn_extra: $fn_name_normalized:expr,
     ) => {
         paste::paste! {
+            $(#[$meta])*
             impl MpOp for crate::op::$fn_name::Routine {
                 type MpTy = (MpFloat, MpFloat, MpFloat);
 
@@ -128,6 +134,7 @@ libm_macros::for_each_function! {
         // Most of these need a manual implementation
         fabs, ceil, copysign, floor, rint, round, trunc,
         fabsf, ceilf, copysignf, floorf, rintf, roundf, truncf,
+        fabsf16, fabsf128, copysignf16, copysignf128,
         fmod, fmodf, frexp, frexpf, ilogb, ilogbf, jn, jnf, ldexp, ldexpf,
         lgamma_r, lgammaf_r, modf, modff, nextafter, nextafterf, pow,powf,
         remquo, remquof, scalbn, scalbnf, sincos, sincosf,
@@ -150,12 +157,24 @@ libm_macros::for_each_function! {
 
 /// Implement unary functions that don't have a `_round` version
 macro_rules! impl_no_round {
-    // Unary matcher
-    ($($fn_name:ident, $rug_name:ident;)*) => {
+    ($($fn_name:ident, $rug_name:ident $(, @include $f16_ty:ty, $f128_ty:ty )?;)*) => {
         paste::paste! {
             // Implement for both f32 and f64
-            $( impl_no_round!{ @inner_unary [< $fn_name f >], $rug_name } )*
-            $( impl_no_round!{ @inner_unary $fn_name, $rug_name } )*
+            $(
+
+                impl_no_round!{ @inner_unary [< $fn_name f >], $rug_name }
+                impl_no_round!{ @inner_unary $fn_name, $rug_name }
+
+                $(
+                    // Possibly implement for `f16` and `f128`. We shouldn't need to match
+                    // `f16_ty` and `f128_ty` (we know what they are...) but this gets us around
+                    // the "repeat an expression containing no syntax variables" error.
+                    #[cfg(f16_enabled)]
+                    impl_no_round!{ @inner_unary [< $fn_name $f16_ty >], $rug_name }
+                    #[cfg(f128_enabled)]
+                    impl_no_round!{ @inner_unary [< $fn_name $f128_ty >], $rug_name }
+                )?
+            )*
         }
     };
 
@@ -177,7 +196,7 @@ macro_rules! impl_no_round {
 }
 
 impl_no_round! {
-    fabs, abs_mut;
+    fabs, abs_mut, @include f16, f128;
     ceil, ceil_mut;
     floor, floor_mut;
     rint, round_even_mut; // FIXME: respect rounding mode
@@ -301,5 +320,39 @@ impl MpOp for crate::op::lgammaf_r::Routine {
         let (sign, ord) = this.ln_abs_gamma_round(Nearest);
         let ret = prep_retval::<Self::FTy>(this, ord);
         (ret, sign as i32)
+    }
+}
+
+// Not all `f16` and `f128` functions exist yet so we can't easily use the macros.
+
+#[cfg(f16_enabled)]
+impl MpOp for crate::op::copysignf16::Routine {
+    type MpTy = (MpFloat, MpFloat);
+
+    fn new_mp() -> Self::MpTy {
+        (new_mpfloat::<f16>(), new_mpfloat::<f16>())
+    }
+
+    fn run(this: &mut Self::MpTy, input: Self::RustArgs) -> Self::RustRet {
+        this.0.assign(input.0);
+        this.1.assign(input.1);
+        this.0.copysign_mut(&this.1);
+        prep_retval::<Self::RustRet>(&mut this.0, Ordering::Equal)
+    }
+}
+
+#[cfg(f128_enabled)]
+impl MpOp for crate::op::copysignf128::Routine {
+    type MpTy = (MpFloat, MpFloat);
+
+    fn new_mp() -> Self::MpTy {
+        (new_mpfloat::<f128>(), new_mpfloat::<f128>())
+    }
+
+    fn run(this: &mut Self::MpTy, input: Self::RustArgs) -> Self::RustRet {
+        this.0.assign(input.0);
+        this.1.assign(input.1);
+        this.0.copysign_mut(&this.1);
+        prep_retval::<Self::RustRet>(&mut this.0, Ordering::Equal)
     }
 }

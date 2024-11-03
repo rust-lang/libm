@@ -42,8 +42,12 @@ static TEST_CASES_JN: LazyLock<CachedInput> = LazyLock::new(|| {
     // These functions are extremely slow, limit them
     let ntests_jn = (NTESTS / 1000).max(80);
     cases.inputs_i32.truncate(ntests_jn);
+    #[cfg(f16_enabled)]
+    cases.inputs_f16.truncate(ntests_jn);
     cases.inputs_f32.truncate(ntests_jn);
     cases.inputs_f64.truncate(ntests_jn);
+    #[cfg(f128_enabled)]
+    cases.inputs_f128.truncate(ntests_jn);
 
     // It is easy to overflow the stack with these in debug mode
     let max_iterations = if cfg!(optimizations_enabled) && cfg!(target_pointer_width = "64") {
@@ -68,6 +72,17 @@ fn make_test_cases(ntests: usize) -> CachedInput {
 
     // make sure we include some basic cases
     let mut inputs_i32 = vec![(0, 0, 0), (1, 1, 1), (-1, -1, -1)];
+    #[cfg(f16_enabled)]
+    let mut inputs_f16 = vec![
+        (0.0, 0.0, 0.0),
+        (f16::EPSILON, f16::EPSILON, f16::EPSILON),
+        (f16::INFINITY, f16::INFINITY, f16::INFINITY),
+        (f16::NEG_INFINITY, f16::NEG_INFINITY, f16::NEG_INFINITY),
+        (f16::MAX, f16::MAX, f16::MAX),
+        (f16::MIN, f16::MIN, f16::MIN),
+        (f16::MIN_POSITIVE, f16::MIN_POSITIVE, f16::MIN_POSITIVE),
+        (f16::NAN, f16::NAN, f16::NAN),
+    ];
     let mut inputs_f32 = vec![
         (0.0, 0.0, 0.0),
         (f32::EPSILON, f32::EPSILON, f32::EPSILON),
@@ -88,11 +103,27 @@ fn make_test_cases(ntests: usize) -> CachedInput {
         (f64::MIN_POSITIVE, f64::MIN_POSITIVE, f64::MIN_POSITIVE),
         (f64::NAN, f64::NAN, f64::NAN),
     ];
+    #[cfg(f128_enabled)]
+    let mut inputs_f128 = vec![
+        (0.0, 0.0, 0.0),
+        (f128::EPSILON, f128::EPSILON, f128::EPSILON),
+        (f128::INFINITY, f128::INFINITY, f128::INFINITY),
+        (f128::NEG_INFINITY, f128::NEG_INFINITY, f128::NEG_INFINITY),
+        (f128::MAX, f128::MAX, f128::MAX),
+        (f128::MIN, f128::MIN, f128::MIN),
+        (f128::MIN_POSITIVE, f128::MIN_POSITIVE, f128::MIN_POSITIVE),
+        (f128::NAN, f128::NAN, f128::NAN),
+    ];
 
     inputs_i32.extend((0..(ntests - inputs_i32.len())).map(|_| rng.gen::<(i32, i32, i32)>()));
 
     // Generate integers to get a full range of bitpatterns, then convert back to
     // floats.
+    #[cfg(f16_enabled)]
+    inputs_f16.extend((0..(ntests - inputs_f16.len())).map(|_| {
+        let ints = rng.gen::<(u16, u16, u16)>();
+        (f16::from_bits(ints.0), f16::from_bits(ints.1), f16::from_bits(ints.2))
+    }));
     inputs_f32.extend((0..(ntests - inputs_f32.len())).map(|_| {
         let ints = rng.gen::<(u32, u32, u32)>();
         (f32::from_bits(ints.0), f32::from_bits(ints.1), f32::from_bits(ints.2))
@@ -101,8 +132,21 @@ fn make_test_cases(ntests: usize) -> CachedInput {
         let ints = rng.gen::<(u64, u64, u64)>();
         (f64::from_bits(ints.0), f64::from_bits(ints.1), f64::from_bits(ints.2))
     }));
+    #[cfg(f128_enabled)]
+    inputs_f128.extend((0..(ntests - inputs_f128.len())).map(|_| {
+        let ints = rng.gen::<(u128, u128, u128)>();
+        (f128::from_bits(ints.0), f128::from_bits(ints.1), f128::from_bits(ints.2))
+    }));
 
-    CachedInput { inputs_f32, inputs_f64, inputs_i32 }
+    CachedInput {
+        #[cfg(f16_enabled)]
+        inputs_f16,
+        inputs_f32,
+        inputs_f64,
+        #[cfg(f128_enabled)]
+        inputs_f128,
+        inputs_i32,
+    }
 }
 
 /// Create a test case iterator.

@@ -15,7 +15,7 @@ use libm_test::{CheckBasis, CheckCtx, CheckOutput, GenerateInput, MathOp, TupleC
 macro_rules! musl_rand_tests {
     (
         fn_name: $fn_name:ident,
-        attrs: [$($meta:meta)*]
+        attrs: [$($meta:meta),*],
     ) => {
         paste::paste! {
             #[test]
@@ -45,6 +45,8 @@ where
 
 libm_macros::for_each_function! {
     callback: musl_rand_tests,
+    // Musl has no implementations for `f16` and `f128` (on all platforms)
+    skip: [copysignf16, copysignf128, fabsf16, fabsf128],
     attributes: [
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         [exp10, exp10f, exp2, exp2f, rint]

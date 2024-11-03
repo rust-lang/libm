@@ -314,7 +314,7 @@ where
         // Make sure that the signs are the same before checing ULP to avoid wraparound
         let act_sig = actual.signum();
         let exp_sig = expected.signum();
-        ensure!(act_sig == exp_sig, "mismatched signs {act_sig} {exp_sig}");
+        ensure!(act_sig == exp_sig, "mismatched signs {act_sig:?} {exp_sig:?}");
 
         if actual.is_infinite() ^ expected.is_infinite() {
             bail!("mismatched infinities");
@@ -348,6 +348,12 @@ where
 }
 
 impl_float!(f32, f64);
+
+#[cfg(f16_enabled)]
+impl_float!(f16);
+
+#[cfg(f128_enabled)]
+impl_float!(f128);
 
 /* trait implementations for compound types */
 
