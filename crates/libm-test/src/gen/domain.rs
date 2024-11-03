@@ -15,8 +15,8 @@ use std::ops::Bound;
 
 use libm::support::{Float, MinInt};
 
-use crate::domain::Domain;
-use crate::{FloatExt, logspace};
+use crate::domain::{Domain, HasDomain};
+use crate::{FloatExt, MathOp, logspace};
 
 /// Number of values near an interesting point to check.
 const AROUND: usize = 100;
@@ -44,7 +44,16 @@ const NTESTS: usize = {
 const MAX_ASYMPTOTES: usize = 10;
 
 /// Create a test case iterator.
-pub fn get_test_cases<F: Float, D: Domain<F>>() -> impl Iterator<Item = (F,)>
+pub fn get_test_cases<Op>() -> impl Iterator<Item = (Op::FTy,)>
+where
+    Op: MathOp + HasDomain<Op::FTy>,
+    <Op::FTy as Float>::Int: TryFrom<usize>,
+{
+    get_test_cases_for_domain::<Op::FTy, Op::D>()
+}
+
+/// Create test cases given a domain.
+pub fn get_test_cases_for_domain<F: Float, D: Domain<F>>() -> impl Iterator<Item = (F,)>
 where
     F::Int: TryFrom<usize>,
 {
