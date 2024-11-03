@@ -118,11 +118,13 @@ impl MaybeOverride<(f32,)> for SpecialCase {
         _ulp: &mut u32,
         ctx: &CheckCtx,
     ) -> Option<TestResult> {
-        if ctx.basis == CheckBasis::Musl {
-            if ctx.fn_name == "expm1f" && input.0 > 80.0 && actual.is_infinite() {
-                // we return infinity but the number is representable
-                return XFAIL;
-            }
+        if ctx.basis == CheckBasis::Musl
+            && ctx.fn_name == "expm1f"
+            && input.0 > 80.0
+            && actual.is_infinite()
+        {
+            // we return infinity but the number is representable
+            return XFAIL;
         }
 
         if ctx.fn_name == "acoshf" && input.0 < -1.0 {

@@ -43,17 +43,17 @@ impl Config {
 pub fn emit_libm_config(cfg: &Config) {
     emit_intrinsics_cfg();
     emit_arch_cfg();
-    emit_optimization_cfg(&cfg);
-    emit_cfg_shorthands(&cfg);
-    emit_f16_f128_cfg(&cfg);
+    emit_optimization_cfg(cfg);
+    emit_cfg_shorthands(cfg);
+    emit_f16_f128_cfg(cfg);
 }
 
 /// Tests don't need most feature-related config.
 #[allow(dead_code)]
 pub fn emit_test_config(cfg: &Config) {
-    emit_optimization_cfg(&cfg);
-    emit_cfg_shorthands(&cfg);
-    emit_f16_f128_cfg(&cfg);
+    emit_optimization_cfg(cfg);
+    emit_cfg_shorthands(cfg);
+    emit_f16_f128_cfg(cfg);
 }
 
 /// Simplify the feature logic for enabling intrinsics so code only needs to use
