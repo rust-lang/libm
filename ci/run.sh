@@ -69,7 +69,7 @@ fi
 # Make sure we can build with overriding features. We test the individual
 # features it controls separately.
 cargo check --no-default-features
-cargo check --all --target "$target" $extra_flags --features "force-soft-floats"
+cargo check --features "force-soft-floats"
 
 if [ "${BUILD_ONLY:-}" = "1" ]; then
     cmd="cargo build --target $target --package libm"
@@ -78,6 +78,10 @@ if [ "${BUILD_ONLY:-}" = "1" ]; then
 
     echo "can't run tests on $target; skipping"
 else
+    # Check `force-soft-floats` again, this time including test crates.
+    cargo check --all --target "$target" $extra_flags \
+        --features "force-soft-floats" --all-targets
+
     cmd="cargo test --all --target $target $extra_flags"
 
     # stable by default
