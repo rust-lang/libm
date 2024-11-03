@@ -88,6 +88,7 @@ macro_rules! specified_types {
         fn_name: $fn_name:ident,
         RustFn: $RustFn:ty,
         RustArgs: $RustArgs:ty,
+        attrs: [$($meta:meta),*],
     ) => {
         mod $fn_name {
             #[allow(unused)]

@@ -66,10 +66,10 @@ if [ "$(uname -a)" = "Linux" ]; then
     extra_flags="$extra_flags --features libm-test/test-musl-serialized"
 fi
 
-# Make sure we can build with overriding features. We test the indibidual
+# Make sure we can build with overriding features. We test the individual
 # features it controls separately.
 cargo check --no-default-features
-cargo check --features "force-soft-floats"
+cargo check --all --target "$target" $extra_flags --features "force-soft-floats"
 
 if [ "${BUILD_ONLY:-}" = "1" ]; then
     cmd="cargo build --target $target --package libm"

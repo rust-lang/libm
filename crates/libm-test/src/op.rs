@@ -81,6 +81,7 @@ macro_rules! do_thing {
         RustFn: $RustFn:ty,
         RustArgs: $RustArgs:ty,
         RustRet: $RustRet:ty,
+        attrs: [$($meta:meta)*],
     ) => {
         paste::paste! {
             pub mod $fn_name {
