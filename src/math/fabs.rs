@@ -27,7 +27,7 @@ mod tests {
     fn spec_tests() {
         assert!(fabs(f64::NAN).is_nan());
         for f in [0.0, -0.0].iter().copied() {
-            assert_eq!(fabs(f), 0.0);
+            assert_eq!(fabs(f).total_cmp(&0.0), core::cmp::Ordering::Equal);
         }
         for f in [f64::INFINITY, f64::NEG_INFINITY].iter().copied() {
             assert_eq!(fabs(f), f64::INFINITY);
