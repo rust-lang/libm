@@ -8,6 +8,32 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.12](https://github.com/rust-lang/libm/compare/libm-v0.2.11...libm-v0.2.12) - 2024-11-14
+
+### Other
+
+- Use `https:` links in `README.md`
+- Move some numeric trait logic to default implementations
+- Resolve clippy errors in `libm` tests and check this in CI
+- Add some more basic docstrings ([#352](https://github.com/rust-lang/libm/pull/352))
+- Introduce `hf32!` and `hf64!` macros for hex float support
+- Fix errors reported by Clippy in `libm`
+- Expose the `support` module publicly with a test feature
+- Update libm `Float` and `Int` with functions from the test traits
+- Change prefixes used by the `Float` trait
+- Remove `libm-bench`
+- Rename `canonical_name` to `base_name`
+- Add float and integer traits from compiler-builtins
+- Move architecture-specific code to `src/math/arch`
+- Update `select_implementation` to accept arch configuration
+- Add an "arch" Cargo feature that is on by default
+- Vendor `cfg_if::cfg_if!`
+- Make use of `select_implementation`
+- Introduce a `select_implementation` macro
+- Introduce `math::arch::intrinsics`
+- Replace `feature = "unstable-intrinsics"` with `intrinsics_enabled`
+- Move the existing "unstable" feature to "unstable-intrinsics"
+
 ## [0.2.11](https://github.com/rust-lang/libm/compare/libm-v0.2.10...libm-v0.2.11) - 2024-10-28
 
 ### Fixed
