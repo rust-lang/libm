@@ -66,7 +66,7 @@ where
         Op::BASE_NAME.as_str(),
         "edge_cases",
         config,
-        edge_cases::get_test_cases::<Op, _>(),
+        edge_cases::get_test_cases::<Op, _>(&ctx),
     );
 }
 /// Plot the output of a single generator.

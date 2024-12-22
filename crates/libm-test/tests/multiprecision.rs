@@ -83,7 +83,7 @@ macro_rules! mp_domain_tests {
             $(#[$meta])*
             fn [< mp_edge_case_ $fn_name >]() {
                 type Op = libm_test::op::$fn_name::Routine;
-                domain_test_runner::<Op>(edge_cases::get_test_cases::<Op, _>());
+                domain_test_runner::<Op, _>(edge_cases::get_test_cases::<Op, _>);
             }
 
             #[test]

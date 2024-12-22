@@ -10,6 +10,7 @@ use crate::{FloatTy, op};
 
 pub const EXTENSIVE_ENV: &str = "LIBM_EXTENSIVE_TESTS";
 
+/// The different kinds of tests that we run
 #[derive(Debug)]
 pub enum TestTy {
     Extensive,
@@ -61,11 +62,6 @@ pub fn get_iterations(id: op::Identifier, test_ty: TestTy, argnum: usize) -> Tes
     let run_mp = cfg!(feature = "test-multiprecision");
     let run_musl = cfg!(feature = "build-musl");
     let run_extensive = EXTENSIVE.contains(&id);
-    // Tests are pretty slow on non-64-bit targets, x86 MacOS, and targets that run in QEMU.
-    let ci_slow_platform = crate::emulated()
-        || !cfg!(target_pointer_width = "64")
-        || cfg!(all(target_arch = "x86_64", target_vendor = "apple"));
-    let slow_platform = ci_slow_platform && crate::ci();
 
     // Extensive tests handle their own iterations
     if matches!(test_ty, TestTy::Extensive) {
@@ -75,6 +71,11 @@ pub fn get_iterations(id: op::Identifier, test_ty: TestTy, argnum: usize) -> Tes
     // Ideally run 5M tests
     let mut baseline = 5_000_000;
 
+    // Tests are pretty slow on non-64-bit targets, x86 MacOS, and targets that run in QEMU.
+    let slow_on_ci = crate::emulated()
+        || !cfg!(target_pointer_width = "64")
+        || cfg!(all(target_arch = "x86_64", target_vendor = "apple"));
+    let slow_platform = slow_on_ci && crate::ci();
     if slow_platform {
         baseline = 100_000;
     }
@@ -86,14 +87,13 @@ pub fn get_iterations(id: op::Identifier, test_ty: TestTy, argnum: usize) -> Tes
         FloatTy::F64 | FloatTy::F128 => baseline * 4,
     };
 
-    rand_tests *= match op.rust_sig.args.len() {
-        1 => 1,
-        2 => 2,
-        3 => 4,
-        _ => unimplemented!(),
-    };
+    //
+    let arg_multiplier = 1 << (op.rust_sig.args.len() - 1);
+    rand_tests *= arg_multiplier;
 
     // Idea: let main = `TestTy::...`, `main_test_iterations = big number`, `other_iterations = big / 100
+
+    // let primary_test = TestTy::
 
     // TODO
     let has_logspace_test = true;
