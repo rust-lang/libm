@@ -23,12 +23,14 @@ short-benchmarks = []
 [dependencies]
 anyhow = "1.0.90"
 az = { version = "1.2.1", optional = true }
+indicatif = { version = "0.17.9", default-features = false }
 libm = { path = "../..", features = ["unstable-test-support"] }
 libm-macros = { path = "../libm-macros" }
 musl-math-sys = { path = "../musl-math-sys", optional = true }
 paste = "1.0.15"
 rand = "0.8.5"
 rand_chacha = "0.3.1"
+rayon = "1.10.0"
 rug = { version = "1.26.1", optional = true, default-features = false, features = ["float", "std"] }
 
 [target.'cfg(target_family = "wasm")'.dependencies]
@@ -40,7 +42,15 @@ rand = { version = "0.8.5", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5.1", default-features = false, features = ["cargo_bench_support"] }
+# FIXME: use the crates.io version once it supports runtime skipping of tests
+libtest-mimic = { git = "https://github.com/tgross35/libtest-mimic.git", rev = "4c8413b493e1b499bb941d2ced1f4c3d8462f53c" }
 
 [[bench]]
 name = "random"
+harness = false
+
+[[test]]
+# No harness so that we can skip tests at runtime based on env. Prefixed with
+# `z` so these tests get run last.
+name = "z_extensive"
 harness = false
