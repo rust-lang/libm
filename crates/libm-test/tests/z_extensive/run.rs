@@ -6,8 +6,10 @@ use std::time::Duration;
 use indicatif::{ProgressBar, ProgressStyle};
 use libm_test::gen::extensive::{self, ExtensiveInput};
 use libm_test::mpfloat::MpOp;
-use libm_test::run_cfg::{EXTENSIVE_ENV, TestAction, TestTy, get_iterations};
-use libm_test::{CheckBasis, CheckCtx, CheckOutput, MathOp, TestResult, TupleCall};
+use libm_test::{
+    CheckBasis, CheckCtx, CheckOutput, EXTENSIVE_ENV, GeneratorKind, MathOp, TestAction,
+    TestResult, TupleCall, get_iterations,
+};
 use libtest_mimic::{Arguments, Completion, Trial};
 use rayon::prelude::*;
 
@@ -46,7 +48,8 @@ where
 {
     let test_name = format!("mp_extensive_{name}");
     all.push(Trial::skippable_test(test_name, move || {
-        let action = get_iterations(Op::IDENTIFIER, TestTy::Extensive, 0);
+        let ctx = CheckCtx::new(Op::IDENTIFIER, CheckBasis::Mpfr);
+        let action = get_iterations(&ctx, GeneratorKind::Extensive, 0);
         match action {
             TestAction::Run => (),
             TestAction::Iterations(_) => panic!("extensive tests disregard iteration counts"),

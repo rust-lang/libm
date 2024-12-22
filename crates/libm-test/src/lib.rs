@@ -8,7 +8,7 @@ pub mod mpfloat;
 mod num;
 pub mod op;
 mod precision;
-pub mod run_cfg;
+mod run_cfg;
 mod test_traits;
 
 pub use f8_impl::f8;
@@ -16,7 +16,8 @@ pub use libm::support::{Float, Int, IntTy, MinInt};
 pub use num::{FloatExt, logspace};
 pub use op::{BaseName, FloatTy, Identifier, MathOp, OpCFn, OpFTy, OpRustFn, OpRustRet, Ty};
 pub use precision::{MaybeOverride, SpecialCase, default_ulp};
-pub use test_traits::{CheckBasis, CheckCtx, CheckOutput, GenerateInput, Hex, TupleCall};
+pub use run_cfg::{CheckBasis, CheckCtx, EXTENSIVE_ENV, GeneratorKind, TestAction, get_iterations};
+pub use test_traits::{CheckOutput, GenerateInput, Hex, TupleCall};
 
 /// Result type for tests is usually from `anyhow`. Most times there is no success value to
 /// propagate.

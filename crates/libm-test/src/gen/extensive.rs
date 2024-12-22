@@ -31,8 +31,8 @@ where
     Op: HasDomain<Op::FTy>,
 {
     fn gen() -> impl Iterator<Item = Self> {
-        let mut start = Op::D.range_start();
-        let end = Op::D.range_end();
+        let mut start = Op::DOMAIN.range_start();
+        let end = Op::DOMAIN.range_end();
         iter::from_fn(move || {
             if start > end || start >= Op::FTy::INFINITY {
                 return None;
@@ -44,7 +44,7 @@ where
     }
 
     fn count() -> u64 {
-        u64::from(ulp_between(Op::D.range_start(), Op::D.range_end()).unwrap()) + 1
+        u64::from(ulp_between(Op::DOMAIN.range_start(), Op::DOMAIN.range_end()).unwrap()) + 1
     }
 }
 
@@ -54,8 +54,8 @@ where
     Op: HasDomain<Op::FTy>,
 {
     fn gen() -> impl Iterator<Item = Self> {
-        let start = Op::D.range_start();
-        let end = Op::D.range_end();
+        let start = Op::DOMAIN.range_start();
+        let end = Op::DOMAIN.range_end();
         let steps = <Op::FTy as Float>::Int::try_from(MAX_ITERATIONS)
             .unwrap_or(<Op::FTy as Float>::Int::MAX);
         logspace(start, end, steps).map(|v| (v,))
