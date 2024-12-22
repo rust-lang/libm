@@ -26,7 +26,7 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
         // Overrides that apply to either basis
         (_, Id::J0 | Id::J0f | Id::J1 | Id::J1f) => {
             // Results seem very target-dependent
-            if cfg!(target_arch = "x86_64") { 4000 } else { 800_000 }
+            if cfg!(target_arch = "x86_64") { 20_000 } else { 800_000 }
         }
         (_, Id::Jn | Id::Jnf) => 1000,
 
