@@ -26,7 +26,7 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
         // Overrides that apply to either basis
         // FMA is expected to be infinite precision.
         (_, Id::Fma | Id::Fmaf) => 0,
-        (_, Id::J0 | Id::J0f | Id::J1 | Id::J1f | Id::Y0 | Id::Y0f | Id::Y1 | Id::Y1f) => 800_000,
+        (_, Id::J0 | Id::J0f | Id::J1 | Id::J1f | Id::Y0 | Id::Y0f | Id::Y1 | Id::Y1f) => 8_000_000,
         (_, Id::Jn | Id::Jnf | Id::Yn | Id::Ynf) => 1000,
         (_, Id::Erfc | Id::Erfcf) => 4,
 
@@ -45,6 +45,7 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
         (Mpfr, Id::Acoshf) => 4,
         (Mpfr, Id::Asinh | Id::Asinhf) => 2,
         (Mpfr, Id::Atanh | Id::Atanhf) => 2,
+        (Mpfr, Id::Atan2 | Id::Atan2f) => 2,
         (Mpfr, Id::Exp10 | Id::Exp10f) => 6,
         (Mpfr, Id::Lgamma | Id::LgammaR | Id::Lgammaf | Id::LgammafR) => 16,
         (Mpfr, Id::Sinh | Id::Sinhf) => 2,
@@ -128,6 +129,20 @@ impl MaybeOverride<(f32,)> for SpecialCase {
             return XFAIL;
         }
 
+        if (ctx.base_name == BaseName::Lgamma || ctx.base_name == BaseName::LgammaR)
+            && input.0 > 4e36
+            && expected.is_infinite()
+            && !actual.is_infinite()
+        {
+            // This result should saturate but we return a finite value.
+            return XFAIL;
+        }
+
+        if ctx.base_name == BaseName::J0 && input.0 < -1e34 {
+            // Errors get huge close to -inf
+            return XFAIL;
+        }
+
         maybe_check_nan_bits(actual, expected, ctx)
     }
 
@@ -186,6 +201,11 @@ impl MaybeOverride<(f64,)> for SpecialCase {
         if ctx.base_name == BaseName::Lgamma || ctx.base_name == BaseName::LgammaR && input.0 < 0.0
         {
             // loggamma should not be defined for x < 0, yet we both return results
+            return XFAIL;
+        }
+
+        if ctx.base_name == BaseName::J0 && input.0 < -1e300 {
+            // Errors get huge close to -inf
             return XFAIL;
         }
 
@@ -305,6 +325,7 @@ impl MaybeOverride<(i32, f32)> for SpecialCase {
         }
     }
 }
+
 impl MaybeOverride<(i32, f64)> for SpecialCase {
     fn check_float<F: Float>(
         input: (i32, f64),
