@@ -4,27 +4,8 @@ use libm::support::{IntTy, MinInt};
 
 use crate::domain::HasDomain;
 use crate::op::OpITy;
+use crate::run_cfg::{TestAction, TestTy};
 use crate::{MathOp, logspace};
-
-/// Number of tests to run.
-// FIXME(ntests): replace this with a more logical algorithm
-const NTESTS: usize = {
-    if cfg!(optimizations_enabled) {
-        if crate::emulated()
-            || !cfg!(target_pointer_width = "64")
-            || cfg!(all(target_arch = "x86_64", target_vendor = "apple"))
-        {
-            // Tests are pretty slow on non-64-bit targets, x86 MacOS, and targets that run
-            // in QEMU.
-            100_000
-        } else {
-            5_000_000
-        }
-    } else {
-        // Without optimizations just run a quick check
-        800
-    }
-};
 
 /// Create a range of logarithmically spaced inputs within a function's domain.
 ///
@@ -33,11 +14,20 @@ const NTESTS: usize = {
 pub fn get_test_cases<Op>() -> impl Iterator<Item = (Op::FTy,)>
 where
     Op: MathOp + HasDomain<Op::FTy>,
-    IntTy<Op::FTy>: TryFrom<usize>,
+    IntTy<Op::FTy>: TryFrom<u64>,
 {
     let domain = Op::DOMAIN;
+    let action = crate::run_cfg::get_iterations(Op::IDENTIFIER, TestTy::Logspace, 0);
+    let ntests = match action {
+        TestAction::Iterations(n) => n,
+        TestAction::Run => unimplemented!(),
+        TestAction::Skip => unimplemented!(),
+    };
+
+    // We generate logspaced inputs within a specific range, excluding values that are out of
+    // range in order to make iterations useful (random tests still cover the full range).
     let start = domain.range_start();
     let end = domain.range_end();
-    let steps = OpITy::<Op>::try_from(NTESTS).unwrap_or(OpITy::<Op>::MAX);
+    let steps = OpITy::<Op>::try_from(ntests).unwrap_or(OpITy::<Op>::MAX);
     logspace(start, end, steps).map(|v| (v,))
 }

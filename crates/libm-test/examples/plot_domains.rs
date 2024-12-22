@@ -40,7 +40,7 @@ fn main() {
 
     // The script expects a path to `config.toml` to be passed as its only argument
     let mut cmd = Command::new("julia");
-    if !cfg!(debug_assertions) {
+    if cfg!(optimizations_enabled) {
         cmd.arg("-O3");
     }
     cmd.arg(jl_script).arg(config_path);
@@ -69,7 +69,6 @@ where
         edge_cases::get_test_cases::<Op, _>(),
     );
 }
-
 /// Plot the output of a single generator.
 fn plot_one_generator(
     out_dir: &Path,

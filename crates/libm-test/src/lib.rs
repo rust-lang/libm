@@ -8,6 +8,7 @@ pub mod mpfloat;
 mod num;
 pub mod op;
 mod precision;
+pub mod run_cfg;
 mod test_traits;
 
 pub use f8_impl::f8;
@@ -27,6 +28,15 @@ include!(concat!(env!("OUT_DIR"), "/all_files.rs"));
 /// True if `EMULATED` is set and nonempty. Used to determine how many iterations to run.
 pub const fn emulated() -> bool {
     match option_env!("EMULATED") {
+        Some(s) if s.is_empty() => false,
+        None => false,
+        Some(_) => true,
+    }
+}
+
+/// True if `CI` is set and nonempty.
+pub const fn ci() -> bool {
+    match option_env!("CI") {
         Some(s) if s.is_empty() => false,
         None => false,
         Some(_) => true,
