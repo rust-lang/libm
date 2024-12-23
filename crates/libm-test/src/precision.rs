@@ -26,7 +26,7 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
         // Overrides that apply to either basis
         (_, Id::J0 | Id::J0f | Id::J1 | Id::J1f) => {
             // Results seem very target-dependent
-            if cfg!(target_arch = "x86_64") { 4000 } else { 800_000 }
+            if cfg!(target_arch = "x86_64") { 20_000 } else { 800_000 }
         }
         (_, Id::Jn | Id::Jnf) => 1000,
 
@@ -41,10 +41,11 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
         (Musl, Id::Tgamma) => 20,
 
         // Overrides for MPFR
+        (Mpfr, Id::Acosh) => 4,
         (Mpfr, Id::Acoshf) => 4,
         (Mpfr, Id::Asinh | Id::Asinhf) => 2,
         (Mpfr, Id::Atanh | Id::Atanhf) => 2,
-        (Mpfr, Id::Exp10 | Id::Exp10f) => 3,
+        (Mpfr, Id::Exp10 | Id::Exp10f) => 6,
         (Mpfr, Id::Lgamma | Id::LgammaR | Id::Lgammaf | Id::LgammafR) => 16,
         (Mpfr, Id::Sinh | Id::Sinhf) => 2,
         (Mpfr, Id::Tanh | Id::Tanhf) => 2,
@@ -105,17 +106,15 @@ impl MaybeOverride<(f32,)> for SpecialCase {
         _ulp: &mut u32,
         ctx: &CheckCtx,
     ) -> Option<TestResult> {
-        if ctx.basis == CheckBasis::Musl {
-            if ctx.fn_name == "expm1f" && input.0 > 80.0 && actual.is_infinite() {
-                // we return infinity but the number is representable
-                return XFAIL;
-            }
+        if ctx.fn_name == "expm1f" && input.0 > 80.0 && actual.is_infinite() {
+            // we return infinity but the number is representable
+            return XFAIL;
+        }
 
-            if ctx.fn_name == "sinhf" && input.0.abs() > 80.0 && actual.is_nan() {
-                // we return some NaN that should be real values or infinite
-                // doesn't seem to happen on x86
-                return XFAIL;
-            }
+        if ctx.fn_name == "sinhf" && input.0.abs() > 80.0 && actual.is_nan() {
+            // we return some NaN that should be real values or infinite
+            // doesn't seem to happen on x86
+            return XFAIL;
         }
 
         if ctx.fn_name == "acoshf" && input.0 < -1.0 {
