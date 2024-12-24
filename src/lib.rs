@@ -1,7 +1,7 @@
 //! libm in pure Rust
 #![no_std]
-#![cfg_attr(intrinsics_enabled, allow(internal_features))]
-#![cfg_attr(intrinsics_enabled, feature(core_intrinsics))]
+// #![cfg_attr(intrinsics_enabled, allow(internal_features))]
+// #![cfg_attr(intrinsics_enabled, feature(core_intrinsics))]
 #![allow(clippy::assign_op_pattern)]
 #![allow(clippy::deprecated_cfg_attr)]
 #![allow(clippy::eq_op)]
@@ -14,6 +14,8 @@
 #![allow(clippy::needless_return)]
 #![allow(clippy::unreadable_literal)]
 #![allow(clippy::zero_divided_by_zero)]
+#![allow(internal_features)]
+#![feature(core_intrinsics)]
 
 mod libm_helper;
 mod math;
