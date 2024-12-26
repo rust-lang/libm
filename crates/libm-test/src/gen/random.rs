@@ -106,7 +106,7 @@ fn make_test_cases(ntests: usize) -> CachedInput {
 }
 
 /// Create a test case iterator.
-pub fn get_test_cases<RustArgs>(ctx: &CheckCtx) -> impl Iterator<Item = RustArgs>
+pub fn get_test_cases<RustArgs>(ctx: &CheckCtx) -> impl ExactSizeIterator<Item = RustArgs>
 where
     CachedInput: GenerateInput<RustArgs>,
 {

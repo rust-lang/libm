@@ -12,61 +12,61 @@ pub struct CachedInput {
 }
 
 impl GenerateInput<(f32,)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f32,)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f32,)> {
         self.inputs_f32.iter().map(|f| (f.0,))
     }
 }
 
 impl GenerateInput<(f32, f32)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f32, f32)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f32, f32)> {
         self.inputs_f32.iter().map(|f| (f.0, f.1))
     }
 }
 
 impl GenerateInput<(i32, f32)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (i32, f32)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (i32, f32)> {
         self.inputs_i32.iter().zip(self.inputs_f32.iter()).map(|(i, f)| (i.0, f.0))
     }
 }
 
 impl GenerateInput<(f32, i32)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f32, i32)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f32, i32)> {
         GenerateInput::<(i32, f32)>::get_cases(self).map(|(i, f)| (f, i))
     }
 }
 
 impl GenerateInput<(f32, f32, f32)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f32, f32, f32)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f32, f32, f32)> {
         self.inputs_f32.iter().copied()
     }
 }
 
 impl GenerateInput<(f64,)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f64,)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f64,)> {
         self.inputs_f64.iter().map(|f| (f.0,))
     }
 }
 
 impl GenerateInput<(f64, f64)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f64, f64)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f64, f64)> {
         self.inputs_f64.iter().map(|f| (f.0, f.1))
     }
 }
 
 impl GenerateInput<(i32, f64)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (i32, f64)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (i32, f64)> {
         self.inputs_i32.iter().zip(self.inputs_f64.iter()).map(|(i, f)| (i.0, f.0))
     }
 }
 
 impl GenerateInput<(f64, i32)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f64, i32)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f64, i32)> {
         GenerateInput::<(i32, f64)>::get_cases(self).map(|(i, f)| (f, i))
     }
 }
 
 impl GenerateInput<(f64, f64, f64)> for CachedInput {
-    fn get_cases(&self) -> impl Iterator<Item = (f64, f64, f64)> {
+    fn get_cases(&self) -> impl ExactSizeIterator<Item = (f64, f64, f64)> {
         self.inputs_f64.iter().copied()
     }
 }
