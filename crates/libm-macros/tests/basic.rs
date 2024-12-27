@@ -1,6 +1,3 @@
-// `STATUS_DLL_NOT_FOUND` on i686 MinGW, not worth looking into.
-#![cfg(not(all(target_arch = "x86", target_os = "windows", target_env = "gnu")))]
-
 macro_rules! basic {
     (
         fn_name: $fn_name:ident,
