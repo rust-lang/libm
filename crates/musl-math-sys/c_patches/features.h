@@ -27,6 +27,20 @@
  */
 #define weak_alias(old, new) /* nothing */
 
+#elif defined(_MSC_VER)
+#define weak
+#define hidden
+#define weak_alias(_old, _new)
+
+// // from corecrt_math.h
+// #ifndef _HUGE_ENUF
+//     #define _HUGE_ENUF  1e+300  // _HUGE_ENUF*_HUGE_ENUF must overflow
+// #endif
+// #define INFINITY   ((float)(_HUGE_ENUF * _HUGE_ENUF))
+// #define HUGE_VAL   ((double)INFINITY)
+// #define HUGE_VALF  ((float)INFINITY)
+// #define HUGE_VALL  ((long double)INFINITY)
+
 #else
 #define weak __attribute__((__weak__))
 #define hidden __attribute__((__visibility__("hidden")))

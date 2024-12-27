@@ -20,9 +20,9 @@ extra_flags=""
 # build musl since otherwise `--all` will activate it.
 case "$target" in
     # Can't build at all on MSVC, WASM, or thumb
-    *windows-msvc*) extra_flags="$extra_flags --exclude musl-math-sys" ;;
-    *wasm*) extra_flags="$extra_flags --exclude musl-math-sys" ;;
-    *thumb*) extra_flags="$extra_flags --exclude musl-math-sys" ;;
+    # *windows-msvc*) extra_flags="$extra_flags --exclude musl-math-sys" ;;
+    # *wasm*) extra_flags="$extra_flags --exclude musl-math-sys" ;;
+    # *thumb*) extra_flags="$extra_flags --exclude musl-math-sys" ;;
 
     # We can build musl on MinGW but running tests gets a stack overflow
     *windows-gnu*) ;;
