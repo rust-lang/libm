@@ -27,7 +27,7 @@
  */
 #define weak_alias(old, new) /* nothing */
 
-#else if defined(_MSC_VER)
+#elif defined(_MSC_VER)
 #define weak
 #define hidden
 #define weak_alias(_old, _new)
