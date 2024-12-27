@@ -42,17 +42,17 @@ const MULTIPLE_SYMBOLS: &[(&str, &[&str])] = &[
 fn main() {
     let cfg = Config::from_env();
 
-    if cfg.target_env == "msvc"
-        || cfg.target_family == "wasm"
-        || cfg.target_features.iter().any(|f| f == "thumb-mode")
-    {
-        println!(
-            "cargo::warning=Musl doesn't compile with the current \
-            target {}; skipping build",
-            &cfg.target_string
-        );
-        return;
-    }
+    // if cfg.target_env == "msvc"
+    //     || cfg.target_family == "wasm"
+    //     || cfg.target_features.iter().any(|f| f == "thumb-mode")
+    // {
+    //     println!(
+    //         "cargo::warning=Musl doesn't compile with the current \
+    //         target {}; skipping build",
+    //         &cfg.target_string
+    //     );
+    //     return;
+    // }
 
     build_musl_math(&cfg);
 }
