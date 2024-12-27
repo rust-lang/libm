@@ -237,8 +237,18 @@ fn find_math_source(math_root: &Path, cfg: &Config) -> BTreeMap<String, PathBuf>
             continue;
         }
 
+        // Skip long double routines
+        if path.file_name().unwrap().to_str().unwrap().ends_with("l.c") {
+            continue;
+        }
+
         let sym_name = path.file_stem().unwrap();
         map.insert(sym_name.to_str().unwrap().to_owned(), path.to_owned());
+    }
+
+    if cfg.target_os == "windows" {
+        // MSVC doesn't recognize `__asm__` so avoid it.
+        arch_dir = None;
     }
 
     // If arch-specific versions are available, build those instead.
