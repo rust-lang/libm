@@ -218,7 +218,7 @@ const KNOWN_TYPES: &[&str] = &["FTy", "CFn", "CArgs", "CRet", "RustFn", "RustArg
 
 /// A type used in a function signature.
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Ty {
     F16,
     F32,
@@ -359,7 +359,7 @@ pub fn base_name_enum(attributes: pm::TokenStream, tokens: pm::TokenStream) -> p
 ///         // The Rust version's return type (e.g. `(f32, f32)`)
 ///         RustRet: $RustRet:ty,
 ///         // Attributes for the current function, if any
-///         attrs: [$($meta:meta)*]
+///         attrs: [$($meta:meta),*],
 ///         // Extra tokens passed directly (if any)
 ///         extra: [$extra:ident],
 ///         // Extra function-tokens passed directly (if any)
@@ -377,6 +377,8 @@ pub fn base_name_enum(attributes: pm::TokenStream, tokens: pm::TokenStream) -> p
 ///     skip: [sin, cos],
 ///     // Attributes passed as `attrs` for specific functions. For example, here the invocation
 ///     // with `sinf` and that with `cosf` will both get `meta1` and `meta2`, but no others will.
+///     // Note that `f16_enabled` and `f128_enabled` will always get emitted regardless of whether
+///     // or not this is specified.
 ///     attributes: [
 ///         #[meta1]
 ///         #[meta2]
@@ -535,16 +537,28 @@ fn expand(input: StructuredInput, fn_list: &[&FunctionInfo]) -> syn::Result<pm2:
         let fn_name = Ident::new(func.name, Span::call_site());
 
         // Prepare attributes in an `attrs: ...` field
-        let meta_field = match &input.attributes {
-            Some(attrs) => {
-                let meta = attrs
-                    .iter()
-                    .filter(|map| map.names.contains(&fn_name))
-                    .flat_map(|map| &map.meta);
-                quote! { attrs: [ #( #meta )* ]  }
-            }
-            None => pm2::TokenStream::new(),
-        };
+        let mut meta_fields = Vec::new();
+        if let Some(attrs) = &input.attributes {
+            let meta_iter = attrs
+                .iter()
+                .filter(|map| map.names.contains(&fn_name))
+                .flat_map(|map| &map.meta)
+                .map(|v| v.into_token_stream());
+
+            meta_fields.extend(meta_iter);
+        }
+
+        // Always emit f16 and f128 meta so this doesn't need to be repeated everywhere
+        if func.rust_sig.args.contains(&Ty::F16) || func.rust_sig.returns.contains(&Ty::F16) {
+            let ts = quote! { cfg(f16_enabled) };
+            meta_fields.push(ts);
+        }
+        if func.rust_sig.args.contains(&Ty::F128) || func.rust_sig.returns.contains(&Ty::F128) {
+            let ts = quote! { cfg(f128_enabled) };
+            meta_fields.push(ts);
+        }
+
+        let meta_field = quote! { attrs: [ #( #meta_fields ),* ], };
 
         // Prepare extra in an `extra: ...` field, running the replacer
         let extra_field = match input.extra.clone() {

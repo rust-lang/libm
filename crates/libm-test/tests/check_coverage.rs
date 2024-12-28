@@ -22,6 +22,7 @@ const ALLOWED_SKIPS: &[&str] = &[
 macro_rules! callback {
     (
         fn_name: $name:ident,
+        attrs: [$($_meta:meta),*],
         extra: [$push_to:ident],
     ) => {
         $push_to.push(stringify!($name));

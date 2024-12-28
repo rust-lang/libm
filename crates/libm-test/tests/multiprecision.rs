@@ -1,6 +1,8 @@
 //! Test with "infinite precision"
 
 #![cfg(feature = "test-multiprecision")]
+#![cfg_attr(f128_enabled, feature(f128))]
+#![cfg_attr(f16_enabled, feature(f16))]
 
 use libm_test::gen::{CachedInput, random};
 use libm_test::mpfloat::MpOp;
@@ -10,11 +12,16 @@ use libm_test::{CheckBasis, CheckCtx, CheckOutput, GenerateInput, MathOp, TupleC
 macro_rules! mp_rand_tests {
     (
         fn_name: $fn_name:ident,
-        attrs: [$($meta:meta)*]
+        attrs: [$($meta:meta),*],
     ) => {
         paste::paste! {
             #[test]
             $(#[$meta])*
+            // #[cfg_attr(all(
+            //     optimizations_enabled,
+            //     any(target_arch = "powerpc", target_arch = "powerpc64")),
+            //     ignore = "stack overflow on PowerPC without optimizations"
+            // )]
             fn [< mp_random_ $fn_name >]() {
                 test_one::<libm_test::op::$fn_name::Routine>();
             }

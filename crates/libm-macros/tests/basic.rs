@@ -1,4 +1,6 @@
 // `STATUS_DLL_NOT_FOUND` on i686 MinGW, not worth looking into.
+#![feature(f16)]
+#![feature(f128)]
 #![cfg(not(all(target_arch = "x86", target_os = "windows", target_env = "gnu")))]
 
 macro_rules! basic {
@@ -11,7 +13,7 @@ macro_rules! basic {
         RustFn: $RustFn:ty,
         RustArgs: $RustArgs:ty,
         RustRet: $RustRet:ty,
-        attrs: [$($meta:meta)*]
+        attrs: [$($meta:meta),*],
         extra: [$($extra_tt:tt)*],
         fn_extra: $fn_extra:expr,
     ) => {
@@ -60,6 +62,7 @@ mod test_basic {
 macro_rules! basic_no_extra {
     (
         fn_name: $fn_name:ident,
+        attrs: [$($meta:meta),*],
     ) => {
         mod $fn_name {}
     };
@@ -85,6 +88,7 @@ macro_rules! specified_types {
         fn_name: $fn_name:ident,
         RustFn: $RustFn:ty,
         RustArgs: $RustArgs:ty,
+        attrs: [$($meta:meta),*],
     ) => {
         mod $fn_name {
             #[allow(unused)]

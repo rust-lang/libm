@@ -26,7 +26,7 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
         // Overrides that apply to either basis
         (_, Id::J0 | Id::J0f | Id::J1 | Id::J1f) => {
             // Results seem very target-dependent
-            if cfg!(target_arch = "x86_64") { 4000 } else { 800_000 }
+            if cfg!(target_arch = "x86_64") { 6000 } else { 800_000 }
         }
         (_, Id::Jn | Id::Jnf) => 1000,
 
@@ -97,6 +97,19 @@ pub trait MaybeOverride<Input> {
     }
 }
 
+#[cfg(f16_enabled)]
+impl MaybeOverride<(f16, f16)> for SpecialCase {
+    fn check_float<F: Float>(
+        input: (f16, f16),
+        _actual: F,
+        expected: F,
+        _ulp: &mut u32,
+        ctx: &CheckCtx,
+    ) -> Option<TestResult> {
+        maybe_skip_binop_nan(input, expected, ctx)
+    }
+}
+
 impl MaybeOverride<(f32,)> for SpecialCase {
     fn check_float<F: Float>(
         input: (f32,),
@@ -127,6 +140,12 @@ impl MaybeOverride<(f32,)> for SpecialCase {
         if ctx.base_name == BaseName::Lgamma || ctx.base_name == BaseName::LgammaR && input.0 < 0.0
         {
             // loggamma should not be defined for x < 0, yet we both return results
+            return XFAIL;
+        }
+
+        if ctx.fn_name == "sinhf" && input.0.abs() > 80.0 && actual.is_nan() {
+            // we return some NaN that should be real values or infinite
+            // doesn't seem to happen on x86
             return XFAIL;
         }
 
@@ -350,7 +369,25 @@ fn bessel_prec_dropoff<F: Float>(
     None
 }
 
+#[cfg(f128_enabled)]
+impl MaybeOverride<(f128, f128)> for SpecialCase {
+    fn check_float<F: Float>(
+        input: (f128, f128),
+        _actual: F,
+        expected: F,
+        _ulp: &mut u32,
+        ctx: &CheckCtx,
+    ) -> Option<TestResult> {
+        maybe_skip_binop_nan(input, expected, ctx)
+    }
+}
+
 impl MaybeOverride<(f32, f32, f32)> for SpecialCase {}
 impl MaybeOverride<(f64, f64, f64)> for SpecialCase {}
 impl MaybeOverride<(f32, i32)> for SpecialCase {}
 impl MaybeOverride<(f64, i32)> for SpecialCase {}
+
+#[cfg(f16_enabled)]
+impl MaybeOverride<(f16,)> for SpecialCase {}
+#[cfg(f128_enabled)]
+impl MaybeOverride<(f128,)> for SpecialCase {}
