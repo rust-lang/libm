@@ -1,6 +1,7 @@
 //! Configuration for how tests get run.
 
 use std::env;
+use std::ops::RangeInclusive;
 use std::sync::LazyLock;
 
 use crate::{BaseName, FloatTy, Identifier, test_log};
@@ -198,6 +199,25 @@ pub fn iteration_count(ctx: &CheckCtx, gen_kind: GeneratorKind, argnum: usize) -
     ));
 
     ntests
+}
+
+/// Some tests require that an integer be kept within reasonable limits; generate that here.
+pub fn int_range(ctx: &CheckCtx, argnum: usize) -> RangeInclusive<i32> {
+    let t_env = TestEnv::from_env(ctx);
+
+    if !matches!(ctx.base_name, BaseName::Jn | BaseName::Yn) {
+        return i32::MIN..=i32::MAX;
+    }
+
+    assert_eq!(argnum, 0, "For `jn`/`yn`, only the first argument takes an integer");
+
+    // The integer argument to `jn` is an iteration count. Limit this to ensure tests can be
+    // completed in a reasonable amount of time.
+    if t_env.slow_platform || !cfg!(optimizations_enabled) {
+        (-0xf)..=0xff
+    } else {
+        (-0xff)..=0xffff
+    }
 }
 
 /// For domain tests, limit how many asymptotes or specified check points we test.
