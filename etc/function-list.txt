@@ -67,6 +67,8 @@ jn
 jnf
 ldexp
 ldexpf
+ldexpf128
+ldexpf16
 lgamma
 lgamma_r
 lgammaf
@@ -95,6 +97,8 @@ round
 roundf
 scalbn
 scalbnf
+scalbnf128
+scalbnf16
 sin
 sincos
 sincosf
