@@ -124,9 +124,9 @@ macro_rules! impl_extensive_input {
                 let start = <$fty>::NEG_INFINITY;
                 let end = <$fty>::INFINITY;
 
-                let (iter0, steps0) = logspace_steps::<Op>(start, end, ctx, 1);
-                let iter1 = int_range(ctx, GeneratorKind::Extensive, 0);
-                let steps1 = iteration_count(ctx, GeneratorKind::Extensive, 0);
+                let (iter0, steps0) = logspace_steps::<Op>(start, end, ctx, 0);
+                let iter1 = int_range(ctx, GeneratorKind::Extensive, 1);
+                let steps1 = iteration_count(ctx, GeneratorKind::Extensive, 1);
 
                 let iter =
                     iter0.flat_map(move |first| iter1.clone().map(move |second| (first, second)));
