@@ -117,7 +117,8 @@ libm_macros::for_each_function! {
         exp10 | exp10f | exp2 | exp2f => (true, Some(musl_math_sys::MACRO_FN_NAME)),
 
         // Musl does not provide `f16` and `f128` functions
-        copysignf16 | copysignf128 | fabsf16 | fabsf128 => (false, None),
+        copysignf16 | copysignf128 | fabsf16 | fabsf128 |
+            fmaf16 | fmaf128  => (false, None),
 
         // By default we never skip (false) and always have a musl function available
         _ => (false, Some(musl_math_sys::MACRO_FN_NAME))
