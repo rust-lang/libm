@@ -144,6 +144,8 @@ libm_macros::for_each_function! {
         jnf,
         ldexp,
         ldexpf,
+        ldexpf16,
+        ldexpf128,
         nextafter,
         nextafterf,
         pow,
@@ -154,6 +156,8 @@ libm_macros::for_each_function! {
         remquof,
         scalbn,
         scalbnf,
+        scalbnf16,
+        scalbnf128,
         yn,
         ynf,
 

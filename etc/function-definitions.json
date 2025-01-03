@@ -458,6 +458,18 @@
         ],
         "type": "f32"
     },
+    "ldexpf128": {
+        "sources": [
+            "src/math/ldexpf128.rs"
+        ],
+        "type": "f128"
+    },
+    "ldexpf16": {
+        "sources": [
+            "src/math/ldexpf16.rs"
+        ],
+        "type": "f16"
+    },
     "lgamma": {
         "sources": [
             "src/libm_helper.rs",
@@ -630,15 +642,31 @@
     "scalbn": {
         "sources": [
             "src/libm_helper.rs",
+            "src/math/generic/scalbn.rs",
             "src/math/scalbn.rs"
         ],
         "type": "f64"
     },
     "scalbnf": {
         "sources": [
+            "src/math/generic/scalbn.rs",
             "src/math/scalbnf.rs"
         ],
         "type": "f32"
+    },
+    "scalbnf128": {
+        "sources": [
+            "src/math/generic/scalbn.rs",
+            "src/math/scalbnf128.rs"
+        ],
+        "type": "f128"
+    },
+    "scalbnf16": {
+        "sources": [
+            "src/math/generic/scalbn.rs",
+            "src/math/scalbnf16.rs"
+        ],
+        "type": "f16"
     },
     "sin": {
         "sources": [
