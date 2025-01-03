@@ -25,6 +25,8 @@
 
 use core::{f64, intrinsics};
 
+use super::Float;
+
 const B1: u32 = 715094163; /* B1 = (1023-1023/3-0.03306235651)*2**20 */
 const B2: u32 = 696219795; /* B2 = (1023-1023/3-54/3-0.03306235651)*2**20 */
 
@@ -37,14 +39,6 @@ const P4: f64 = 0.145996192886612446982; /* 0x3fc2b000, 0xd4e4edd7 */
 
 fn __builtin_expect<T>(v: T, _exp: T) -> T {
     v
-}
-
-fn __builtin_fabs(x: f64) -> f64 {
-    unsafe { intrinsics::fabsf64(x) }
-}
-
-fn __builtin_copysign(x: f64, y: f64) -> f64 {
-    unsafe { intrinsics::copysignf64(x, y) }
 }
 
 type FExcept = u32;
@@ -158,13 +152,13 @@ fn cr_cbrt(x: f64) -> f64 {
     dy = (y - y1) - dy;
     /* the approximation of zz^(1/3) is now y1 + dy, where |dy| < 1/2 ulp(y)
     (for rounding to nearest) */
-    let mut ady: f64 = unsafe { intrinsics::fabsf64(dy) };
+    let mut ady: f64 = dy.abs();
     /* For directed roundings, ady0 is tiny when dy is tiny, or ady0 is near
     from ulp(1);
     for rounding to nearest, ady0 is tiny when dy is near from 1/2 ulp(1),
     or from 3/2 ulp(1). */
-    let mut ady0: f64 = unsafe { intrinsics::fabsf64(ady - off[rm as usize]) };
-    let mut ady1: f64 = unsafe { intrinsics::fabsf64(ady - (hf64!("0x1p-52") + off[rm as usize])) };
+    let mut ady0: f64 = (ady - off[rm as usize]).abs();
+    let mut ady1: f64 = (ady - (hf64!("0x1p-52") + off[rm as usize])).abs();
     if __builtin_expect(ady0 < hf64!("0x1p-75") || ady1 < hf64!("0x1p-75"), false) {
         y2 = y1 * y1;
         y2l = unsafe { intrinsics::fmaf64(y1, y1, -y2) };
@@ -175,20 +169,20 @@ fn cr_cbrt(x: f64) -> f64 {
         y = y1 - dy;
         dy = (y1 - y) - dy;
         y1 = y;
-        ady = __builtin_fabs(dy);
-        ady0 = __builtin_fabs(ady - off[rm as usize]);
-        ady1 = __builtin_fabs(ady - (hf64!("0x1p-52") + off[rm as usize]));
+        ady = dy.abs();
+        ady0 = (ady - off[rm as usize]).abs();
+        ady1 = (ady - (hf64!("0x1p-52") + off[rm as usize])).abs();
         if __builtin_expect(ady0 < hf64!("0x1p-98") || ady1 < hf64!("0x1p-98"), false) {
-            let azz: f64 = __builtin_fabs(zz);
+            let azz: f64 = (zz).abs();
 
             // ~ 0x1.79d15d0e8d59b80000000000000ffc3dp+0
             if azz == hf64!("0x1.9b78223aa307cp+1") {
-                y1 = __builtin_copysign(hf64!("0x1.79d15d0e8d59cp+0"), zz);
+                y1 = hf64!("0x1.79d15d0e8d59cp+0").copysign(zz);
             }
 
             // ~ 0x1.de87aa837820e80000000000001c0f08p+0
             if azz == hf64!("0x1.a202bfc89ddffp+2") {
-                y1 = __builtin_copysign(hf64!("0x1.de87aa837820fp+0"), zz);
+                y1 = hf64!("0x1.de87aa837820fp+0").copysign(zz);
             }
 
             if rm > 0 {
@@ -204,7 +198,7 @@ fn cr_cbrt(x: f64) -> f64 {
                 for i in 0..7 {
                     if azz == wlist[i].0 {
                         let tmp = if rm as u64 + sign == 2 { hf64!("0x1p-52") } else { 0.0 };
-                        y1 = __builtin_copysign(wlist[i].1 + tmp, zz);
+                        y1 = (wlist[i].1 + tmp).copysign(zz);
                     }
                 }
             }
@@ -218,9 +212,7 @@ fn cr_cbrt(x: f64) -> f64 {
     if __builtin_expect((m0 ^ m1) <= (1u64 << 30), false) {
         let mut cvt4: u64 = y1.to_bits();
         cvt4 = (cvt4 + (164 << 15)) & 0xffffffffffff0000u64;
-        if __builtin_fabs((f64::from_bits(cvt4) - y1) - dy) < hf64!("0x1p-60")
-            || __builtin_fabs(zz) == 1.0
-        {
+        if ((f64::from_bits(cvt4) - y1) - dy).abs() < hf64!("0x1p-60") || (zz).abs() == 1.0 {
             cvt3 = (cvt3 + (1u64 << 15)) & 0xffffffffffff0000u64;
             set_flags(&flag);
         }
