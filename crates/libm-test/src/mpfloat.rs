@@ -144,7 +144,7 @@ libm_macros::for_each_function! {
         expm1 | expm1f => exp_m1,
         fabs | fabsf => abs,
         fdim | fdimf => positive_diff,
-        fma | fmaf => mul_add,
+        fma | fmaf | fmaf16 | fmaf128 => mul_add,
         fmax | fmaxf => max,
         fmin | fminf => min,
         lgamma | lgammaf => ln_gamma,

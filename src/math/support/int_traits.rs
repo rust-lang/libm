@@ -382,3 +382,22 @@ cast_into!(u64);
 cast_into!(i64);
 cast_into!(u128);
 cast_into!(i128);
+
+cast_into!(f32; f64);
+cast_into!(f64; f32);
+
+cfg_if! {
+    if #[cfg(f16_enabled)] {
+        cast_into!(f16; f32, f64);
+        cast_into!(f32; f16);
+        cast_into!(f64; f16);
+    }
+}
+
+cfg_if! {
+    if #[cfg(f128_enabled)] {
+        cast_into!(f128; f32, f64);
+        cast_into!(f32; f128);
+        cast_into!(f64; f128);
+    }
+}
