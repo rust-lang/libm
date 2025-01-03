@@ -135,6 +135,9 @@ pub trait Float:
     fn signum(self) -> Self {
         if self.is_nan() { self } else { Self::ONE.copysign(self) }
     }
+
+    /// Fused multiply-add.
+    fn mul_add(self, y: Self, z: Self) -> Self;
 }
 
 /// Access the associated `Int` type from a float (helper to avoid ambiguous associated types).
@@ -220,6 +223,19 @@ macro_rules! float_impl {
             fn normalize(significand: Self::Int) -> (i32, Self::Int) {
                 let shift = significand.leading_zeros().wrapping_sub(Self::EXP_BITS);
                 (1i32.wrapping_sub(shift as i32), significand << shift as Self::Int)
+            }
+            fn mul_add(self, y: Self, z: Self) -> Self {
+                // TODO: use intrinsics
+                todo!()
+
+                // cfg_if! {
+                //     // FIXME(msrv): `copysign` is available in `core` starting with 1.85.
+                //     if #[cfg(feature = "unstable-intrinsics")] {
+                //         self.copysign(other)
+                //     } else {
+                //         super::super::generic::copysign(self, other)
+                //     }
+                // }
             }
         }
     };

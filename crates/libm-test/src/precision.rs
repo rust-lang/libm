@@ -26,6 +26,7 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
         // Overrides that apply to either basis
         // FMA is expected to be infinite precision.
         (_, Id::Fma | Id::Fmaf) => 0,
+        (Mpfr, Id::Cbrt) => 0,
         (_, Id::J0 | Id::J0f | Id::J1 | Id::J1f | Id::Y0 | Id::Y0f | Id::Y1 | Id::Y1f) => 8_000_000,
         (_, Id::Jn | Id::Jnf | Id::Yn | Id::Ynf) => 1000,
         (_, Id::Erfc | Id::Erfcf) => 4,
