@@ -136,6 +136,8 @@ libm_macros::for_each_function! {
         fdimf,
         fma,
         fmaf,
+        fmaf16,
+        fmaf128,
         fmax,
         fmaxf,
         fmin,
