@@ -9,7 +9,7 @@ use az::Az;
 use rug::Assign;
 pub use rug::Float as MpFloat;
 use rug::float::Round::Nearest;
-use rug::ops::{PowAssignRound, RemAssignRound};
+use rug::ops::{MulAssignRound, PowAssign, PowAssignRound, RemAssignRound};
 
 use crate::{Float, MathOp};
 
@@ -252,6 +252,36 @@ macro_rules! impl_op_for_ty {
                     this.1.assign(input.1);
                     let ord = this.1.jn_round(this.0, Nearest);
                     prep_retval::<Self::FTy>(&mut this.1, ord)
+                }
+            }
+
+            // `ldexp` and `scalbn` are the same for binary floating point, so just forward all
+            // methods.
+            impl MpOp for crate::op::[<ldexp $suffix>]::Routine {
+                type MpTy = <crate::op::[<scalbn $suffix>]::Routine as MpOp>::MpTy;
+
+                fn new_mp() -> Self::MpTy {
+                    <crate::op::[<scalbn $suffix>]::Routine as MpOp>::new_mp()
+                }
+
+                fn run(this: &mut Self::MpTy, input: Self::RustArgs) -> Self::RustRet {
+                    <crate::op::[<scalbn $suffix>]::Routine as MpOp>::run(this, input)
+                }
+            }
+
+            impl MpOp for crate::op::[<scalbn $suffix>]::Routine {
+                type MpTy = (MpFloat, MpFloat);
+
+                fn new_mp() -> Self::MpTy {
+                    (new_mpfloat::<Self::FTy>(), new_mpfloat::<Self::FTy>())
+                }
+
+                fn run(this: &mut Self::MpTy, input: Self::RustArgs) -> Self::RustRet {
+                    this.0.assign(input.0);
+                    this.1.assign(2.0);
+                    this.1.pow_assign(input.1);
+                    let ord = this.0.mul_assign_round(&this.1, Nearest);
+                    prep_retval::<Self::FTy>(&mut this.0, ord)
                 }
             }
 
