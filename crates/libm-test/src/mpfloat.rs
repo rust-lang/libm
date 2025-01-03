@@ -334,9 +334,12 @@ macro_rules! impl_op_for_ty_all {
 
                 fn run(this: &mut Self::MpTy, input: Self::RustArgs) -> Self::RustRet {
                     this.0.assign(input.0);
-                    this.1.assign(2.0);
-                    this.1.pow_assign(input.1);
-                    let ord = this.0.mul_assign_round(&this.1, Nearest);
+                    let mut ord = Ordering::Equal;
+                    if this.0.is_finite() {
+                        this.1.assign(2.0);
+                        this.1.pow_assign(input.1);
+                        ord = this.0.mul_assign_round(&this.1, Nearest);
+                    }
                     prep_retval::<Self::FTy>(&mut this.0, ord)
                 }
             }
