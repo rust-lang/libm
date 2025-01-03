@@ -137,6 +137,7 @@ libm_macros::for_each_function! {
         fmod, fmodf, frexp, frexpf, ilogb, ilogbf, jn, jnf, ldexp, ldexpf,
         lgamma_r, lgammaf_r, modf, modff, nextafter, nextafterf, pow,powf,
         remquo, remquof, scalbn, scalbnf, sincos, sincosf, yn, ynf,
+        copysignf16, copysignf128, fabsf16, fabsf128,
     ],
     fn_extra: match MACRO_FN_NAME {
         // Remap function names that are different between mpfr and libm
@@ -157,10 +158,8 @@ libm_macros::for_each_function! {
 /// Implement unary functions that don't have a `_round` version
 macro_rules! impl_no_round {
     // Unary matcher
-    ($($fn_name:ident, $rug_name:ident;)*) => {
+    ($($fn_name:ident => $rug_name:ident;)*) => {
         paste::paste! {
-            // Implement for both f32 and f64
-            $( impl_no_round!{ @inner_unary [< $fn_name f >], $rug_name } )*
             $( impl_no_round!{ @inner_unary $fn_name, $rug_name } )*
         }
     };
@@ -183,12 +182,28 @@ macro_rules! impl_no_round {
 }
 
 impl_no_round! {
-    fabs, abs_mut;
-    ceil, ceil_mut;
-    floor, floor_mut;
-    rint, round_even_mut; // FIXME: respect rounding mode
-    round, round_mut;
-    trunc, trunc_mut;
+    ceil => ceil_mut;
+    ceilf => ceil_mut;
+    fabs => abs_mut;
+    fabsf => abs_mut;
+    floor => floor_mut;
+    floorf => floor_mut;
+    rint => round_even_mut; // FIXME: respect rounding mode
+    rintf => round_even_mut; // FIXME: respect rounding mode
+    round => round_mut;
+    roundf => round_mut;
+    trunc => trunc_mut;
+    truncf => trunc_mut;
+}
+
+#[cfg(f16_enabled)]
+impl_no_round! {
+    fabsf16 => abs_mut;
+}
+
+#[cfg(f128_enabled)]
+impl_no_round! {
+    fabsf128 => abs_mut;
 }
 
 /// Some functions are difficult to do in a generic way. Implement them here.
@@ -322,5 +337,39 @@ impl MpOp for crate::op::lgammaf_r::Routine {
         let (sign, ord) = this.ln_abs_gamma_round(Nearest);
         let ret = prep_retval::<Self::FTy>(this, ord);
         (ret, sign as i32)
+    }
+}
+
+/* Not all `f16` and `f128` functions exist yet so we can't easily use the macros. */
+
+#[cfg(f16_enabled)]
+impl MpOp for crate::op::copysignf16::Routine {
+    type MpTy = (MpFloat, MpFloat);
+
+    fn new_mp() -> Self::MpTy {
+        (new_mpfloat::<f16>(), new_mpfloat::<f16>())
+    }
+
+    fn run(this: &mut Self::MpTy, input: Self::RustArgs) -> Self::RustRet {
+        this.0.assign(input.0);
+        this.1.assign(input.1);
+        this.0.copysign_mut(&this.1);
+        prep_retval::<Self::RustRet>(&mut this.0, Ordering::Equal)
+    }
+}
+
+#[cfg(f128_enabled)]
+impl MpOp for crate::op::copysignf128::Routine {
+    type MpTy = (MpFloat, MpFloat);
+
+    fn new_mp() -> Self::MpTy {
+        (new_mpfloat::<f128>(), new_mpfloat::<f128>())
+    }
+
+    fn run(this: &mut Self::MpTy, input: Self::RustArgs) -> Self::RustRet {
+        this.0.assign(input.0);
+        this.1.assign(input.1);
+        this.0.copysign_mut(&this.1);
+        prep_retval::<Self::RustRet>(&mut this.0, Ordering::Equal)
     }
 }
