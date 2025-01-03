@@ -8,6 +8,43 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.12](https://github.com/rust-lang/libm/compare/libm-v0.2.11...libm-v0.2.12) - 2025-01-03
+
+### Other
+
+- Use intrinsics for `abs` and `copysign` when available
+- Rename generic `abs` to `fabs`
+- Use `rustdoc` output to create a list of public API
+- Remove an `is_nan` workaround that is no longer needed
+- Update and slightly refactor some of the `Float` trait
+- Add `f16` and `f128` configuration from `compiler-builtins`
+- Introduce generic `abs` and `copysign`
+- Fix new `clippy::precedence` lints
+- Introduce helper types for accessing trait items
+- Fix a bug in `abs_diff`
+- Remove tests against system musl
+- Use `https:` links in `README.md`
+- Move some numeric trait logic to default implementations
+- Resolve clippy errors in `libm` tests and check this in CI
+- Add some more basic docstrings ([#352](https://github.com/rust-lang/libm/pull/352))
+- Introduce `hf32!` and `hf64!` macros for hex float support
+- Fix errors reported by Clippy in `libm`
+- Expose the `support` module publicly with a test feature
+- Update libm `Float` and `Int` with functions from the test traits
+- Change prefixes used by the `Float` trait
+- Remove `libm-bench`
+- Rename `canonical_name` to `base_name`
+- Add float and integer traits from compiler-builtins
+- Move architecture-specific code to `src/math/arch`
+- Update `select_implementation` to accept arch configuration
+- Add an "arch" Cargo feature that is on by default
+- Vendor `cfg_if::cfg_if!`
+- Make use of `select_implementation`
+- Introduce a `select_implementation` macro
+- Introduce `math::arch::intrinsics`
+- Replace `feature = "unstable-intrinsics"` with `intrinsics_enabled`
+- Move the existing "unstable" feature to "unstable-intrinsics"
+
 ## [0.2.11](https://github.com/rust-lang/libm/compare/libm-v0.2.10...libm-v0.2.11) - 2024-10-28
 
 ### Fixed
