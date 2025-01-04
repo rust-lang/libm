@@ -115,6 +115,26 @@ macro_rules! impl_extensive_input {
                 KnownSize::new(iter, count)
             }
         }
+
+        impl<Op> ExtensiveInput<Op> for ($fty, i32)
+        where
+            Op: MathOp<RustArgs = Self, FTy = $fty>,
+        {
+            fn get_cases(ctx: &CheckCtx) -> impl ExactSizeIterator<Item = Self> {
+                let start = <$fty>::NEG_INFINITY;
+                let end = <$fty>::INFINITY;
+
+                let (iter0, steps0) = logspace_steps::<Op>(start, end, ctx, 0);
+                let iter1 = int_range(ctx, GeneratorKind::Extensive, 1);
+                let steps1 = iteration_count(ctx, GeneratorKind::Extensive, 1);
+
+                let iter =
+                    iter0.flat_map(move |first| iter1.clone().map(move |second| (first, second)));
+                let count = steps0.checked_mul(steps1).unwrap();
+
+                KnownSize::new(iter, count)
+            }
+        }
     };
 }
 
