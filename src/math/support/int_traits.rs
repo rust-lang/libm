@@ -82,6 +82,7 @@ pub trait Int:
     fn wrapping_shr(self, other: u32) -> Self;
     fn rotate_left(self, other: u32) -> Self;
     fn overflowing_add(self, other: Self) -> (Self, bool);
+    fn overflowing_sub(self, other: Self) -> (Self, bool);
     fn leading_zeros(self) -> u32;
     fn ilog2(self) -> u32;
 }
@@ -138,6 +139,10 @@ macro_rules! int_impl_common {
 
         fn overflowing_add(self, other: Self) -> (Self, bool) {
             <Self>::overflowing_add(self, other)
+        }
+
+        fn overflowing_sub(self, other: Self) -> (Self, bool) {
+            <Self>::overflowing_sub(self, other)
         }
 
         fn leading_zeros(self) -> u32 {
@@ -383,8 +388,15 @@ cast_into!(i64);
 cast_into!(u128);
 cast_into!(i128);
 
+cast_into!(i64; f32);
+cast_into!(i64; f64);
 cast_into!(f32; f64);
 cast_into!(f64; f32);
+
+cast_into!(bool; u16);
+cast_into!(bool; u32);
+cast_into!(bool; u64);
+cast_into!(bool; u128);
 
 cfg_if! {
     if #[cfg(f16_enabled)] {
