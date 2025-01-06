@@ -10,13 +10,13 @@ pub fn fma<F: Float>(x: F, y: F, z: F) -> F {
     todo!()
 }
 
-pub fn fma_big<F: Float, B: Float>(x: F, y: F, z: F) -> F
+/// FMA implementation when there is a larger float type available.
+pub fn fma_big<F, B>(x: F, y: F, z: F) -> F
 where
-    F: CastInto<B>,
-    B: CastInto<F>,
+    F: Float + CastInto<B>,
+    B: Float + CastInto<F> + CastFrom<F>,
     B::Int: CastInto<i32>,
     i32: CastFrom<i32>,
-    B: CastFrom<F>,
 {
     let one = IntTy::<B>::ONE;
 
