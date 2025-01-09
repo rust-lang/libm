@@ -48,7 +48,10 @@ where
 libm_macros::for_each_function! {
     callback: musl_rand_tests,
     // Musl does not support `f16` and `f128` on all platforms.
-    skip: [copysignf16, copysignf128, fabsf16, fabsf128],
+    skip: [
+        copysignf16, copysignf128, fabsf16, fabsf128,
+        ldexpf16, ldexpf128, scalbnf16, scalbnf128,
+    ],
     attributes: [
         #[cfg_attr(x86_no_sse, ignore)] // FIXME(correctness): wrong result on i586
         [exp10, exp10f, exp2, exp2f, rint]

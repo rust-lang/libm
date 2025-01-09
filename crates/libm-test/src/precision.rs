@@ -487,5 +487,9 @@ fn bessel_prec_dropoff<F: Float>(
 
 impl MaybeOverride<(f32, f32, f32)> for SpecialCase {}
 impl MaybeOverride<(f64, f64, f64)> for SpecialCase {}
+#[cfg(f16_enabled)]
+impl MaybeOverride<(f16, i32)> for SpecialCase {}
 impl MaybeOverride<(f32, i32)> for SpecialCase {}
 impl MaybeOverride<(f64, i32)> for SpecialCase {}
+#[cfg(f128_enabled)]
+impl MaybeOverride<(f128, i32)> for SpecialCase {}
