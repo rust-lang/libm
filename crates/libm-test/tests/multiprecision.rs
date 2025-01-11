@@ -122,6 +122,7 @@ libm_macros::for_each_function! {
         fdimf,
         fma,
         fmaf,
+        fmaf16,
         fmax,
         fmaxf,
         fmin,
