@@ -318,15 +318,31 @@
     "fma": {
         "sources": [
             "src/libm_helper.rs",
-            "src/math/fma.rs"
+            "src/math/fma.rs",
+            "src/math/generic/fma.rs"
         ],
         "type": "f64"
     },
     "fmaf": {
         "sources": [
-            "src/math/fmaf.rs"
+            "src/math/fmaf.rs",
+            "src/math/generic/fma.rs"
         ],
         "type": "f32"
+    },
+    "fmaf128": {
+        "sources": [
+            "src/math/fmaf128.rs",
+            "src/math/generic/fma.rs"
+        ],
+        "type": "f128"
+    },
+    "fmaf16": {
+        "sources": [
+            "src/math/fmaf16.rs",
+            "src/math/generic/fma.rs"
+        ],
+        "type": "f16"
     },
     "fmax": {
         "sources": [
