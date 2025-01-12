@@ -47,6 +47,10 @@ use super::fenv::{
 /// according to the rounding mode characterized by the value of FLT_ROUNDS.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fmaf(x: f32, y: f32, mut z: f32) -> f32 {
+    if true {
+        return super::generic::fma_big::<f32, f64>(x, y, z);
+    }
+
     let xy: f64;
     let mut result: f64;
     let mut ui: u64;

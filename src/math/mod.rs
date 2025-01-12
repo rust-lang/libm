@@ -121,7 +121,7 @@ use self::rem_pio2::rem_pio2;
 use self::rem_pio2_large::rem_pio2_large;
 use self::rem_pio2f::rem_pio2f;
 #[allow(unused_imports)]
-use self::support::{CastFrom, CastInto, DInt, Float, HInt, Int, MinInt};
+use self::support::{CastFrom, CastInto, DFloat, DInt, Float, HFloat, HInt, Int, IntTy, MinInt};
 
 // Public modules
 mod acos;
@@ -343,9 +343,11 @@ cfg_if! {
     if #[cfg(f16_enabled)] {
         mod copysignf16;
         mod fabsf16;
+        mod fmaf16;
 
         pub use self::copysignf16::copysignf16;
         pub use self::fabsf16::fabsf16;
+        pub use self::fmaf16::fmaf16;
     }
 }
 

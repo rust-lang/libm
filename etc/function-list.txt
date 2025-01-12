@@ -47,6 +47,7 @@ floor
 floorf
 fma
 fmaf
+fmaf16
 fmax
 fmaxf
 fmin

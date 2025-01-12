@@ -1,4 +1,5 @@
-use core::{fmt, mem, ops};
+use core::ops::{self, Neg};
+use core::{fmt, mem};
 
 use super::int_traits::{Int, MinInt};
 
@@ -23,10 +24,9 @@ pub trait Float:
     type Int: Int<OtherSign = Self::SignedInt, Unsigned = Self::Int>;
 
     /// A int of the same width as the float
-    type SignedInt: Int + MinInt<OtherSign = Self::Int, Unsigned = Self::Int>;
-
-    /// An int capable of containing the exponent bits plus a sign bit. This is signed.
-    type ExpInt: Int;
+    type SignedInt: Int
+        + MinInt<OtherSign = Self::Int, Unsigned = Self::Int>
+        + Neg<Output = Self::SignedInt>;
 
     const ZERO: Self;
     const NEG_ZERO: Self;
@@ -98,7 +98,7 @@ pub trait Float:
     }
 
     /// Returns the exponent, not adjusting for bias.
-    fn exp(self) -> Self::ExpInt;
+    fn exp(self) -> i32;
 
     /// Returns the significand with no implicit bit (or the "fractional" part)
     fn frac(self) -> Self::Int {
@@ -138,7 +138,6 @@ pub trait Float:
 }
 
 /// Access the associated `Int` type from a float (helper to avoid ambiguous associated types).
-#[allow(dead_code)]
 pub type IntTy<F> = <F as Float>::Int;
 
 macro_rules! float_impl {
@@ -146,7 +145,6 @@ macro_rules! float_impl {
         $ty:ident,
         $ity:ident,
         $sity:ident,
-        $expty:ident,
         $bits:expr,
         $significand_bits:expr,
         $from_bits:path
@@ -154,7 +152,6 @@ macro_rules! float_impl {
         impl Float for $ty {
             type Int = $ity;
             type SignedInt = $sity;
-            type ExpInt = $expty;
 
             const ZERO: Self = 0.0;
             const NEG_ZERO: Self = -0.0;
@@ -191,8 +188,8 @@ macro_rules! float_impl {
             fn is_sign_negative(self) -> bool {
                 self.is_sign_negative()
             }
-            fn exp(self) -> Self::ExpInt {
-                ((self.to_bits() & Self::EXP_MASK) >> Self::SIG_BITS) as Self::ExpInt
+            fn exp(self) -> i32 {
+                ((self.to_bits() & Self::EXP_MASK) >> Self::SIG_BITS) as i32
             }
             fn from_bits(a: Self::Int) -> Self {
                 Self::from_bits(a)
@@ -226,11 +223,11 @@ macro_rules! float_impl {
 }
 
 #[cfg(f16_enabled)]
-float_impl!(f16, u16, i16, i8, 16, 10, f16::from_bits);
-float_impl!(f32, u32, i32, i16, 32, 23, f32_from_bits);
-float_impl!(f64, u64, i64, i16, 64, 52, f64_from_bits);
+float_impl!(f16, u16, i16, 16, 10, f16::from_bits);
+float_impl!(f32, u32, i32, 32, 23, f32_from_bits);
+float_impl!(f64, u64, i64, 64, 52, f64_from_bits);
 #[cfg(f128_enabled)]
-float_impl!(f128, u128, i128, i16, 128, 112, f128::from_bits);
+float_impl!(f128, u128, i128, 128, 112, f128::from_bits);
 
 /* FIXME(msrv): vendor some things that are not const stable at our MSRV */
 
@@ -245,3 +242,63 @@ pub const fn f64_from_bits(bits: u64) -> f64 {
     // SAFETY: POD cast with no preconditions
     unsafe { mem::transmute::<u64, f64>(bits) }
 }
+
+/// Trait for floats twice the bit width of another integer.
+#[allow(unused)]
+pub trait DFloat: Float {
+    /// Float that is half the bit width of the floatthis trait is implemented for.
+    type H: HFloat<D = Self>;
+
+    /// Narrow the float type.
+    fn narrow(self) -> Self::H;
+}
+
+/// Trait for floats half the bit width of another float.
+#[allow(unused)]
+pub trait HFloat: Float {
+    /// Float that is double the bit width of the float this trait is implemented for.
+    type D: DFloat<H = Self>;
+
+    /// Widen the float type.
+    fn widen(self) -> Self::D;
+}
+
+macro_rules! impl_d_float {
+    ($($X:ident $D:ident),*) => {
+        $(
+            impl DFloat for $D {
+                type H = $X;
+
+                fn narrow(self) -> Self::H {
+                    self as $X
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_h_float {
+    ($($H:ident $X:ident),*) => {
+        $(
+            impl HFloat for $H {
+                type D = $X;
+
+                fn widen(self) -> Self::D {
+                    self as $X
+                }
+            }
+        )*
+    };
+}
+
+impl_d_float!(f32 f64);
+#[cfg(f16_enabled)]
+impl_d_float!(f16 f32);
+#[cfg(f128_enabled)]
+impl_d_float!(f64 f128);
+
+impl_h_float!(f32 f64);
+#[cfg(f16_enabled)]
+impl_h_float!(f16 f32);
+#[cfg(f128_enabled)]
+impl_h_float!(f64 f128);

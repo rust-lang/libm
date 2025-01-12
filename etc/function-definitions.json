@@ -328,6 +328,12 @@
         ],
         "type": "f32"
     },
+    "fmaf16": {
+        "sources": [
+            "src/math/fmaf16.rs"
+        ],
+        "type": "f16"
+    },
     "fmax": {
         "sources": [
             "src/libm_helper.rs",
