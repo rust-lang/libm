@@ -55,10 +55,12 @@ pub trait Int:
     + ops::BitAnd<Output = Self>
     + cmp::Ord
     + CastFrom<i32>
+    + CastFrom<u16>
     + CastFrom<u32>
     + CastFrom<u8>
     + CastFrom<usize>
     + CastInto<i32>
+    + CastInto<u16>
     + CastInto<u32>
     + CastInto<u8>
     + CastInto<usize>
@@ -88,6 +90,7 @@ pub trait Int:
     fn wrapping_shr(self, other: u32) -> Self;
     fn rotate_left(self, other: u32) -> Self;
     fn overflowing_add(self, other: Self) -> (Self, bool);
+    fn overflowing_mul(self, other: Self) -> (Self, bool);
     fn leading_zeros(self) -> u32;
     fn ilog2(self) -> u32;
 }
@@ -144,6 +147,10 @@ macro_rules! int_impl_common {
 
         fn overflowing_add(self, other: Self) -> (Self, bool) {
             <Self>::overflowing_add(self, other)
+        }
+
+        fn overflowing_mul(self, other: Self) -> (Self, bool) {
+            <Self>::overflowing_mul(self, other)
         }
 
         fn leading_zeros(self) -> u32 {
