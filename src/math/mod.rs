@@ -341,10 +341,12 @@ pub use self::truncf::truncf;
 
 cfg_if! {
     if #[cfg(f16_enabled)] {
+        mod ceilf16;
         mod copysignf16;
         mod fabsf16;
         mod truncf16;
 
+        pub use self::ceilf16::ceilf16;
         pub use self::copysignf16::copysignf16;
         pub use self::fabsf16::fabsf16;
         pub use self::truncf16::truncf16;
@@ -353,10 +355,12 @@ cfg_if! {
 
 cfg_if! {
     if #[cfg(f128_enabled)] {
+        mod ceilf128;
         mod copysignf128;
         mod fabsf128;
         mod truncf128;
 
+        pub use self::ceilf128::ceilf128;
         pub use self::copysignf128::copysignf128;
         pub use self::fabsf128::fabsf128;
         pub use self::truncf128::truncf128;
