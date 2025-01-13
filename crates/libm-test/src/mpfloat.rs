@@ -146,6 +146,8 @@ libm_macros::for_each_function! {
         fabsf128,
         fabsf16,floor,
         floorf,
+        floorf128,
+        floorf16,
         fmod,
         fmodf,
         frexp,
@@ -237,12 +239,14 @@ impl_no_round! {
 #[cfg(f16_enabled)]
 impl_no_round! {
     fabsf16 => abs_mut;
+    floorf16 => floor_mut;
     truncf16 => trunc_mut;
 }
 
 #[cfg(f128_enabled)]
 impl_no_round! {
     fabsf128 => abs_mut;
+    floorf128 => floor_mut;
     truncf128 => trunc_mut;
 }
 
