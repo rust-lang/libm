@@ -6,6 +6,9 @@ use core::ops;
 use super::super::support::{IntTy, cold_path, raise_invalid};
 use super::super::{CastFrom, CastInto, DInt, Float, HInt, Int, MinInt};
 
+extern crate std;
+use std::println;
+
 pub fn sqrt<F: Float>(x: F) -> F
 where
     F::Int: DInt + HInt + CastInto<u32>,
@@ -16,14 +19,27 @@ where
     let zero = IntTy::<F>::ZERO;
     let one = IntTy::<F>::ONE;
 
+    // We can get by without shifting the exponent around
+    let noshift = F::BITS <= 32;
+
     let mut ix = x.to_bits();
     // Exponent and sign
-    let mut top = u32::cast_from(ix >> F::SIG_BITS);
 
-    if top.wrapping_sub(1) >= F::EXP_MAX - 1 {
+    let (mut top, special) = if noshift {
+        let exp_lsb = one << F::SIG_BITS;
+        let special = ix.wrapping_sub(exp_lsb) >= F::EXP_MASK - exp_lsb;
+        (0, special)
+    } else {
+        let top = u32::cast_from(ix >> F::SIG_BITS);
+        let special = top.wrapping_sub(1) >= F::EXP_MAX - 1;
+        (top, special)
+    };
+
+    if special {
+        println!("special");
         cold_path();
         //
-        if ix.overflowing_mul(f_int::<F, _>(2u8)).0 == zero {
+        if ix.wrapping_mul(2u8.cast()) == zero {
             return x;
         }
 
@@ -39,19 +55,39 @@ where
 
         let scaled = x * F::from_parts(false, (F::SIG_BITS + F::EXP_BIAS) as i32, zero);
         ix = scaled.to_bits();
-        top = scaled.exp().unsigned();
-        top = top.wrapping_sub(F::SIG_BITS);
+        if noshift {
+            ix = ix.wrapping_sub(F::SIG_BITS.cast()) << F::SIG_BITS;
+        } else {
+            top = scaled.exp().unsigned();
+            top = top.wrapping_sub(F::SIG_BITS);
+        }
     }
 
-    let even = (top & 1) != 0;
-    let mut m = (ix << F::EXP_BITS) | (one << (F::BITS - 1));
-    if even {
-        m >>= 1;
+    let mut ey = zero;
+    let mut m;
+
+    if noshift {
+        let even = ix & (one << F::SIG_BITS) != zero;
+        let m1 = (ix << 8) | 0x80000000u32.cast();
+        let m0 = (ix << 7) | 0x7fffffffu32.cast();
+        m = if even { m0 } else { m1 };
+        // assert_eq!(m, mx);
+
+        ey = ix >> 1;
+        ey += 0x3f800000u32.cast() >> 1;
+        ey &= 0x7f800000u32.cast();
+    } else {
+        let even = (top & 1) != 0;
+        m = (ix << F::EXP_BITS) | (one << (F::BITS - 1));
+        if even {
+            m >>= 1;
+        }
+        top = (top.wrapping_add(F::EXP_MAX >> 1)) >> 1;
     }
-    top = (top.wrapping_add(F::EXP_MAX >> 1)) >> 1;
 
     // 32-bit three
-    let three = f_int::<F, _>(0b11u8) << ((F::BITS / 2) - 2);
+    let three = f_int::<F, _>(0b11u32 << 30);
+    println!("three {three:#x}");
 
     let mut r: F::Int;
     let mut s: F::Int;
@@ -59,35 +95,65 @@ where
     let mut u: F::Int;
     let i: F::Int;
 
+    let shift = if F::BITS == 32 {
+        17
+    } else if F::BITS == 64 {
+        46
+    } else {
+        unreachable!()
+    };
+
     // 17 for f32, 46 for f64
-    i = (ix >> 46) % f_int::<F, _>(128u8);
+    i = (ix >> shift) % 128u8.cast();
     // i = (ix >> todo!()) % f_int::<F, _>(128u8);
     r = f_int::<F, _>(RSQRT_TAB[usize::cast_from(i)]) << 16;
+
+    let shift = if F::BITS == 32 {
+        0
+    } else if F::BITS == 64 {
+        32
+    } else {
+        unreachable!()
+    };
+
     // TODO: can some of this casting back and forth be removed?
-    s = wmulh::<u32>(u32::cast_from(m >> 32), u32::cast_from(r)).cast();
+    s = wmulh::<u32>(u32::cast_from(m >> shift), u32::cast_from(r)).cast();
     d = wmulh::<u32>(s.cast(), r.cast()).cast();
-    u = three - d;
+    // u = three - d;
+    u = three.wrapping_sub(d);
 
     r = wmulh::<u32>(r.cast(), u.cast()).cast() << 1;
     s = wmulh::<u32>(s.cast(), u.cast()).cast() << 1;
     d = wmulh::<u32>(s.cast(), r.cast()).cast();
-    u = three - d;
-    r = wmulh::<u32>(r.cast(), u.cast()).cast() << 1;
+    // u = three - d;
+    u = three.wrapping_sub(d);
     /* |r sqrt(m) - 1| < 0x1.3704p-29 (measured worst-case) */
-    r <<= 32;
-    s = mul64(m, r);
-    d = mul64(s, r);
-    u = (three << 32) - d;
-    s = mul64(s, u); /* repr: 3.61 */
-    /* -0x1p-57 < s - sqrt(m) < 0x1.8001p-61 */
-    s = (s - 2u8.cast()) >> 9; /* repr: 12.52 */
-    // if F::BITS > 32 {
-    // } else {
-    //     //
-    // }
-    //
-    //
-    //
+
+    if F::BITS > 32 {
+        r = wmulh::<u32>(r.cast(), u.cast()).cast() << 1;
+        r <<= 32;
+        s = mul64(m, r);
+        d = mul64(s, r);
+        u = (three << 32) - d;
+        s = mul64(s, u); /* repr: 3.61 */
+        /* -0x1p-57 < s - sqrt(m) < 0x1.8001p-61 */
+        s = (s - 2u8.cast()) >> 9; /* repr: 12.52 */
+    } else {
+        s = wmulh::<u32>(s.cast(), u.cast()).cast();
+        s = (s - one) >> 6;
+
+        let d0: F::Int;
+        let d1: F::Int;
+        d0 = (m << 16).wrapping_sub(s.wrapping_mul(s));
+        d1 = s.wrapping_sub(d0);
+
+        s += d1 >> (F::BITS - 1);
+        s &= F::SIG_MASK;
+        // s &= 0x000fffffffffffff;
+        s |= ey;
+        let y = F::from_bits(s);
+        return y;
+    }
 
     let d0: F::Int;
     let d1: F::Int;
@@ -96,10 +162,18 @@ where
     let y: F;
     // let t: F;
 
-    d0 = (m << 42).wrapping_sub(s.overflowing_mul(s).0);
+    let shift = if F::BITS == 32 {
+        16
+    } else if F::BITS == 64 {
+        42
+    } else {
+        unimplemented!()
+    };
+
+    d0 = (m << shift).wrapping_sub(s.wrapping_mul(s));
     d1 = s.wrapping_sub(d0);
     // d2 = d1.wrapping_add(s).wrapping_add(one);
-    s += d1 >> F::BITS - 1;
+    s += d1 >> (F::BITS - 1);
     s &= F::SIG_MASK;
     // s &= 0x000fffffffffffff;
     s |= f_int::<F, _>(top) << F::SIG_BITS;
@@ -143,7 +217,7 @@ fn mul64<I: DInt + HInt>(a: I, b: I) -> I {
 // }
 
 #[rustfmt::skip]
-const RSQRT_TAB: [u16; 128] = [
+static RSQRT_TAB: [u16; 128] = [
     0xb451,0xb2f0,0xb196,0xb044,0xaef9,0xadb6,0xac79,0xab43,
     0xaa14,0xa8eb,0xa7c8,0xa6aa,0xa592,0xa480,0xa373,0xa26b,
     0xa168,0xa06a,0x9f70,0x9e7b,0x9d8a,0x9c9d,0x9bb5,0x9ad1,
