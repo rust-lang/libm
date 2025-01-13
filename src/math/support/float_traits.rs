@@ -34,6 +34,7 @@ pub trait Float:
     const NAN: Self;
     const MAX: Self;
     const MIN: Self;
+    const EPSILON: Self;
     const PI: Self;
     const NEG_PI: Self;
     const FRAC_PI_2: Self;
@@ -175,6 +176,7 @@ macro_rules! float_impl {
             const MAX: Self = -Self::MIN;
             // Sign bit set, saturated mantissa, saturated exponent with last bit zeroed
             const MIN: Self = $from_bits(Self::Int::MAX & !(1 << Self::SIG_BITS));
+            const EPSILON: Self = <$ty>::EPSILON;
 
             const PI: Self = core::$ty::consts::PI;
             const NEG_PI: Self = -Self::PI;
