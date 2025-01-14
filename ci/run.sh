@@ -80,7 +80,7 @@ fi
 
 flags="$flags --all --target $target"
 cmd="cargo test $flags"
-profile="--profile"
+profile_flag="--profile"
 
 # If nextest is available, use that
 command -v cargo-nextest && nextest=1 || nextest=0
@@ -94,7 +94,7 @@ if [ "$nextest" = "1" ]; then
     fi
     
     cmd="cargo nextest run ${cfg_flag:-} $flags"
-    profile="--cargo-profile"
+    profile_flag="--cargo-profile"
 fi
 
 # Test once without intrinsics
@@ -112,11 +112,13 @@ $cmd --features unstable-intrinsics
 $cmd --features unstable-intrinsics --benches
 
 # Test the same in release mode, which also increases coverage. Also ensure
-# the soft float routines are checked.
-$cmd "$profile" release-checked 
-$cmd "$profile" release-checked --features force-soft-floats
-$cmd "$profile" release-checked --features unstable-intrinsics
-$cmd "$profile" release-checked --features unstable-intrinsics --benches
+# the soft float routines are checked. `libm-test` is the only crate that
+# needs to be run with optimizations to get the full test suite.
+cmd="$cmd $profile_flag release-checked --package libm-test"
+$cmd
+$cmd --features force-soft-floats
+$cmd --features unstable-intrinsics
+$cmd --features unstable-intrinsics --benches
 
 # Ensure that the routines do not panic.
 ENSURE_NO_PANIC=1 cargo build -p libm --target "$target" --no-default-features --release
