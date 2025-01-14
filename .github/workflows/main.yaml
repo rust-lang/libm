@@ -12,248 +12,335 @@ env:
   RUST_BACKTRACE: full
 
 jobs:
-  test:
-    name: Build and test
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - target: aarch64-apple-darwin
-          os: macos-15
-        - target: aarch64-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: aarch64-pc-windows-msvc
-          os: windows-2025
-          build_only: 1 # Can't run on x86 hosts
-        - target: arm-unknown-linux-gnueabi
-          os: ubuntu-24.04
-        - target: arm-unknown-linux-gnueabihf
-          os: ubuntu-24.04
-        - target: armv7-unknown-linux-gnueabihf
-          os: ubuntu-24.04
-        - target: i586-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: i686-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: loongarch64-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: powerpc-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: powerpc64-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: powerpc64le-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: riscv64gc-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: thumbv6m-none-eabi
-          os: ubuntu-24.04
-        - target: thumbv7em-none-eabi
-          os: ubuntu-24.04
-        - target: thumbv7em-none-eabihf
-          os: ubuntu-24.04
-        - target: thumbv7m-none-eabi
-          os: ubuntu-24.04
-        - target: x86_64-unknown-linux-gnu
-          os: ubuntu-24.04
-        - target: x86_64-apple-darwin
-          os: macos-13
-        - target: wasm32-unknown-unknown
-          os: ubuntu-24.04
-          build_only: 1
-        - target: i686-pc-windows-msvc
-          os: windows-2025
-        - target: x86_64-pc-windows-msvc
-          os: windows-2025
-        - target: i686-pc-windows-gnu
-          os: windows-2025
-          channel: nightly-i686-gnu
-        - target: x86_64-pc-windows-gnu
-          os: windows-2025
-          channel: nightly-x86_64-gnu
-    runs-on: ${{ matrix.os }}
-    env:
-      BUILD_ONLY: ${{ matrix.build_only }}
-    steps:
-    - name: Print runner information
-      run: uname -a
-    - uses: actions/checkout@v4
-    - name: Install Rust (rustup)
-      shell: bash
-      run: |
-        channel="nightly"
-        # Account for channels that have required components (MinGW)
-        [ -n "${{ matrix.channel }}" ] && channel="${{ matrix.channel }}"
-        rustup update "$channel" --no-self-update
-        rustup default "$channel"
-        rustup target add "${{ matrix.target }}"
-        rustup component add clippy llvm-tools-preview
-    - uses: taiki-e/install-action@nextest
-    - uses: Swatinem/rust-cache@v2
-      with:
-        key: ${{ matrix.target }}
+  # test:
+  #   name: Build and test
+  #   timeout-minutes: 40
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #       - target: aarch64-apple-darwin
+  #         os: macos-15
+  #       - target: aarch64-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: aarch64-pc-windows-msvc
+  #         os: windows-2025
+  #         build_only: 1 # Can't run on x86 hosts
+  #       - target: arm-unknown-linux-gnueabi
+  #         os: ubuntu-24.04
+  #       - target: arm-unknown-linux-gnueabihf
+  #         os: ubuntu-24.04
+  #       - target: armv7-unknown-linux-gnueabihf
+  #         os: ubuntu-24.04
+  #       - target: i586-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: i686-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: loongarch64-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: powerpc-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: powerpc64-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: powerpc64le-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: riscv64gc-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: thumbv6m-none-eabi
+  #         os: ubuntu-24.04
+  #       - target: thumbv7em-none-eabi
+  #         os: ubuntu-24.04
+  #       - target: thumbv7em-none-eabihf
+  #         os: ubuntu-24.04
+  #       - target: thumbv7m-none-eabi
+  #         os: ubuntu-24.04
+  #       - target: x86_64-unknown-linux-gnu
+  #         os: ubuntu-24.04
+  #       - target: x86_64-apple-darwin
+  #         os: macos-13
+  #       - target: wasm32-unknown-unknown
+  #         os: ubuntu-24.04
+  #         build_only: 1
+  #       - target: i686-pc-windows-msvc
+  #         os: windows-2025
+  #       - target: x86_64-pc-windows-msvc
+  #         os: windows-2025
+  #       - target: i686-pc-windows-gnu
+  #         os: windows-2025
+  #         channel: nightly-i686-gnu
+  #       - target: x86_64-pc-windows-gnu
+  #         os: windows-2025
+  #         channel: nightly-x86_64-gnu
+  #   runs-on: ${{ matrix.os }}
+  #   env:
+  #     BUILD_ONLY: ${{ matrix.build_only }}
+  #   steps:
+  #   - name: Print runner information
+  #     run: uname -a
+  #   - uses: actions/checkout@v4
+  #   - name: Install Rust (rustup)
+  #     shell: bash
+  #     run: |
+  #       channel="nightly"
+  #       # Account for channels that have required components (MinGW)
+  #       [ -n "${{ matrix.channel }}" ] && channel="${{ matrix.channel }}"
+  #       rustup update "$channel" --no-self-update
+  #       rustup default "$channel"
+  #       rustup target add "${{ matrix.target }}"
+  #       rustup component add clippy llvm-tools-preview
+  #   - uses: taiki-e/install-action@nextest
+  #   - uses: Swatinem/rust-cache@v2
+  #     with:
+  #       key: ${{ matrix.target }}
 
+  #   - name: Download musl source
+  #     run: ./ci/download-musl.sh
+  #     shell: bash
+
+  #   - name: Verify API list
+  #     if: matrix.os == 'ubuntu-24.04'
+  #     run: python3 etc/update-api-list.py --check
+
+  #   # Non-linux tests just use our raw script
+  #   - name: Run locally
+  #     if: matrix.os != 'ubuntu-24.04' || contains(matrix.target, 'wasm')
+  #     shell: bash
+  #     run: ./ci/run.sh ${{ matrix.target }}
+
+  #   # Otherwise we use our docker containers to run builds
+  #   - name: Run in Docker
+  #     if: matrix.os == 'ubuntu-24.04' && !contains(matrix.target, 'wasm')
+  #     run: |
+  #       rustup target add x86_64-unknown-linux-musl
+  #       cargo generate-lockfile && ./ci/run-docker.sh ${{ matrix.target }}
+
+  #   - name: Print test logs if available
+  #     if: always()
+  #     run: if [ -f "target/test-log.txt" ]; then cat target/test-log.txt; fi
+  #     shell: bash
+
+  # clippy:
+  #   name: Clippy
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Install Rust
+  #     run: |
+  #       rustup update nightly --no-self-update
+  #       rustup default nightly
+  #       rustup component add clippy
+  #   - uses: Swatinem/rust-cache@v2
+  #   - name: Download musl source
+  #     run: ./ci/download-musl.sh
+  #   - run: cargo clippy --all --all-features --all-targets
+
+  # builtins:
+  #   name: Check use with compiler-builtins
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Install Rust
+  #     run: rustup update nightly --no-self-update && rustup default nightly
+  #   - uses: Swatinem/rust-cache@v2
+  #   - run: cargo test --manifest-path crates/compiler-builtins-smoke-test/Cargo.toml
+
+  benchmarks:
+    name: Benchmarks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@master
+    - uses: taiki-e/install-action@cargo-binstall
+    - name: Set up dependencies
+      run: |
+        rustup update nightly --no-self-update
+        rustup default nightly
+        iai_version="$(cargo metadata --format-version=1 --features icount |
+           jq -r '.packages[] | select(.name == "iai-callgrind").version')"
+        cargo binstall -y iai-callgrind-runner --version "$iai_version"
+        sudo apt-get install valgrind
+    - uses: Swatinem/rust-cache@v2
     - name: Download musl source
       run: ./ci/download-musl.sh
-      shell: bash
-
-    - name: Verify API list
-      if: matrix.os == 'ubuntu-24.04'
-      run: python3 etc/update-api-list.py --check
-
-    # Non-linux tests just use our raw script
-    - name: Run locally
-      if: matrix.os != 'ubuntu-24.04' || contains(matrix.target, 'wasm')
-      shell: bash
-      run: ./ci/run.sh ${{ matrix.target }}
-
-    # Otherwise we use our docker containers to run builds
-    - name: Run in Docker
-      if: matrix.os == 'ubuntu-24.04' && !contains(matrix.target, 'wasm')
+    - name: Run icount benchmarks
       run: |
-        rustup target add x86_64-unknown-linux-musl
-        cargo generate-lockfile && ./ci/run-docker.sh ${{ matrix.target }}
+        set -x
+        cargo bench --no-default-features \
+          --features unstable,unstable-float,icount,build-musl \
+          --bench icount \
+          -- --save-baseline
 
+        name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
+        fname="$name.tar.gz"
+        echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
+        echo "BASELINE_FNAME=$fname" >> "$GITHUB_ENV"
+        tar cJf "$fname.tar.gz" target/iai/libm-test/icount
+    - name: Upload the benchmark baseline
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.BASELINE_NAME }}
+        path: ${{ env.BASELINE_FNAME }}
     - name: Print test logs if available
       if: always()
       run: if [ -f "target/test-log.txt" ]; then cat target/test-log.txt; fi
       shell: bash
 
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-24.04
-    steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: |
-        rustup update nightly --no-self-update
-        rustup default nightly
-        rustup component add clippy
-    - uses: Swatinem/rust-cache@v2
-    - name: Download musl source
-      run: ./ci/download-musl.sh
-    - run: cargo clippy --all --all-features --all-targets
+  # msrv:
+  #   name: Check MSRV
+  #   runs-on: ubuntu-24.04
+  #   env:
+  #     RUSTFLAGS: # No need to check warnings on old MSRV, unset `-Dwarnings`
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - run: |
+  #       msrv="$(perl -ne 'print if s/rust-version\s*=\s*"(.*)"/\1/g' Cargo.toml)"
+  #       echo "MSRV: $msrv"
+  #       echo "MSRV=$msrv" >> "$GITHUB_ENV"
+  #   - name: Install Rust
+  #     run: rustup update "$MSRV" --no-self-update && rustup default "$MSRV"
+  #   - uses: Swatinem/rust-cache@v2
+  #   - run: cargo build -p libm
 
-  builtins:
-    name: Check use with compiler-builtins
-    runs-on: ubuntu-24.04
-    steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: rustup update nightly --no-self-update && rustup default nightly
-    - uses: Swatinem/rust-cache@v2
-    - run: cargo test --manifest-path crates/compiler-builtins-smoke-test/Cargo.toml
+  # rustfmt:
+  #   name: Rustfmt
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Install Rust
+  #     run: |
+  #       rustup update nightly --no-self-update
+  #       rustup default nightly
+  #       rustup component add rustfmt
+  #   - run: cargo fmt -- --check
 
-  benchmarks:
-    name: Benchmarks
-    runs-on: ubuntu-24.04
-    steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: rustup update nightly --no-self-update && rustup default nightly
-    - uses: Swatinem/rust-cache@v2
-    - name: Download musl source
-      run: ./ci/download-musl.sh
-    - run: |
-        # Always use the same seed for benchmarks. Ideally we should switch to a
-        # non-random generator.
-        export LIBM_SEED=benchesbenchesbenchesbencheswoo!
-        cargo bench --all --features libm-test/short-benchmarks,libm-test/build-musl
+  # # Determine which extensive tests should be run based on changed files.
+  # calculate_extensive_matrix:
+  #   name: Calculate job matrix
+  #   runs-on: ubuntu-24.04
+  #   outputs:
+  #     matrix: ${{ steps.script.outputs.matrix }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 100
+  #     - name: Fetch pull request ref
+  #       run: git fetch origin "$GITHUB_REF:$GITHUB_REF"
+  #       if: github.event_name == 'pull_request'
+  #     - run: python3 ci/calculate-exhaustive-matrix.py >> "$GITHUB_OUTPUT"
+  #       id: script
 
-  msrv:
-    name: Check MSRV
-    runs-on: ubuntu-24.04
-    env:
-      RUSTFLAGS: # No need to check warnings on old MSRV, unset `-Dwarnings`
-    steps:
-    - uses: actions/checkout@master
-    - run: |
-        msrv="$(perl -ne 'print if s/rust-version\s*=\s*"(.*)"/\1/g' Cargo.toml)"
-        echo "MSRV: $msrv"
-        echo "MSRV=$msrv" >> "$GITHUB_ENV"
-    - name: Install Rust
-      run: rustup update "$MSRV" --no-self-update && rustup default "$MSRV"
-    - uses: Swatinem/rust-cache@v2
-    - run: cargo build -p libm
+  # extensive:
+  #   name: Extensive tests for ${{ matrix.ty }}
+  #   needs:
+  #     # Wait on `clippy` so we have some confidence that the crate will build
+  #     - clippy
+  #     - calculate_extensive_matrix
+  #   runs-on: ubuntu-24.04
+  #   timeout-minutes: 80
+  #   strategy:
+  #     matrix:
+  #       # Use the output from `calculate_extensive_matrix` to calculate the matrix
+  #       # FIXME: it would be better to run all jobs (i.e. all types) but mark those that
+  #       # didn't change as skipped, rather than completely excluding the job. However,
+  #       # this is not currently possible https://github.com/actions/runner/issues/1985.
+  #       include: ${{ fromJSON(needs.calculate_extensive_matrix.outputs.matrix).matrix }}
+  #   env:
+  #     CHANGED: ${{ matrix.changed }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Rust
+  #       run: |
+  #         rustup update nightly --no-self-update
+  #         rustup default nightly
+  #     - uses: Swatinem/rust-cache@v2
+  #     - name: Download musl source
+  #       run: ./ci/download-musl.sh
+  #     - name: Run extensive tests
+  #       run: |
+  #         echo "Changed: '$CHANGED'"
+  #         if [ -z "$CHANGED" ]; then
+  #           echo "No tests to run, exiting."
+  #           exit
+  #         fi
 
-  rustfmt:
-    name: Rustfmt
-    runs-on: ubuntu-24.04
-    steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: |
-        rustup update nightly --no-self-update
-        rustup default nightly
-        rustup component add rustfmt
-    - run: cargo fmt -- --check
+  # rustfmt:
+  #   name: Rustfmt
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Install Rust
+  #     run: |
+  #       rustup update nightly --no-self-update
+  #       rustup default nightly
+  #       rustup component add rustfmt
+  #   - run: cargo fmt -- --check
 
-  # Determine which extensive tests should be run based on changed files.
-  calculate_extensive_matrix:
-    name: Calculate job matrix
-    runs-on: ubuntu-24.04
-    outputs:
-      matrix: ${{ steps.script.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 100
-      - name: Fetch pull request ref
-        run: git fetch origin "$GITHUB_REF:$GITHUB_REF"
-        if: github.event_name == 'pull_request'
-      - run: python3 ci/ci-util.py generate-matrix >> "$GITHUB_OUTPUT"
-        id: script
+  # # Determine which extensive tests should be run based on changed files.
+  # calculate_extensive_matrix:
+  #   name: Calculate job matrix
+  #   runs-on: ubuntu-24.04
+  #   outputs:
+  #     matrix: ${{ steps.script.outputs.matrix }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 100
+  #     - name: Fetch pull request ref
+  #       run: git fetch origin "$GITHUB_REF:$GITHUB_REF"
+  #       if: github.event_name == 'pull_request'
+  #     - run: python3 ci/ci-util.py generate-matrix >> "$GITHUB_OUTPUT"
+  #       id: script
 
-  extensive:
-    name: Extensive tests for ${{ matrix.ty }}
-    needs:
-      # Wait on `clippy` so we have some confidence that the crate will build
-      - clippy
-      - calculate_extensive_matrix
-    runs-on: ubuntu-24.04
-    timeout-minutes: 80
-    strategy:
-      matrix:
-        # Use the output from `calculate_extensive_matrix` to calculate the matrix
-        # FIXME: it would be better to run all jobs (i.e. all types) but mark those that
-        # didn't change as skipped, rather than completely excluding the job. However,
-        # this is not currently possible https://github.com/actions/runner/issues/1985.
-        include: ${{ fromJSON(needs.calculate_extensive_matrix.outputs.matrix).matrix }}
-    env:
-      CHANGED: ${{ matrix.changed }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Rust
-        run: |
-          rustup update nightly --no-self-update
-          rustup default nightly
-      - uses: Swatinem/rust-cache@v2
-      - name: Download musl source
-        run: ./ci/download-musl.sh
-      - name: Run extensive tests
-        run: |
-          echo "Changed: '$CHANGED'"
-          if [ -z "$CHANGED" ]; then
-            echo "No tests to run, exiting."
-            exit
-          fi
+  # extensive:
+  #   name: Extensive tests for ${{ matrix.ty }}
+  #   needs:
+  #     # Wait on `clippy` so we have some confidence that the crate will build
+  #     - clippy
+  #     - calculate_extensive_matrix
+  #   runs-on: ubuntu-24.04
+  #   timeout-minutes: 80
+  #   strategy:
+  #     matrix:
+  #       # Use the output from `calculate_extensive_matrix` to calculate the matrix
+  #       # FIXME: it would be better to run all jobs (i.e. all types) but mark those that
+  #       # didn't change as skipped, rather than completely excluding the job. However,
+  #       # this is not currently possible https://github.com/actions/runner/issues/1985.
+  #       include: ${{ fromJSON(needs.calculate_extensive_matrix.outputs.matrix).matrix }}
+  #   env:
+  #     CHANGED: ${{ matrix.changed }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Rust
+  #       run: |
+  #         rustup update nightly --no-self-update
+  #         rustup default nightly
+  #     - uses: Swatinem/rust-cache@v2
+  #     - name: Download musl source
+  #       run: ./ci/download-musl.sh
+  #     - name: Run extensive tests
+  #       run: |
+  #         echo "Changed: '$CHANGED'"
+  #         if [ -z "$CHANGED" ]; then
+  #           echo "No tests to run, exiting."
+  #           exit
+  #         fi
 
-          LIBM_EXTENSIVE_TESTS="$CHANGED" cargo t \
-            --features build-mpfr,unstable \
-            --profile release-checked \
-            -- extensive
-      - name: Print test logs if available
-        run: if [ -f "target/test-log.txt" ]; then cat target/test-log.txt; fi
-        shell: bash
+  #         LIBM_EXTENSIVE_TESTS="$CHANGED" cargo t \
+  #           --features build-mpfr,unstable \
+  #           --profile release-checked \
+  #           -- extensive
+  #     - name: Print test logs if available
+  #       run: if [ -f "target/test-log.txt" ]; then cat target/test-log.txt; fi
+  #       shell: bash
 
   success:
     needs:
-      - test
-      - builtins
+      # - test
+      # - builtins
       - benchmarks
-      - msrv
-      - rustfmt
-      - extensive
+      # - msrv
+      # - rustfmt
+      # - extensive
     runs-on: ubuntu-24.04
     # GitHub branch protection is exceedingly silly and treats "jobs skipped because a dependency
     # failed" as success. So we have to do some contortions to ensure the job fails if any of its
@@ -262,4 +349,4 @@ jobs:
     steps:
       # Manually check the status of all dependencies. `if: failure()` does not work.
       - name: check if any dependency failed
-        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'
+        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'; exit 1
