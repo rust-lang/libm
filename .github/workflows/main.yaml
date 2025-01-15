@@ -172,7 +172,7 @@ jobs:
         cargo bench --no-default-features \
           --features unstable,unstable-float,icount,build-musl \
           --bench icount \
-          -- --save-baseline=default --home "$iai_home"
+          -- --save-baseline=default --home "$(pwd)/$iai_home"
 
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
