@@ -219,6 +219,9 @@ def locate_baseline(flags: list[str]) -> None:
         eprint("unable to find job ID")
         return
 
+    # TODO: this is overriding the job to download from (for consistency), remove
+    job_id = "12785149073"
+
     sp.run(
         ["gh", "run", "download", str(job_id), f"--pattern={ARTIFACT_GLOB}"],
         check=False,

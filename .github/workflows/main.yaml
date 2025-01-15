@@ -166,7 +166,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        set -x
+        set -xe
         iai_home="iai-home"
         ./ci/ci-util.py locate-baseline --download --extract
         cargo bench --no-default-features \
