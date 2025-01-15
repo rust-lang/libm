@@ -6,9 +6,6 @@ use core::ops;
 use super::super::support::{IntTy, cold_path, raise_invalid};
 use super::super::{CastFrom, CastInto, DInt, Float, HInt, Int, MinInt};
 
-extern crate std;
-use std::println;
-
 pub fn sqrt<F: Float>(x: F) -> F
 where
     F::Int: DInt + HInt + CastInto<u32>,
@@ -36,7 +33,6 @@ where
     };
 
     if special {
-        println!("special");
         cold_path();
         //
         if ix.wrapping_mul(2u8.cast()) == zero {
@@ -56,7 +52,7 @@ where
         let scaled = x * F::from_parts(false, (F::SIG_BITS + F::EXP_BIAS) as i32, zero);
         ix = scaled.to_bits();
         if noshift {
-            ix = ix.wrapping_sub(F::SIG_BITS.cast()) << F::SIG_BITS;
+            ix = ix.wrapping_sub((F::SIG_BITS << F::SIG_BITS).cast());
         } else {
             top = scaled.exp().unsigned();
             top = top.wrapping_sub(F::SIG_BITS);
@@ -69,7 +65,7 @@ where
     if noshift {
         let even = ix & (one << F::SIG_BITS) != zero;
         let m1 = (ix << 8) | 0x80000000u32.cast();
-        let m0 = (ix << 7) | 0x7fffffffu32.cast();
+        let m0 = (ix << 7) & 0x7fffffffu32.cast();
         m = if even { m0 } else { m1 };
         // assert_eq!(m, mx);
 
@@ -87,7 +83,6 @@ where
 
     // 32-bit three
     let three = f_int::<F, _>(0b11u32 << 30);
-    println!("three {three:#x}");
 
     let mut r: F::Int;
     let mut s: F::Int;
