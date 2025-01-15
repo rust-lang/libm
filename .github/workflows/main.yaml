@@ -170,7 +170,7 @@ jobs:
         iai_home="iai-home"
         ./ci/ci-util.py locate-baseline --download --extract
         cargo bench --no-default-features \
-          --features unstable,unstable-float,icount,build-musl --bench icount \
+          --features unstable,unstable-float,icount --bench icount \
           -- --save-baseline=default --home "$(pwd)/$iai_home" --regression 'ir=0.0' \
           --regression-fail-fast=true
         echo $?
