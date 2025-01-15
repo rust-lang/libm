@@ -196,7 +196,7 @@ def locate_baseline(flags: list[str]) -> None:
                 "run",
                 "list",
                 "--limit=1",
-                "--status=completed",
+                "--status=completed",  # TODO: change to status=success
                 f"--branch={DEFAULT_BRANCH}",
                 "--json=databaseId,url,headSha,conclusion,createdAt,"
                 "status,workflowDatabaseId,workflowName",
