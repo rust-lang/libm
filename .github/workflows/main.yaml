@@ -171,15 +171,13 @@ jobs:
           -- --save-baseline
 
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
-        fname="$name.tar.gz"
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
-        echo "BASELINE_FNAME=$fname" >> "$GITHUB_ENV"
-        tar cJf "$fname.tar.gz" target/iai/libm-test/icount
+        tar cJf "$name.tar.xz" target/iai/libm-test/icount
     - name: Upload the benchmark baseline
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.BASELINE_NAME }}
-        path: ${{ env.BASELINE_FNAME }}
+        path: ${{ env.BASELINE_NAME }}.tar.xz
     - name: Print test logs if available
       if: always()
       run: if [ -f "target/test-log.txt" ]; then cat target/test-log.txt; fi
