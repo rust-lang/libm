@@ -171,7 +171,8 @@ jobs:
         ./ci/ci-util.py locate-baseline --download --extract
         cargo bench --no-default-features \
           --features unstable,unstable-float,icount,build-musl --bench icount \
-          -- --save-baseline=default --home "$(pwd)/$iai_home" --regression 'ir=5.0'
+          -- --save-baseline=default --home "$(pwd)/$iai_home" --regression 'ir=5.0' \
+          --regression-fail-fast=true
         echo $?
 
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
