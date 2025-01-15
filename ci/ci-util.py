@@ -238,7 +238,7 @@ def locate_baseline(flags: list[str]) -> None:
     candidate_baselines.sort(reverse=True)
     baseline_archive = candidate_baselines[0]
     eprint(f"extracting {baseline_archive}")
-    sp.run(["tar", "xjvf", baseline_archive], check=True)
+    sp.run(["tar", "xJvf", baseline_archive], check=True)
 
 
 def main():
