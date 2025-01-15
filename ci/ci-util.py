@@ -32,7 +32,6 @@ USAGE = cleandoc(
             downloading fails.
 
             Note that `--extract` will overwrite files in `target/iai/libm-*`.
-
     """
 )
 
