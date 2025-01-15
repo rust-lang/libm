@@ -167,15 +167,16 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         set -x
+        iai_home="iai-home"
         ./ci/ci-util.py locate-baseline --download --extract
         cargo bench --no-default-features \
           --features unstable,unstable-float,icount,build-musl \
           --bench icount \
-          -- --save-baseline=default
+          -- --save-baseline=default --home "$iai_home"
 
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
-        tar cJf "$name.tar.xz" target/iai/libm-test/icount
+        tar cJf "$name.tar.xz" "$iai_home"
     - name: Upload the benchmark baseline
       uses: actions/upload-artifact@v4
       with:
