@@ -163,6 +163,8 @@ jobs:
     - name: Download musl source
       run: ./ci/download-musl.sh
     - name: Run icount benchmarks
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         set -x
         ./ci/ci-util.py locate-baseline --download --extract
