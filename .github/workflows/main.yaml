@@ -165,10 +165,11 @@ jobs:
     - name: Run icount benchmarks
       run: |
         set -x
+        ./ci/ci-util.py locate-baseline --download --extract
         cargo bench --no-default-features \
           --features unstable,unstable-float,icount,build-musl \
           --bench icount \
-          -- --save-baseline
+          -- --save-baseline=default
 
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
@@ -182,7 +183,6 @@ jobs:
       if: always()
       run: if [ -f "target/test-log.txt" ]; then cat target/test-log.txt; fi
       shell: bash
-
   # msrv:
   #   name: Check MSRV
   #   runs-on: ubuntu-24.04

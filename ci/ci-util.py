@@ -9,6 +9,7 @@ import json
 import subprocess as sp
 import sys
 from dataclasses import dataclass
+from glob import glob
 from inspect import cleandoc
 from os import getenv
 from pathlib import Path
@@ -18,16 +19,28 @@ USAGE = cleandoc(
     """
     usage:
 
-    ./ci/ci-util.py <SUBCOMMAND>
+    ./ci/ci-util.py <COMMAND> [flags]
 
-    SUBCOMMAND:
-        generate-matrix    Calculate a matrix of which functions had source change,
-                           print that as JSON object.
+    COMMAND:
+        generate-matrix
+            Calculate a matrix of which functions had source change, print that as
+             a JSON object.
+
+        locate-baseline [--download] [--extract]
+            Locate the most recent benchmark baseline available in CI and, if flags
+            specify, download and extract it. Never exits with nonzero status if
+            downloading fails.
+
+            Note that `--extract` will overwrite files in `target/iai/libm-*`.
+
     """
 )
 
 REPO_ROOT = Path(__file__).parent.parent
 GIT = ["git", "-C", REPO_ROOT]
+DEFAULT_BRANCH = "icount-benchmarks"  # TODO: change once ready to merge
+WORKFLOW_NAME = "CI"  # Workflow that generates the benchmark artifacts
+ARTIFACT_GLOB = "baseline-icount*"
 
 # Don't run exhaustive tests if these files change, even if they contaiin a function
 # definition.
@@ -38,6 +51,11 @@ IGNORE_FILES = [
 ]
 
 TYPES = ["f16", "f32", "f64", "f128"]
+
+
+def eprint(*args, **kwargs):
+    """Print to stderr."""
+    print(*args, file=sys.stderr, **kwargs)
 
 
 class FunctionDef(TypedDict):
@@ -145,9 +163,77 @@ class Context:
         return output
 
 
-def eprint(*args, **kwargs):
-    """Print to stderr."""
-    print(*args, file=sys.stderr, **kwargs)
+def locate_baseline(flags: list[str]) -> None:
+    """Find the most recent baseline from CI, download it if specified.
+
+    This returns rather than erroring, even if the `gh` commands fail. This is to avoid
+    erroring in CI if the baseline is unavailable (artifact time limit exceeded, first
+    run on the branch, etc).
+    """
+
+    download = False
+    extract = False
+
+    while len(flags) > 0:
+        match flags[0]:
+            case "--download":
+                download = True
+            case "--extract":
+                extract = True
+            case _:
+                eprint(USAGE)
+                exit(1)
+        flags = flags[1:]
+
+    if extract and not download:
+        eprint("cannot extract without downloading")
+        exit(1)
+
+    try:
+        # Locate the most recent job to run on our branch
+        latest_job = sp.check_output(
+            [
+                "gh",
+                "run",
+                "list",
+                f"--branch={DEFAULT_BRANCH}",
+                "--limit=1",
+                "--json=databaseId,url,headSha,conclusion,createdAt,"
+                "status,workflowDatabaseId,workflowName",
+                f'--jq=select(.[].workflowName == "{WORKFLOW_NAME}")',
+            ],
+            text=True,
+        )
+    except sp.CalledProcessError as e:
+        eprint(f"failed to run github command: {e}")
+        return
+
+    latest = json.loads(latest_job)[0]
+    eprint("latest job: ", json.dumps(latest, indent=4))
+
+    if not download:
+        return
+
+    job_id = latest.get("databaseId")
+    if job_id is None:
+        eprint("unable to find job ID")
+        return
+
+    sp.run(
+        ["gh", "run", "download", str(job_id), f"--pattern={ARTIFACT_GLOB}"],
+        check=False,
+    )
+
+    if not extract:
+        return
+
+    # Find the baseline with the most recent timestamp. GH downloads the files to e.g.
+    # `some-dirname/some-dirname.tar.xz`, so just glob the whole thing together.
+    candidate_baselines = glob(f"{ARTIFACT_GLOB}/{ARTIFACT_GLOB}")
+    candidate_baselines.sort(reverse=True)
+    baseline_archive = candidate_baselines[0]
+    eprint(f"extracting {baseline_archive}")
+    sp.run(["tar", "xjvf", baseline_archive], check=True)
 
 
 def main():
@@ -156,6 +242,8 @@ def main():
             ctx = Context()
             output = ctx.make_workflow_output()
             print(f"matrix={output}")
+        case ["locate-baseline", *flags]:
+            locate_baseline(flags)
         case ["--help" | "-h"]:
             print(USAGE)
             exit()
