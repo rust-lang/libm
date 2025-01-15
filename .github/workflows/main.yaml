@@ -166,12 +166,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        set -x
+        set -xe
         iai_home="iai-home"
         ./ci/ci-util.py locate-baseline --download --extract
         cargo bench --no-default-features \
-          --features unstable,unstable-float,icount,build-musl --bench icount \
-          -- --save-baseline=default --home "$(pwd)/$iai_home" --regression 'ir=5.0'
+          --features unstable,unstable-float,icount --bench icount \
+          -- --save-baseline=default --home "$(pwd)/$iai_home" --regression 'ir=-5.0' \
+          --regression-fail-fast=true
+        echo $?
 
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
