@@ -196,8 +196,9 @@ def locate_baseline(flags: list[str]) -> None:
                 "gh",
                 "run",
                 "list",
-                f"--branch={DEFAULT_BRANCH}",
                 "--limit=1",
+                "--status=completed",
+                f"--branch={DEFAULT_BRANCH}",
                 "--json=databaseId,url,headSha,conclusion,createdAt,"
                 "status,workflowDatabaseId,workflowName",
                 f'--jq=select(.[].workflowName == "{WORKFLOW_NAME}")',
@@ -230,6 +231,10 @@ def locate_baseline(flags: list[str]) -> None:
     # Find the baseline with the most recent timestamp. GH downloads the files to e.g.
     # `some-dirname/some-dirname.tar.xz`, so just glob the whole thing together.
     candidate_baselines = glob(f"{ARTIFACT_GLOB}/{ARTIFACT_GLOB}")
+    if len(candidate_baselines) == 0:
+        eprint("no possible baseline directories found")
+        return
+
     candidate_baselines.sort(reverse=True)
     baseline_archive = candidate_baselines[0]
     eprint(f"extracting {baseline_archive}")
