@@ -193,6 +193,13 @@ jobs:
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
         tar cJf "$name.tar.xz" "$iai_home"
 
+    - name: Run wall time benchmarks
+    - run: |
+        # Always use the same seed for benchmarks. Ideally we should switch to a
+        # non-random generator.
+        export LIBM_SEED=benchesbenchesbenchesbencheswoo!
+        cargo bench --all --features libm-test/short-benchmarks,libm-test/build-musl
+
     - name: Upload the benchmark baseline
       uses: actions/upload-artifact@v4
       with:
