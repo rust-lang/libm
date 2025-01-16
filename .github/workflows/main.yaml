@@ -200,7 +200,7 @@ jobs:
         path: ${{ env.BASELINE_NAME }}.tar.xz
     
     - name: Run wall time benchmarks
-    - run: |
+      run: |
         # Always use the same seed for benchmarks. Ideally we should switch to a
         # non-random generator.
         export LIBM_SEED=benchesbenchesbenchesbencheswoo!
