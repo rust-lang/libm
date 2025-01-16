@@ -8,6 +8,72 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.12](https://github.com/rust-lang/libm/compare/libm-v0.2.11...libm-v0.2.12) - 2025-01-16
+
+### Other
+
+- Adjust precision and add xfails based on new tests
+- Simplify and optimize `fdim` ([#442](https://github.com/rust-lang/libm/pull/442))
+- Don't set `codegen-units=1` by default in CI
+- Add `fdimf16` and `fdimf128`
+- Add a generic version of `fdim`
+- Add `truncf16` and `truncf128`
+- Add a generic version of `trunc`
+- Add a utility crate for quick evaluation
+- Enable `build-mpfr` and `build-musl` by default
+- Rename the `test-multiprecision` feature to `build-mpfr`
+- Introduce arch::aarch64 and use it for rint{,f}
+- Use wasm32 arch intrinsics for rint{,f}
+- Expose C versions of `libm` functions in the `cb` crate
+- Add `biteq` and `exp_unbiased` to `Float`
+- Add a `release-checked` profile with debug and overflow assertions
+- Remove `ExpInt` from `Float`, always use `i32` instead
+- Split `cast` into `cast` and `cast_lossy`
+- Use `core::arch::wasm` functions rather than intrinsics
+- Account for optimization levels other than numbers
+- Replace "intrinsic" config with "arch" config
+- Don't use intrinsics abs for `f16` and `f128` on wasm32
+- Remove an unused `feature = "force-soft-floats"` gate
+- Switch from using `unstable-intrinsics` to `intrinsics_enabled`
+- Add test infrastructure for `f16` and `f128`
+- Add `fabsf16`, `fabsf128`, `copysignf16`, and `copysignf128`
+- Enable `f16` and `f128` when creating the API change list
+- Add more detailed definition output for `update-api-list.py`
+- Rename `unstable-test-support` to `unstable-public-internals`
+- Add a way for tests to log to a file
+- Use intrinsics for `abs` and `copysign` when available
+- Rename generic `abs` to `fabs`
+- Use `rustdoc` output to create a list of public API
+- Remove an `is_nan` workaround that is no longer needed
+- Update and slightly refactor some of the `Float` trait
+- Add `f16` and `f128` configuration from `compiler-builtins`
+- Introduce generic `abs` and `copysign`
+- Fix new `clippy::precedence` lints
+- Introduce helper types for accessing trait items
+- Fix a bug in `abs_diff`
+- Remove tests against system musl
+- Use `https:` links in `README.md`
+- Move some numeric trait logic to default implementations
+- Resolve clippy errors in `libm` tests and check this in CI
+- Add some more basic docstrings ([#352](https://github.com/rust-lang/libm/pull/352))
+- Introduce `hf32!` and `hf64!` macros for hex float support
+- Fix errors reported by Clippy in `libm`
+- Expose the `support` module publicly with a test feature
+- Update libm `Float` and `Int` with functions from the test traits
+- Change prefixes used by the `Float` trait
+- Remove `libm-bench`
+- Rename `canonical_name` to `base_name`
+- Add float and integer traits from compiler-builtins
+- Move architecture-specific code to `src/math/arch`
+- Update `select_implementation` to accept arch configuration
+- Add an "arch" Cargo feature that is on by default
+- Vendor `cfg_if::cfg_if!`
+- Make use of `select_implementation`
+- Introduce a `select_implementation` macro
+- Introduce `math::arch::intrinsics`
+- Replace `feature = "unstable-intrinsics"` with `intrinsics_enabled`
+- Move the existing "unstable" feature to "unstable-intrinsics"
+
 ## [0.2.11](https://github.com/rust-lang/libm/compare/libm-v0.2.10...libm-v0.2.11) - 2024-10-28
 
 ### Fixed
