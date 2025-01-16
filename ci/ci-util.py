@@ -43,7 +43,7 @@ USAGE = cleandoc(
 
 REPO_ROOT = Path(__file__).parent.parent
 GIT = ["git", "-C", REPO_ROOT]
-DEFAULT_BRANCH = "icount-benchmarks"  # TODO: change once ready to merge
+DEFAULT_BRANCH = "master"
 WORKFLOW_NAME = "CI"  # Workflow that generates the benchmark artifacts
 ARTIFACT_GLOB = "baseline-icount*"
 
@@ -195,14 +195,14 @@ def locate_baseline(flags: list[str]) -> None:
         exit(1)
 
     try:
-        # Locate the most recent job to run on our branch
+        # Locate the most recent job to complete with success on our branch
         latest_job = sp.check_output(
             [
                 "gh",
                 "run",
                 "list",
                 "--limit=1",
-                "--status=completed",  # TODO: change to status=success
+                "--status=success",
                 f"--branch={DEFAULT_BRANCH}",
                 "--json=databaseId,url,headSha,conclusion,createdAt,"
                 "status,workflowDatabaseId,workflowName",
@@ -250,7 +250,9 @@ def locate_baseline(flags: list[str]) -> None:
 
 
 def check_iai_regressions(iai_home: str | None | Path):
-    """Find regressions in iai summary.json files, exit with failure if any"""
+    """Find regressions in iai summary.json files, exit with failure if any are
+    found.
+    """
     if iai_home is None:
         iai_home = "iai-home"
     iai_home = Path(iai_home)
