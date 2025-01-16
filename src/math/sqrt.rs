@@ -90,6 +90,10 @@ pub fn sqrt(x: f64) -> f64 {
         args: x,
     }
 
+    if true {
+        return super::generic::sqrt(x);
+    }
+
     use core::num::Wrapping;
 
     const TINY: f64 = 1.0e-300;
@@ -226,12 +230,13 @@ pub fn sqrt(x: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
+    use super::super::Float;
     use super::*;
 
     #[test]
     fn sanity_check() {
-        assert_eq!(sqrt(100.0), 10.0);
-        assert_eq!(sqrt(4.0), 2.0);
+        assert_biteq!(sqrt(100.0), 10.0);
+        assert_biteq!(sqrt(4.0), 2.0);
     }
 
     /// The spec: https://en.cppreference.com/w/cpp/numeric/math/sqrt
@@ -241,24 +246,27 @@ mod tests {
         assert!(sqrt(-1.0).is_nan());
         assert!(sqrt(f64::NAN).is_nan());
         for f in [0.0, -0.0, f64::INFINITY].iter().copied() {
-            assert_eq!(sqrt(f), f);
+            assert_biteq!(sqrt(f), f);
         }
     }
 
     #[test]
     #[allow(clippy::approx_constant)]
     fn conformance_tests() {
-        let values = [3.14159265359, 10000.0, f64::from_bits(0x0000000f), f64::INFINITY];
-        let results = [
-            4610661241675116657u64,
-            4636737291354636288u64,
-            2197470602079456986u64,
-            9218868437227405312u64,
+        let cases = [
+            (3.14159265359, 4610661241675116657u64),
+            (10000.0, 4636737291354636288u64),
+            (f64::from_bits(0x0000000f), 2197470602079456986u64),
+            (f64::INFINITY, 9218868437227405312u64),
         ];
 
-        for i in 0..values.len() {
-            let bits = f64::to_bits(sqrt(values[i]));
-            assert_eq!(results[i], bits);
+        for (input, output) in cases {
+            assert_biteq!(
+                sqrt(input),
+                f64::from_bits(output),
+                "input: {input} ({:#018x})",
+                input.to_bits()
+            );
         }
     }
 }
