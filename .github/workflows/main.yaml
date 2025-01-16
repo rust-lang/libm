@@ -172,7 +172,8 @@ jobs:
         cargo bench --no-default-features \
           --features unstable,unstable-float,icount --bench icount \
           -- --save-baseline=default --home "$(pwd)/$iai_home" --regression 'ir=-5.0' \
-          --regression-fail-fast=true
+          --regression-fail-fast=true \
+          --save-summary
         echo $?
 
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
