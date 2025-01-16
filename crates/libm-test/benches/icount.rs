@@ -1,3 +1,5 @@
+//! Benchmarks that use `iai-cachegrind` to be reasonably CI-stable.
+
 use std::hint::black_box;
 
 use iai_callgrind::{library_benchmark, library_benchmark_group, main};
@@ -12,6 +14,7 @@ macro_rules! icount_benches {
         attrs: [$($_attr:meta),*],
     ) => {
         paste::paste! {
+            // Construct benchmark inputs from the logspace generator.
             fn [< setup_ $fn_name >]() -> Vec<OpRustArgs<op::$fn_name::Routine>> {
                 type Op = op::$fn_name::Routine;
                 let mut ctx = CheckCtx::new(
@@ -25,6 +28,7 @@ macro_rules! icount_benches {
                 ret
             }
 
+            // Run benchmarks with the above inputs.
             #[library_benchmark]
             #[bench::logspace([< setup_ $fn_name >]())]
             fn [< icount_bench_ $fn_name >](cases: Vec<OpRustArgs<op::$fn_name::Routine>>) {
