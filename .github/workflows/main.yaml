@@ -147,7 +147,7 @@ jobs:
   benchmarks:
     name: Benchmarks
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
     - uses: actions/checkout@master
     - uses: taiki-e/install-action@cargo-binstall
@@ -193,18 +193,18 @@ jobs:
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
         tar cJf "$name.tar.xz" "$iai_home"
 
+    - name: Upload the benchmark baseline
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.BASELINE_NAME }}
+        path: ${{ env.BASELINE_NAME }}.tar.xz
+    
     - name: Run wall time benchmarks
     - run: |
         # Always use the same seed for benchmarks. Ideally we should switch to a
         # non-random generator.
         export LIBM_SEED=benchesbenchesbenchesbencheswoo!
         cargo bench --all --features libm-test/short-benchmarks,libm-test/build-musl
-
-    - name: Upload the benchmark baseline
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.BASELINE_NAME }}
-        path: ${{ env.BASELINE_NAME }}.tar.xz
 
     - name: Print test logs if available
       if: always()
@@ -313,4 +313,4 @@ jobs:
     steps:
       # Manually check the status of all dependencies. `if: failure()` does not work.
       - name: check if any dependency failed
-        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'; exit 1
+        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'
