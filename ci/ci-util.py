@@ -9,7 +9,7 @@ import json
 import subprocess as sp
 import sys
 from dataclasses import dataclass
-from glob import glob
+from glob import glob, iglob
 from inspect import cleandoc
 from os import getenv
 from pathlib import Path
@@ -34,7 +34,7 @@ USAGE = cleandoc(
             Note that `--extract` will overwrite files in `iai-home`.
 
         check-regressions [iai-home]
-            Check `iai-home` (or `target/iai` if unspecified) for `summary.json`
+            Check `iai-home` (or `iai-home` if unspecified) for `summary.json`
             files and see if there are any regressions. This is used as a workaround
             for `iai-callgrind` not exiting with error status; see
             <https://github.com/iai-callgrind/iai-callgrind/issues/337>.
@@ -249,8 +249,37 @@ def locate_baseline(flags: list[str]) -> None:
     sp.run(["tar", "xJvf", baseline_archive], check=True)
 
 
-def check_iai_regressions(iai_home: str | None):
-    pass
+def check_iai_regressions(iai_home: str | None | Path):
+    """Find regressions in iai summary.json files, exit with failure if any"""
+    if iai_home is None:
+        iai_home = "iai-home"
+    iai_home = Path(iai_home)
+
+    found_summaries = False
+    regressions = []
+    for summary_path in iglob("**/summary.json", root_dir=iai_home, recursive=True):
+        found_summaries = True
+        with open(iai_home / summary_path, "r") as f:
+            summary = json.load(f)
+
+        summary_regs = []
+        run = summary["callgrind_summary"]["callgrind_run"]
+        name_entry = {"name": f"{summary["function_name"]}.{summary["id"]}"}
+
+        for segment in run["segments"]:
+            summary_regs.extend(segment["regressions"])
+
+        summary_regs.extend(run["total"]["regressions"])
+
+        regressions.extend(name_entry | reg for reg in summary_regs)
+
+    if not found_summaries:
+        eprint(f"did not find any summary.json files within {iai_home}")
+        exit(1)
+
+    if len(regressions) > 0:
+        eprint("Found regressions:", json.dumps(regressions, indent=4))
+        exit(1)
 
 
 def main():

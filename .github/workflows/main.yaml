@@ -175,6 +175,7 @@ jobs:
           --save-summary
         echo $?
 
+        ./ci/ci-util.py check-regressions "$iai_home"
         name="baseline-icount-$(date -u +'%Y%m%d%H%M')-${GITHUB_SHA:0:12}"
         echo "BASELINE_NAME=$name" >> "$GITHUB_ENV"
         tar cJf "$name.tar.xz" "$iai_home"
