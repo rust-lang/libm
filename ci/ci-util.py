@@ -32,6 +32,12 @@ USAGE = cleandoc(
             downloading fails.
 
             Note that `--extract` will overwrite files in `iai-home`.
+
+        check-regressions [iai-home]
+            Check `iai-home` (or `target/iai` if unspecified) for `summary.json`
+            files and see if there are any regressions. This is used as a workaround
+            for `iai-callgrind` not exiting with error status; see
+            <https://github.com/iai-callgrind/iai-callgrind/issues/337>.
     """
 )
 
@@ -243,6 +249,10 @@ def locate_baseline(flags: list[str]) -> None:
     sp.run(["tar", "xJvf", baseline_archive], check=True)
 
 
+def check_iai_regressions(iai_home: str | None):
+    pass
+
+
 def main():
     match sys.argv[1:]:
         case ["generate-matrix"]:
@@ -251,6 +261,10 @@ def main():
             print(f"matrix={output}")
         case ["locate-baseline", *flags]:
             locate_baseline(flags)
+        case ["check-regressions"]:
+            check_iai_regressions(None)
+        case ["check-regressions", iai_home]:
+            check_iai_regressions(iai_home)
         case ["--help" | "-h"]:
             print(USAGE)
             exit()
