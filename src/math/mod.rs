@@ -349,6 +349,8 @@ cfg_if! {
         mod fmaxf16;
         mod fminf16;
         mod fmodf16;
+        mod frexpf16;
+        mod ilogbf16;
         mod rintf16;
         mod roundf16;
         mod sqrtf16;
@@ -362,6 +364,8 @@ cfg_if! {
         pub use self::fmaxf16::fmaxf16;
         pub use self::fminf16::fminf16;
         pub use self::fmodf16::fmodf16;
+        pub use self::frexpf16::frexpf16;
+        pub use self::ilogbf16::ilogbf16;
         pub use self::rintf16::rintf16;
         pub use self::roundf16::roundf16;
         pub use self::sqrtf16::sqrtf16;
@@ -379,6 +383,8 @@ cfg_if! {
         mod fmaxf128;
         mod fminf128;
         mod fmodf128;
+        mod frexpf128;
+        mod ilogbf128;
         mod rintf128;
         mod roundf128;
         mod sqrtf128;
@@ -392,6 +398,8 @@ cfg_if! {
         pub use self::fmaxf128::fmaxf128;
         pub use self::fminf128::fminf128;
         pub use self::fmodf128::fmodf128;
+        pub use self::frexpf128::frexpf128;
+        pub use self::ilogbf128::ilogbf128;
         pub use self::rintf128::rintf128;
         pub use self::roundf128::roundf128;
         pub use self::sqrtf128::sqrtf128;

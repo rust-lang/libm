@@ -107,6 +107,13 @@ const ALL_OPERATIONS_NESTED: &[(FloatTy, Signature, Option<Signature>, &[&str])]
         &["fma"],
     ),
     (
+        // `(f16) -> i32`
+        FloatTy::F16,
+        Signature { args: &[Ty::F16], returns: &[Ty::I32] },
+        None,
+        &["ilogbf16"],
+    ),
+    (
         // `(f32) -> i32`
         FloatTy::F32,
         Signature { args: &[Ty::F32], returns: &[Ty::I32] },
@@ -119,6 +126,13 @@ const ALL_OPERATIONS_NESTED: &[(FloatTy, Signature, Option<Signature>, &[&str])]
         Signature { args: &[Ty::F64], returns: &[Ty::I32] },
         None,
         &["ilogb"],
+    ),
+    (
+        // `(f128) -> i32`
+        FloatTy::F128,
+        Signature { args: &[Ty::F128], returns: &[Ty::I32] },
+        None,
+        &["ilogbf128"],
     ),
     (
         // `(i32, f32) -> f32`
@@ -163,6 +177,13 @@ const ALL_OPERATIONS_NESTED: &[(FloatTy, Signature, Option<Signature>, &[&str])]
         &["modf"],
     ),
     (
+        // `(f16, &mut c_int) -> f16` as `(f16) -> (f16, i32)`
+        FloatTy::F16,
+        Signature { args: &[Ty::F16], returns: &[Ty::F16, Ty::I32] },
+        Some(Signature { args: &[Ty::F16, Ty::MutCInt], returns: &[Ty::F16] }),
+        &["frexpf16"],
+    ),
+    (
         // `(f32, &mut c_int) -> f32` as `(f32) -> (f32, i32)`
         FloatTy::F32,
         Signature { args: &[Ty::F32], returns: &[Ty::F32, Ty::I32] },
@@ -175,6 +196,13 @@ const ALL_OPERATIONS_NESTED: &[(FloatTy, Signature, Option<Signature>, &[&str])]
         Signature { args: &[Ty::F64], returns: &[Ty::F64, Ty::I32] },
         Some(Signature { args: &[Ty::F64, Ty::MutCInt], returns: &[Ty::F64] }),
         &["frexp", "lgamma_r"],
+    ),
+    (
+        // `(f128, &mut c_int) -> f128` as `(f128) -> (f128, i32)`
+        FloatTy::F128,
+        Signature { args: &[Ty::F128], returns: &[Ty::F128, Ty::I32] },
+        Some(Signature { args: &[Ty::F128, Ty::MutCInt], returns: &[Ty::F128] }),
+        &["frexpf128"],
     ),
     (
         // `(f32, f32, &mut c_int) -> f32` as `(f32, f32) -> (f32, i32)`
