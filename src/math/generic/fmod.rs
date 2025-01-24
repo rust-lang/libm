@@ -46,10 +46,12 @@ pub fn fmod<F: Float>(x: F, y: F) -> F {
     /* x mod y */
     while ex > ey {
         let i = ix.wrapping_sub(iy);
-        if i >> (F::BITS - 1) == zero {
-            if i == zero {
-                return F::ZERO * x;
-            }
+
+        if i == zero {
+            return F::ZERO * x;
+        }
+
+        if i & F::SIGN_MASK == zero {
             ix = i;
         }
 
