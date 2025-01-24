@@ -466,13 +466,15 @@
     "frexp": {
         "sources": [
             "src/libm_helper.rs",
-            "src/math/frexp.rs"
+            "src/math/frexp.rs",
+            "src/math/generic/frexp.rs"
         ],
         "type": "f64"
     },
     "frexpf": {
         "sources": [
-            "src/math/frexpf.rs"
+            "src/math/frexpf.rs",
+            "src/math/generic/frexp.rs"
         ],
         "type": "f32"
     },
@@ -492,12 +494,14 @@
     "ilogb": {
         "sources": [
             "src/libm_helper.rs",
+            "src/math/generic/ilogb.rs",
             "src/math/ilogb.rs"
         ],
         "type": "f64"
     },
     "ilogbf": {
         "sources": [
+            "src/math/generic/ilogb.rs",
             "src/math/ilogbf.rs"
         ],
         "type": "f32"
