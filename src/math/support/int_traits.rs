@@ -1,7 +1,6 @@
 use core::{cmp, fmt, ops};
 
 /// Minimal integer implementations needed on all integer types, including wide integers.
-#[allow(dead_code)]
 pub trait MinInt:
     Copy
     + fmt::Debug
@@ -31,7 +30,6 @@ pub trait MinInt:
 pub type OtherSign<I> = <I as MinInt>::OtherSign;
 
 /// Trait for some basic operations on integers
-#[allow(dead_code)]
 pub trait Int:
     MinInt
     + fmt::Display
@@ -252,7 +250,6 @@ int_impl!(i128, u128);
 
 /// Trait for integers twice the bit width of another integer. This is implemented for all
 /// primitives except for `u8`, because there is not a smaller primitive.
-#[allow(unused)]
 pub trait DInt: MinInt {
     /// Integer that is half the bit width of the integer this trait is implemented for
     type H: HInt<D = Self>;
@@ -273,7 +270,6 @@ pub trait DInt: MinInt {
 
 /// Trait for integers half the bit width of another integer. This is implemented for all
 /// primitives except for `u128`, because it there is not a larger primitive.
-#[allow(unused)]
 pub trait HInt: Int {
     /// Integer that is double the bit width of the integer this trait is implemented for
     type D: DInt<H = Self> + MinInt;
@@ -351,7 +347,6 @@ impl_h_int!(
 );
 
 /// Trait to express (possibly lossy) casting of integers
-#[allow(unused)]
 pub trait CastInto<T: Copy>: Copy {
     /// By default, casts should be exact.
     fn cast(self) -> T;
@@ -360,7 +355,6 @@ pub trait CastInto<T: Copy>: Copy {
     fn cast_lossy(self) -> T;
 }
 
-#[allow(unused)]
 pub trait CastFrom<T: Copy>: Copy {
     /// By default, casts should be exact.
     fn cast_from(value: T) -> Self;
