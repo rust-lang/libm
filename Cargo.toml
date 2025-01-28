@@ -43,6 +43,7 @@ force-soft-floats = []
 [workspace]
 resolver = "2"
 members = [
+  "crates/core-math-sys",
   "crates/libm-macros",
   "crates/libm-test",
   "crates/musl-math-sys",
