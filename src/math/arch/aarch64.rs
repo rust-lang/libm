@@ -1,33 +1,267 @@
-use core::arch::aarch64::{
-    float32x2_t, float64x1_t, vdup_n_f32, vdup_n_f64, vget_lane_f32, vget_lane_f64, vrndn_f32,
-    vrndn_f64,
-};
+//! Architecture-specific support for aarch64 with neon.
 
-pub fn rint(x: f64) -> f64 {
-    // SAFETY: only requires target_feature=neon, ensured by `cfg_if` in parent module.
-    let x_vec: float64x1_t = unsafe { vdup_n_f64(x) };
+use core::arch::asm;
 
-    // SAFETY: only requires target_feature=neon, ensured by `cfg_if` in parent module.
-    let result_vec: float64x1_t = unsafe { vrndn_f64(x_vec) };
-
-    // SAFETY: only requires target_feature=neon, ensured by `cfg_if` in parent module.
-    let result: f64 = unsafe { vget_lane_f64::<0>(result_vec) };
-
-    result
+pub fn ceil(mut x: f64) -> f64 {
+    unsafe {
+        asm!(
+            "frintp {x:d}, {x:d}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
 }
 
-pub fn rintf(x: f32) -> f32 {
-    // There's a scalar form of this instruction (FRINTN) but core::arch doesn't expose it, so we
-    // have to use the vector form and drop the other lanes afterwards.
+pub fn ceilf(mut x: f32) -> f32 {
+    unsafe {
+        asm!(
+            "frintp {x:s}, {x:s}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
 
-    // SAFETY: only requires target_feature=neon, ensured by `cfg_if` in parent module.
-    let x_vec: float32x2_t = unsafe { vdup_n_f32(x) };
+#[cfg(all(f16_enabled, target_feature = "fp16"))]
+pub fn ceilf16(mut x: f16) -> f16 {
+    unsafe {
+        asm!(
+            "frintp {x:h}, {x:h}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
 
-    // SAFETY: only requires target_feature=neon, ensured by `cfg_if` in parent module.
-    let result_vec: float32x2_t = unsafe { vrndn_f32(x_vec) };
+pub fn fabs(mut x: f64) -> f64 {
+    unsafe {
+        asm!(
+            "fabs {x:d}, {x:d}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
 
-    // SAFETY: only requires target_feature=neon, ensured by `cfg_if` in parent module.
-    let result: f32 = unsafe { vget_lane_f32::<0>(result_vec) };
+pub fn fabsf(mut x: f32) -> f32 {
+    unsafe {
+        asm!(
+            "fabs {x:s}, {x:s}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
 
-    result
+#[cfg(all(f16_enabled, target_feature = "fp16"))]
+pub fn fabsf16(mut x: f16) -> f16 {
+    unsafe {
+        asm!(
+            "fabs {x:h}, {x:h}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn floor(mut x: f64) -> f64 {
+    unsafe {
+        asm!(
+            "frintm {x:d}, {x:d}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn floorf(mut x: f32) -> f32 {
+    unsafe {
+        asm!(
+            "frintm {x:s}, {x:s}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+#[cfg(all(f16_enabled, target_feature = "fp16"))]
+pub fn floorf16(mut x: f16) -> f16 {
+    unsafe {
+        asm!(
+            "frintm {x:h}, {x:h}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn fma(mut x: f64, y: f64, z: f64) -> f64 {
+    unsafe {
+        asm!(
+            "fmadd {x:d}, {x:d}, {y:d}, {z:d}",
+            x = inout(vreg) x,
+            y = in(vreg) y,
+            z = in(vreg) z,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn fmaf(mut x: f32, y: f32, z: f32) -> f32 {
+    unsafe {
+        asm!(
+            "fmadd {x:s}, {x:s}, {y:s}, {z:s}",
+            x = inout(vreg) x,
+            y = in(vreg) y,
+            z = in(vreg) z,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn rint(mut x: f64) -> f64 {
+    unsafe {
+        asm!(
+            "frinti {x:d}, {x:d}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn rintf(mut x: f32) -> f32 {
+    unsafe {
+        asm!(
+            "frinti {x:s}, {x:s}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+#[cfg(all(f16_enabled, target_feature = "fp16"))]
+pub fn rintf16(mut x: f16) -> f16 {
+    unsafe {
+        asm!(
+            "frinti {x:h}, {x:h}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn round(mut x: f64) -> f64 {
+    unsafe {
+        asm!(
+            "frinta {x:d}, {x:d}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn roundf(mut x: f32) -> f32 {
+    unsafe {
+        asm!(
+            "frinta {x:s}, {x:s}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+#[cfg(all(f16_enabled, target_feature = "fp16"))]
+pub fn roundf16(mut x: f16) -> f16 {
+    unsafe {
+        asm!(
+            "frinta {x:h}, {x:h}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn sqrt(mut x: f64) -> f64 {
+    unsafe {
+        asm!(
+            "fsqrt {x:d}, {x:d}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn sqrtf(mut x: f32) -> f32 {
+    unsafe {
+        asm!(
+            "fsqrt {x:s}, {x:s}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+#[cfg(all(f16_enabled, target_feature = "fp16"))]
+pub fn sqrtf16(mut x: f16) -> f16 {
+    unsafe {
+        asm!(
+            "fsqrt {x:h}, {x:h}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn trunc(mut x: f64) -> f64 {
+    unsafe {
+        asm!(
+            "frintz {x:d}, {x:d}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+pub fn truncf(mut x: f32) -> f32 {
+    unsafe {
+        asm!(
+            "frintz {x:s}, {x:s}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
+}
+
+#[cfg(all(f16_enabled, target_feature = "fp16"))]
+pub fn truncf16(mut x: f16) -> f16 {
+    unsafe {
+        asm!(
+            "frintz {x:h}, {x:h}",
+            x = inout(vreg) x,
+            options(nomem, nostack, pure)
+        );
+    }
+    x
 }

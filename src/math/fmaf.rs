@@ -47,6 +47,12 @@ use super::fenv::{
 /// according to the rounding mode characterized by the value of FLT_ROUNDS.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fmaf(x: f32, y: f32, mut z: f32) -> f32 {
+    select_implementation! {
+        name: fmaf,
+        use_arch: all(target_arch = "aarch64", target_feature = "neon"),
+        args: x, y, z,
+    }
+
     let xy: f64;
     let mut result: f64;
     let mut ui: u64;

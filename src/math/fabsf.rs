@@ -6,7 +6,10 @@
 pub fn fabsf(x: f32) -> f32 {
     select_implementation! {
         name: fabsf,
-        use_arch: all(target_arch = "wasm32", intrinsics_enabled),
+        use_arch: any(
+            all(target_arch = "aarch64", target_feature = "neon"),
+            all(target_arch = "wasm32", intrinsics_enabled),
+        ),
         args: x,
     }
 
