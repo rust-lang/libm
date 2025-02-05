@@ -56,14 +56,20 @@ where
     Op::RustArgs: SpacedInput<Op>,
 {
     let mut ctx = CheckCtx::new(Op::IDENTIFIER, CheckBasis::Mpfr, GeneratorKind::Spaced);
-    plot_one_generator(out_dir, &ctx, "logspace", config, spaced::get_test_cases::<Op>(&ctx).0);
+    plot_one_generator(
+        out_dir,
+        &ctx,
+        "logspace",
+        config,
+        spaced::get_test_cases::<Op>(ctx.clone()).0,
+    );
     ctx.gen_kind = GeneratorKind::EdgeCases;
     plot_one_generator(
         out_dir,
         &ctx,
         "edge_cases",
         config,
-        edge_cases::get_test_cases::<Op>(&ctx).0,
+        edge_cases::get_test_cases::<Op>(ctx.clone()).0,
     );
 }
 

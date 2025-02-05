@@ -6,7 +6,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use indicatif::{ProgressBar, ProgressStyle};
-use libm_test::gen::spaced;
+use libm_test::gen::edge_cases::EdgeCaseInput;
+use libm_test::gen::random::RandomInput;
+use libm_test::gen::{edge_cases, random, spaced};
 use libm_test::mpfloat::MpOp;
 use libm_test::{
     CheckBasis, CheckCtx, CheckOutput, GeneratorKind, MathOp, TestResult, TupleCall,
@@ -17,7 +19,6 @@ use rayon::prelude::*;
 use spaced::SpacedInput;
 
 const BASIS: CheckBasis = CheckBasis::Mpfr;
-const GEN_KIND: GeneratorKind = GeneratorKind::Spaced;
 
 /// Run the extensive test suite.
 pub fn run() {
@@ -41,7 +42,7 @@ macro_rules! mp_extensive_tests {
         extra: [$push_to:ident],
     ) => {
         $(#[$attr])*
-        register_single_test::<libm_test::op::$fn_name::Routine>(&mut $push_to);
+        register_single_op::<libm_test::op::$fn_name::Routine>(&mut $push_to);
     };
 }
 
@@ -64,13 +65,43 @@ fn register_all_tests() -> Vec<Trial> {
 }
 
 /// Add a single test to the list.
-fn register_single_test<Op>(all: &mut Vec<Trial>)
+fn register_single_op<Op>(all: &mut Vec<Trial>)
 where
-    Op: MathOp + MpOp,
-    Op::RustArgs: SpacedInput<Op> + Send,
+    Op: MathOp + MpOp + 'static,
+    Op::RustArgs: SpacedInput<Op> + RandomInput + EdgeCaseInput<Op> + Send,
 {
-    let test_name = format!("mp_extensive_{}", Op::NAME);
-    let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GEN_KIND).extensive(true);
+    // All generators need to take `ctx` by value to avoid
+    // https://github.com/rust-lang/rust/issues/42940
+
+    let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GeneratorKind::EdgeCases).extensive(true);
+    let (cases, total) = edge_cases::get_test_cases::<Op>(ctx.clone());
+    register_single_test::<Op>(all, ctx, cases, total);
+
+    let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GeneratorKind::Spaced).extensive(true);
+    let (cases, total) = spaced::get_test_cases::<Op>(ctx.clone());
+    register_single_test::<Op>(all, ctx, cases, total);
+
+    let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GeneratorKind::Random).extensive(true);
+    let (cases, total) = random::get_test_cases::<Op>(ctx.clone());
+    register_single_test::<Op>(all, ctx, cases, total);
+}
+
+fn register_single_test<Op>(
+    all: &mut Vec<Trial>,
+    ctx: CheckCtx,
+    cases: impl Iterator<Item = Op::RustArgs> + Send + 'static,
+    total: u64,
+) where
+    Op: MathOp + MpOp,
+    Op::RustArgs: SpacedInput<Op> + RandomInput + EdgeCaseInput<Op> + Send,
+{
+    let x = match ctx.gen_kind {
+        GeneratorKind::EdgeCases => "edge_cases",
+        GeneratorKind::Spaced => "logspace",
+        GeneratorKind::Random => "random",
+    };
+
+    let test_name = format!("mp_extensive_{x}_{}", Op::NAME);
     let skip = skip_extensive_test(&ctx);
 
     let runner = move || {
@@ -78,7 +109,7 @@ where
             panic!("extensive tests should be run with --release");
         }
 
-        let res = run_single_test::<Op>(&ctx);
+        let res = run_single_test::<Op>(&ctx, cases, total);
         let e = match res {
             Ok(()) => return Ok(()),
             Err(e) => e,
@@ -96,7 +127,11 @@ where
 }
 
 /// Test runner for a signle routine.
-fn run_single_test<Op>(ctx: &CheckCtx) -> TestResult
+fn run_single_test<Op>(
+    ctx: &CheckCtx,
+    mut cases: impl Iterator<Item = Op::RustArgs> + Send,
+    total: u64,
+) -> TestResult
 where
     Op: MathOp + MpOp,
     Op::RustArgs: SpacedInput<Op> + Send,
@@ -106,7 +141,8 @@ where
     eprintln!();
 
     let completed = AtomicU64::new(0);
-    let (ref mut cases, total) = spaced::get_test_cases::<Op>(ctx);
+    // let ref mut cases = cases;
+    // let (ref mut cases, total) = spaced::get_test_cases::<Op>(ctx);
     let pb = Progress::new(Op::NAME, total);
 
     let test_single_chunk = |mp_vals: &mut Op::MpTy, input_vec: Vec<Op::RustArgs>| -> TestResult {
@@ -129,7 +165,7 @@ where
     let chunk_size = 50_000;
     let chunks = std::iter::from_fn(move || {
         let mut v = Vec::with_capacity(chunk_size);
-        v.extend(cases.take(chunk_size));
+        v.extend((&mut cases).take(chunk_size));
         (!v.is_empty()).then_some(v)
     });
 

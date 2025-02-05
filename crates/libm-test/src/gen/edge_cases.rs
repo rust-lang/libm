@@ -5,11 +5,11 @@ use libm::support::{Float, Int};
 use crate::domain::get_domain;
 use crate::gen::KnownSize;
 use crate::run_cfg::{check_near_count, check_point_count};
-use crate::{CheckCtx, FloatExt, MathOp, test_log};
+use crate::{CheckCtx, FloatExt, GeneratorKind, MathOp, test_log};
 
 /// Generate a sequence of edge cases, e.g. numbers near zeroes and infiniteis.
 pub trait EdgeCaseInput<Op> {
-    fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self> + Send, u64);
+    fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self> + Send, u64);
 }
 
 /// Create a list of values around interesting points (infinities, zeroes, NaNs).
@@ -140,7 +140,8 @@ macro_rules! impl_edge_case_input {
         where
             Op: MathOp<RustArgs = Self, FTy = $fty>,
         {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let (iter0, steps0) = float_edge_cases::<Op>(ctx, 0);
                 let iter0 = iter0.map(|v| (v,));
                 (iter0, steps0)
@@ -151,7 +152,8 @@ macro_rules! impl_edge_case_input {
         where
             Op: MathOp<RustArgs = Self, FTy = $fty>,
         {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let (iter0, steps0) = float_edge_cases::<Op>(ctx, 0);
                 let (iter1, steps1) = float_edge_cases::<Op>(ctx, 1);
                 let iter =
@@ -165,7 +167,8 @@ macro_rules! impl_edge_case_input {
         where
             Op: MathOp<RustArgs = Self, FTy = $fty>,
         {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let (iter0, steps0) = float_edge_cases::<Op>(ctx, 0);
                 let (iter1, steps1) = float_edge_cases::<Op>(ctx, 1);
                 let (iter2, steps2) = float_edge_cases::<Op>(ctx, 2);
@@ -185,7 +188,8 @@ macro_rules! impl_edge_case_input {
         where
             Op: MathOp<RustArgs = Self, FTy = $fty>,
         {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let (iter0, steps0) = int_edge_cases(ctx, 0);
                 let (iter1, steps1) = float_edge_cases::<Op>(ctx, 1);
 
@@ -201,7 +205,8 @@ macro_rules! impl_edge_case_input {
         where
             Op: MathOp<RustArgs = Self, FTy = $fty>,
         {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let (iter0, steps0) = float_edge_cases::<Op>(ctx, 0);
                 let (iter1, steps1) = int_edge_cases(ctx, 1);
 
@@ -222,13 +227,12 @@ impl_edge_case_input!(f64);
 #[cfg(f128_enabled)]
 impl_edge_case_input!(f128);
 
-pub fn get_test_cases<Op>(
-    ctx: &CheckCtx,
-) -> (impl Iterator<Item = Op::RustArgs> + Send + use<'_, Op>, u64)
+pub fn get_test_cases<Op>(ctx: CheckCtx) -> (impl Iterator<Item = Op::RustArgs> + Send, u64)
 where
     Op: MathOp,
     Op::RustArgs: EdgeCaseInput<Op>,
 {
+    assert_eq!(ctx.gen_kind, GeneratorKind::EdgeCases);
     let (iter, count) = Op::RustArgs::get_cases(ctx);
 
     // Wrap in `KnownSize` so we get an assertion if the cuunt is wrong.
