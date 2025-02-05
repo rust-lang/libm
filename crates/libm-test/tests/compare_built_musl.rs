@@ -54,9 +54,9 @@ macro_rules! musl_tests {
 
             #[test]
             $(#[$attr])*
-            fn [< musl_quickspace_ $fn_name >]() {
+            fn [< musl_logspace_ $fn_name >]() {
                 type Op = libm_test::op::$fn_name::Routine;
-                let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GeneratorKind::QuickSpaced);
+                let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GeneratorKind::Spaced);
                 let cases = spaced::get_test_cases::<Op>(&ctx).0;
                 musl_runner::<Op>(&ctx, cases, musl_math_sys::$fn_name);
             }

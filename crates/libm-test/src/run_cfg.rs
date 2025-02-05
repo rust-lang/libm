@@ -21,10 +21,10 @@ static EXTENSIVE_ITER_OVERRIDE: LazyLock<Option<u64>> = LazyLock::new(|| {
 /// Specific tests that need to have a reduced amount of iterations to complete in a reasonable
 /// amount of time.
 ///
-/// Contains the itentifier+generator combo to match on, plus the factor to reduce by.
-const EXTEMELY_SLOW_TESTS: &[(Identifier, GeneratorKind, u64)] = &[
-    (Identifier::Fmodf128, GeneratorKind::QuickSpaced, 40),
-    (Identifier::Fmodf128, GeneratorKind::Extensive, 40),
+/// Contains the itentifier+generator+exhaustive combo to match on, plus the factor to reduce by.
+const EXTEMELY_SLOW_TESTS: &[(Identifier, GeneratorKind, bool, u64)] = &[
+    (Identifier::Fmodf128, GeneratorKind::Spaced, false, 40),
+    (Identifier::Fmodf128, GeneratorKind::Spaced, true, 40),
 ];
 
 /// Maximum number of iterations to run for a single routine.
@@ -52,6 +52,7 @@ pub struct CheckCtx {
     /// Source of truth for tests.
     pub basis: CheckBasis,
     pub gen_kind: GeneratorKind,
+    pub extensive: bool,
     /// If specified, this value will override the value returned by [`iteration_count`].
     pub override_iterations: Option<u64>,
 }
@@ -67,10 +68,17 @@ impl CheckCtx {
             base_name_str: fn_ident.base_name().as_str(),
             basis,
             gen_kind,
+            extensive: false,
             override_iterations: None,
         };
         ret.ulp = crate::default_ulp(&ret);
         ret
+    }
+
+    /// Configure that this is an extensive test.
+    pub fn extensive(mut self, extensive: bool) -> Self {
+        self.extensive = extensive;
+        self
     }
 
     /// The number of input arguments for this function.
@@ -99,8 +107,7 @@ pub enum CheckBasis {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum GeneratorKind {
     EdgeCases,
-    Extensive,
-    QuickSpaced,
+    Spaced,
     Random,
 }
 
@@ -216,21 +223,22 @@ pub fn iteration_count(ctx: &CheckCtx, argnum: usize) -> u64 {
     let random_iter_count = domain_iter_count / 100;
 
     let mut total_iterations = match ctx.gen_kind {
-        GeneratorKind::QuickSpaced => domain_iter_count,
+        GeneratorKind::Spaced if ctx.extensive => extensive_max_iterations(),
+        GeneratorKind::Spaced => domain_iter_count,
         GeneratorKind::Random => random_iter_count,
-        GeneratorKind::Extensive => extensive_max_iterations(),
         GeneratorKind::EdgeCases => {
             unimplemented!("edge case tests shoudn't need `iteration_count`")
         }
     };
 
     // Some tests are significantly slower than others and need to be further reduced.
-    if let Some((_id, _gen, scale)) = EXTEMELY_SLOW_TESTS
-        .iter()
-        .find(|(id, gen, _scale)| *id == ctx.fn_ident && *gen == ctx.gen_kind)
+    if let Some((_id, _gen, _extensive, scale)) =
+        EXTEMELY_SLOW_TESTS.iter().find(|(id, gen, extensive, _scale)| {
+            *id == ctx.fn_ident && *gen == ctx.gen_kind && *extensive == ctx.extensive
+        })
     {
         // However, do not override if the extensive iteration count has been manually set.
-        if !(ctx.gen_kind == GeneratorKind::Extensive && EXTENSIVE_ITER_OVERRIDE.is_some()) {
+        if !(ctx.extensive && EXTENSIVE_ITER_OVERRIDE.is_some()) {
             total_iterations /= scale;
         }
     }
@@ -265,7 +273,7 @@ pub fn iteration_count(ctx: &CheckCtx, argnum: usize) -> u64 {
     let total = ntests.pow(t_env.input_count.try_into().unwrap());
 
     let seed_msg = match ctx.gen_kind {
-        GeneratorKind::QuickSpaced | GeneratorKind::Extensive => String::new(),
+        GeneratorKind::Spaced => String::new(),
         GeneratorKind::Random => {
             format!(" using `{SEED_ENV}={}`", str::from_utf8(SEED.as_slice()).unwrap())
         }
@@ -307,8 +315,8 @@ pub fn int_range(ctx: &CheckCtx, argnum: usize) -> RangeInclusive<i32> {
     let extensive_range = (-0xfff)..=0xfffff;
 
     match ctx.gen_kind {
-        GeneratorKind::Extensive => extensive_range,
-        GeneratorKind::QuickSpaced | GeneratorKind::Random => non_extensive_range,
+        _ if ctx.extensive => extensive_range,
+        GeneratorKind::Spaced | GeneratorKind::Random => non_extensive_range,
         GeneratorKind::EdgeCases => extensive_range,
     }
 }

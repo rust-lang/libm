@@ -17,7 +17,7 @@ use rayon::prelude::*;
 use spaced::SpacedInput;
 
 const BASIS: CheckBasis = CheckBasis::Mpfr;
-const GEN_KIND: GeneratorKind = GeneratorKind::Extensive;
+const GEN_KIND: GeneratorKind = GeneratorKind::Spaced;
 
 /// Run the extensive test suite.
 pub fn run() {
@@ -70,7 +70,7 @@ where
     Op::RustArgs: SpacedInput<Op> + Send,
 {
     let test_name = format!("mp_extensive_{}", Op::NAME);
-    let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GEN_KIND);
+    let ctx = CheckCtx::new(Op::IDENTIFIER, BASIS, GEN_KIND).extensive(true);
     let skip = skip_extensive_test(&ctx);
 
     let runner = move || {
