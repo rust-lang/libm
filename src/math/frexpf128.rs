@@ -2,6 +2,6 @@
 ///
 /// That is, `x * 2^p` will represent the input value.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn frexp(x: f64) -> (f64, i32) {
+pub fn frexpf128(x: f128) -> (f128, i32) {
     super::generic::frexp(x)
 }

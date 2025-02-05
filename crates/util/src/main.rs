@@ -102,6 +102,10 @@ fn do_eval(basis: &str, op: &str, inputs: &[&str]) {
             | fminf16
             | fmodf128
             | fmodf16
+            | frexpf128
+            | frexpf16
+            | ilogbf128
+            | ilogbf16
             | rintf128
             | rintf16
             | roundf128
