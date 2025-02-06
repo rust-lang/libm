@@ -9,8 +9,8 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
 use super::KnownSize;
-use crate::CheckCtx;
 use crate::run_cfg::{int_range, iteration_count};
+use crate::{CheckCtx, GeneratorKind, MathOp};
 
 pub(crate) const SEED_ENV: &str = "LIBM_SEED";
 
@@ -27,7 +27,7 @@ pub(crate) static SEED: LazyLock<[u8; 32]> = LazyLock::new(|| {
 
 /// Generate a sequence of random values of this type.
 pub trait RandomInput: Sized {
-    fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self> + Send, u64);
+    fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self> + Send, u64);
 }
 
 /// Generate a sequence of deterministically random floats.
@@ -51,7 +51,8 @@ fn random_ints(count: u64, range: RangeInclusive<i32>) -> impl Iterator<Item = i
 macro_rules! impl_random_input {
     ($fty:ty) => {
         impl RandomInput for ($fty,) {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let count = iteration_count(ctx, 0);
                 let iter = random_floats(count).map(|f: $fty| (f,));
                 (iter, count)
@@ -59,7 +60,8 @@ macro_rules! impl_random_input {
         }
 
         impl RandomInput for ($fty, $fty) {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let count0 = iteration_count(ctx, 0);
                 let count1 = iteration_count(ctx, 1);
                 let iter = random_floats(count0)
@@ -69,7 +71,8 @@ macro_rules! impl_random_input {
         }
 
         impl RandomInput for ($fty, $fty, $fty) {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let count0 = iteration_count(ctx, 0);
                 let count1 = iteration_count(ctx, 1);
                 let count2 = iteration_count(ctx, 2);
@@ -83,7 +86,8 @@ macro_rules! impl_random_input {
         }
 
         impl RandomInput for (i32, $fty) {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let count0 = iteration_count(ctx, 0);
                 let count1 = iteration_count(ctx, 1);
                 let range0 = int_range(ctx, 0);
@@ -94,7 +98,8 @@ macro_rules! impl_random_input {
         }
 
         impl RandomInput for ($fty, i32) {
-            fn get_cases(ctx: &CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+            fn get_cases(ctx: CheckCtx) -> (impl Iterator<Item = Self>, u64) {
+                let ctx = &ctx;
                 let count0 = iteration_count(ctx, 0);
                 let count1 = iteration_count(ctx, 1);
                 let range1 = int_range(ctx, 1);
@@ -115,10 +120,13 @@ impl_random_input!(f64);
 impl_random_input!(f128);
 
 /// Create a test case iterator.
-pub fn get_test_cases<RustArgs: RandomInput>(
-    ctx: &CheckCtx,
-) -> (impl Iterator<Item = RustArgs> + Send + use<'_, RustArgs>, u64) {
-    let (iter, count) = RustArgs::get_cases(ctx);
+pub fn get_test_cases<Op>(ctx: CheckCtx) -> (impl Iterator<Item = Op::RustArgs> + Send, u64)
+where
+    Op: MathOp,
+    Op::RustArgs: RandomInput,
+{
+    assert_eq!(ctx.gen_kind, GeneratorKind::Random);
+    let (iter, count) = Op::RustArgs::get_cases(ctx);
 
     // Wrap in `KnownSize` so we get an assertion if the cuunt is wrong.
     (KnownSize::new(iter, count), count)
