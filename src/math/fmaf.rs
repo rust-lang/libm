@@ -5,7 +5,11 @@
 /// according to the rounding mode characterized by the value of FLT_ROUNDS.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fmaf(x: f32, y: f32, z: f32) -> f32 {
-    super::generic::fma_wide(x, y, z)
+    if cfg!(f32_no_widen) {
+        super::generic::fma(x, y, z)
+    } else {
+        super::generic::fma_wide(x, y, z)
+    }
 }
 
 #[cfg(test)]

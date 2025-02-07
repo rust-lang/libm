@@ -14,6 +14,8 @@ if [ -z "$target" ]; then
     target="$host_target"
 fi
 
+nowiden_tests=$($cmd "$profile" release-checked --features force-soft-floats)
+
 # We enumerate features manually.
 flags="$flags --no-default-features"
 
@@ -112,6 +114,7 @@ $cmd --features unstable-intrinsics --benches
 # Test the same in release mode, which also increases coverage. Also ensure
 # the soft float routines are checked.
 $cmd "$profile" release-checked
+LIBM_F32_NO_WIDEN=1 $cmd "$profile" release-checked -- $nowiden_tests
 $cmd "$profile" release-checked --features force-soft-floats
 $cmd "$profile" release-checked --features unstable-intrinsics
 $cmd "$profile" release-checked --features unstable-intrinsics --benches

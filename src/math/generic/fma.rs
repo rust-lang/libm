@@ -345,6 +345,16 @@ pub trait FmaHelper {
     fn raise_underflow_ret_zero(self) -> Self;
 }
 
+impl FmaHelper for f32 {
+    fn raise_underflow_as_min_positive(self) -> Self {
+        f32::MIN_POSITIVE.copysign(self)
+    }
+
+    fn raise_underflow_ret_zero(self) -> Self {
+        f32::ZERO
+    }
+}
+
 impl FmaHelper for f64 {
     fn raise_underflow_as_min_positive(self) -> Self {
         /* min normal after rounding, underflow depends
