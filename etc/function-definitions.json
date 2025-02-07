@@ -363,6 +363,13 @@
         ],
         "type": "f128"
     },
+    "fmaf16": {
+        "sources": [
+            "src/math/fmaf16.rs",
+            "src/math/generic/fma.rs"
+        ],
+        "type": "f16"
+    },
     "fmax": {
         "sources": [
             "src/math/fmax.rs",

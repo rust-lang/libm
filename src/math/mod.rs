@@ -347,6 +347,7 @@ cfg_if! {
         mod fabsf16;
         mod fdimf16;
         mod floorf16;
+        mod fmaf16;
         mod fmaxf16;
         mod fminf16;
         mod fmodf16;
@@ -364,6 +365,7 @@ cfg_if! {
         pub use self::fabsf16::fabsf16;
         pub use self::fdimf16::fdimf16;
         pub use self::floorf16::floorf16;
+        pub use self::fmaf16::fmaf16;
         pub use self::fmaxf16::fmaxf16;
         pub use self::fminf16::fminf16;
         pub use self::fmodf16::fmodf16;

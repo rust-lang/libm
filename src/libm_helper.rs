@@ -185,6 +185,7 @@ libm_helper! {
         (fn fabs(x: f16) -> (f16);                  => fabsf16);
         (fn fdim(x: f16, y: f16) -> (f16);          => fdimf16);
         (fn floorf(x: f16) -> (f16);                => floorf16);
+        (fn fmaf16(x: f16, y: f16, z: f16) -> (f16);  => fmaf16);
         (fn fmaxf(x: f16, y: f16) -> (f16);         => fmaxf16);
         (fn fminf(x: f16, y: f16) -> (f16);         => fminf16);
         (fn fmodf(x: f16, y: f16) -> (f16);         => fmodf16);
