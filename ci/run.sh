@@ -14,7 +14,7 @@ if [ -z "$target" ]; then
     target="$host_target"
 fi
 
-nowiden_tests=$($cmd "$profile" release-checked --features force-soft-floats)
+nowiden_tests=$(grep -vE '^#' etc/has-nowiden-impl.txt | tr '\n' ' ')
 
 # We enumerate features manually.
 flags="$flags --no-default-features"
