@@ -50,6 +50,7 @@ pub fn emit_libm_config(cfg: &Config) {
     emit_intrinsics_cfg();
     emit_arch_cfg();
     emit_optimization_cfg(cfg);
+    emit_widen_cfg(cfg);
     emit_cfg_shorthands(cfg);
     emit_cfg_env(cfg);
     emit_f16_f128_cfg(cfg);
@@ -93,6 +94,15 @@ fn emit_optimization_cfg(cfg: &Config) {
 
     if !matches!(cfg.opt_level.as_str(), "0" | "1") {
         println!("cargo:rustc-cfg=optimizations_enabled");
+    }
+}
+
+fn emit_widen_cfg(_cfg: &Config) {
+    println!("cargo:rustc-check-cfg=cfg(f32_no_widen)");
+    println!("cargo:rerun-if-env-changed=LIBM_F32_NO_WIDEN");
+
+    if env::var_os("LIBM_F32_NO_WIDEN").is_some() {
+        println!("cargo:rustc-cfg=f32_no_widen");
     }
 }
 
