@@ -1,5 +1,7 @@
 # `libm`
 
+poke ci
+
 A port of [MUSL]'s libm to Rust.
 
 [MUSL]: https://musl.libc.org/
