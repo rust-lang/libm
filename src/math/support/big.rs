@@ -120,26 +120,56 @@ impl ops::Shr<u32> for u256 {
 
     fn shr(mut self, rhs: u32) -> Self::Output {
         debug_assert!(rhs < Self::BITS, "attempted to shift right with overflow");
-        if rhs >= Self::BITS {
-            return Self::ZERO;
-        }
 
-        if rhs == 0 {
-            return self;
-        }
+        /* NB: LLVM produces significantly better codegen with a manual `u64`
+         * array-based shift compared to a u128 `>>`-based version. */
 
-        if rhs < 128 {
-            self.lo >>= rhs;
-            self.lo |= self.hi << (128 - rhs);
-        } else {
-            self.lo = self.hi >> (rhs - 128);
-        }
+        // Store input to an array with 256 bits of zero beyond the msb
+        let mut xarr = [0u8; size_of::<u256>() * 2];
+        xarr[..16].copy_from_slice(&self.lo.to_le_bytes());
+        xarr[16..32].copy_from_slice(&self.hi.to_le_bytes());
 
-        if rhs < 128 {
-            self.hi >>= rhs;
-        } else {
-            self.hi = 0;
-        }
+        // Maximum shift is 256, all other values are 0. `x >> 256 = 0` by
+        // default with this algorithm.
+        let shift = rhs.min(256);
+
+        // Split shift into a coarse bytewise shift (done via array access) and
+        // a fine shift (done with bit shifts).
+        let byteshift = (shift as usize / 64) * 8;
+        let bitshift = shift % 64;
+
+        // Apply the coarse shift by accessing within the array, possibly
+        let mut r0b = [0u8; 8];
+        let mut r1b = [0u8; 8];
+        let mut r2b = [0u8; 8];
+        let mut r3b = [0u8; 8];
+        r0b.copy_from_slice(&xarr[byteshift..(8 + byteshift)]);
+        r1b.copy_from_slice(&xarr[(8 + byteshift)..(16 + byteshift)]);
+        r2b.copy_from_slice(&xarr[(16 + byteshift)..(24 + byteshift)]);
+        r3b.copy_from_slice(&xarr[(24 + byteshift)..(32 + byteshift)]);
+        let mut r0 = u64::from_le_bytes(r0b);
+        let mut r1 = u64::from_le_bytes(r1b);
+        let mut r2 = u64::from_le_bytes(r2b);
+        let mut r3 = u64::from_le_bytes(r3b);
+
+        // Apply the fine shifts
+        r0 >>= bitshift;
+        r0 |= r1.checked_shl(64 - bitshift).unwrap_or(0);
+        r1 >>= bitshift;
+        r1 |= r2.checked_shl(64 - bitshift).unwrap_or(0);
+        r2 >>= bitshift;
+        r2 |= r3.checked_shl(64 - bitshift).unwrap_or(0);
+        r3 >>= bitshift;
+
+        // Transmute <2 x u64> to u128 via arrays, then store
+        let mut lo = [0u8; 16];
+        let mut hi = [0u8; 16];
+        lo[..8].copy_from_slice(&r0.to_le_bytes());
+        lo[8..].copy_from_slice(&r1.to_le_bytes());
+        hi[..8].copy_from_slice(&r2.to_le_bytes());
+        hi[8..].copy_from_slice(&r3.to_le_bytes());
+        self.lo = u128::from_le_bytes(lo);
+        self.hi = u128::from_le_bytes(hi);
 
         self
     }
