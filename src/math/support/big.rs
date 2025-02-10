@@ -153,13 +153,16 @@ impl ops::Shr<u32> for u256 {
         let mut r3 = u64::from_le_bytes(r3b);
 
         // Apply the fine shifts
-        r0 >>= bitshift;
-        r0 |= r1.checked_shl(64 - bitshift).unwrap_or(0);
-        r1 >>= bitshift;
-        r1 |= r2.checked_shl(64 - bitshift).unwrap_or(0);
-        r2 >>= bitshift;
-        r2 |= r3.checked_shl(64 - bitshift).unwrap_or(0);
-        r3 >>= bitshift;
+        if bitshift > 0 {
+            let lshift = 64 - bitshift;
+            r0 >>= bitshift;
+            r0 |= r1 << lshift;
+            r1 >>= bitshift;
+            r1 |= r2 << lshift;
+            r2 >>= bitshift;
+            r2 |= r3 << lshift;
+            r3 >>= bitshift;
+        }
 
         // Transmute <2 x u64> to u128 via arrays, then store
         let mut lo = [0u8; 16];
