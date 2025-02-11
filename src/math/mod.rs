@@ -390,6 +390,7 @@ cfg_if! {
         mod truncf128;
         // verify-sorted-end
 
+        // pub use self::cbrt::cbrtf128;
         // verify-sorted-start
         pub use self::ceilf128::ceilf128;
         pub use self::copysignf128::copysignf128;

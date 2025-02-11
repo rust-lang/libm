@@ -10,6 +10,7 @@ pub trait Float:
     + PartialEq
     + PartialOrd
     + ops::AddAssign
+    + ops::SubAssign
     + ops::MulAssign
     + ops::Add<Output = Self>
     + ops::Sub<Output = Self>
@@ -42,6 +43,11 @@ pub trait Float:
     const FRAC_PI_2: Self;
 
     const MIN_POSITIVE_NORMAL: Self;
+
+    /// `2^sig_bits`, e.g. `0x1p-52` for `f64`. Used for normalization.
+    const TWO_POW_SIG_BITS: Self;
+    /// `2^-sig_bits`, e.g. `0x1p-52` for `f64`. Used for normalization.
+    const TWO_POW_NEG_SIG_BITS: Self;
 
     /// The bitwidth of the float type
     const BITS: u32;
@@ -204,6 +210,14 @@ macro_rules! float_impl {
 
             // Exponent is a 1 in the LSB
             const MIN_POSITIVE_NORMAL: Self = $from_bits(1 << Self::SIG_BITS);
+
+            /// `2^sig_bits`
+            const TWO_POW_SIG_BITS: Self =
+                $from_bits(((Self::SIG_BITS + Self::EXP_BIAS) as Self::Int) << Self::SIG_BITS);
+            /// `2^-sig_bits`
+            const TWO_POW_NEG_SIG_BITS: Self = $from_bits(
+                ((-(Self::SIG_BITS as i32) + Self::EXP_BIAS as i32) as Self::Int) << Self::SIG_BITS,
+            );
 
             const PI: Self = core::$ty::consts::PI;
             const NEG_PI: Self = -Self::PI;
