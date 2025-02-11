@@ -39,6 +39,13 @@ impl Float for f8 {
     const NEG_PI: Self = Self::ZERO;
     const FRAC_PI_2: Self = Self::ZERO;
 
+    /// `2^sig_bits`
+    const TWO_POW_SIG_BITS: Self =
+        Self(((Self::SIG_BITS + Self::EXP_BIAS) as Self::Int) << Self::SIG_BITS);
+    /// `2^-sig_bits`
+    const TWO_POW_NEG_SIG_BITS: Self =
+        Self(((-(Self::SIG_BITS as i32) + Self::EXP_BIAS as i32) as Self::Int) << Self::SIG_BITS);
+
     const BITS: u32 = 8;
     const SIG_BITS: u32 = 3;
     const SIGN_MASK: Self::Int = 0b1_0000_000;
