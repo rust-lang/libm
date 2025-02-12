@@ -6,12 +6,14 @@
 
 use core::cmp::Ordering;
 
+#[allow(unused_imports)] // msrv compat
+use super::support::Float;
 use super::support::{DInt, HInt, cold_path};
 
 /// The natural logarithm of `x` (f64).
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn log(x: f64) -> f64 {
-    return cr_log(x);
+    cr_log(x)
 }
 
 fn cr_log(x: f64) -> f64 {
@@ -241,10 +243,6 @@ impl DInt64 {
     than 2^-129.97 */
     const LOG2: Self = Self { hi: 0xb17217f7d1cf79ab, lo: 0xc9e3b39803f2f6af, ex: -1, sign: 0x0 };
 
-    #[allow(unused)]
-    const LOG2_INV: Self =
-        Self { hi: 0xb8aa3b295c17f0bb, lo: 0xbe87fed0691d3e89, ex: 12, sign: 0x0 };
-
     const ZERO: Self = Self { hi: 0x0, lo: 0x0, ex: 0, sign: 0x0 };
 
     fn new(sig: u128, ex: i64, sign: u64) -> Self {
@@ -349,14 +347,11 @@ impl DInt64 {
             }
         }
 
-        let ex: u64 = if (c >> 64) as u64 != 0 {
-            ((c >> 64) as u64).leading_zeros() as u64
+        let ex: u64 = if c.hi() != 0 {
+            c.hi().leading_zeros() as u64
         } else {
-            64 + if (c & u64::MAX as u128) != 0 {
-                ((c & u64::MAX as u128) as u64).leading_zeros() as u64
-            } else {
-                self.ex as u64
-            }
+            let tmp = if c.lo() != 0 { c.lo().leading_zeros() as u64 } else { self.ex as u64 };
+            tmp + 64
         };
         c <<= ex;
 
@@ -374,18 +369,17 @@ impl DInt64 {
         let (m, ovf) = m1.overflowing_add(m2);
         t = t.wrapping_add((ovf as u128) << 64);
         t = t.wrapping_add(m.hi().widen());
-        // t = t.wrapping_add(m & ((u64::MAX as u128) << 64));
 
         // Ensure that r->hi starts with a 1
-        let ex: u64 = ((t >> (64 + 63)) == 0) as u64;
+        let ex: u64 = ((t.hi() >> 63) == 0) as u64;
         if ex != 0 {
             t <<= 1;
         }
-        t += (m & u64::MAX as u128) >> 63;
+        t += (m.lo() >> 63).widen();
 
         Self {
-            lo: t as u64,
-            hi: (t >> 64) as u64,
+            lo: t.lo(),
+            hi: t.hi(),
             ex: self.ex + other.ex - ex as i64 + 1,
             sign: self.sign ^ other.sign,
         }
