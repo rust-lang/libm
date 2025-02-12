@@ -18,7 +18,6 @@ pub struct TestCase<Op: MathOp> {
 }
 
 impl<Op: MathOp> TestCase<Op> {
-    #[expect(dead_code)]
     fn append_inputs(v: &mut Vec<Self>, l: &[Op::RustArgs]) {
         v.extend(l.iter().copied().map(|input| Self { input, output: None }));
     }
@@ -429,7 +428,18 @@ fn frexpf_cases() -> Vec<TestCase<op::frexpf::Routine>> {
 }
 
 fn hypot_cases() -> Vec<TestCase<op::hypot::Routine>> {
-    vec![]
+    let mut v = vec![];
+    TestCase::append_inputs(
+        &mut v,
+        &[
+            // Cases that can overflow exponent if wrapping arithmetic is not used
+            (hf64!("-0x1.800f800f80100p+1023"), hf64!("0x1.8354835473720p+996")),
+            (hf64!("0x1.201b201b201c0p+0"), hf64!("0x1.b028b028b02a0p-1")),
+            (hf64!("-0x1.e538e538e564p+980"), hf64!("-0x1.c4dfc4dfc508p+983")),
+            (hf64!("-0x1.2f22e4f77aa58p+983"), hf64!("-0x1.44c9f5524c8ccp+980")),
+        ],
+    );
+    v
 }
 
 fn hypotf_cases() -> Vec<TestCase<op::hypotf::Routine>> {
