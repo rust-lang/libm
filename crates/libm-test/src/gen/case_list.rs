@@ -18,7 +18,6 @@ pub struct TestCase<Op: MathOp> {
 }
 
 impl<Op: MathOp> TestCase<Op> {
-    #[expect(dead_code)]
     fn append_inputs(v: &mut Vec<Self>, l: &[Op::RustArgs]) {
         v.extend(l.iter().copied().map(|input| Self { input, output: None }));
     }
@@ -503,7 +502,17 @@ fn lgammaf_r_cases() -> Vec<TestCase<op::lgammaf_r::Routine>> {
 }
 
 fn log_cases() -> Vec<TestCase<op::log::Routine>> {
-    vec![]
+    let mut v = vec![];
+    TestCase::append_inputs(
+        &mut v,
+        &[
+            // Cases that showed up during extensive tests and proved problematic
+            (hf64!("0x1.ffffffffffff9p-1"),),
+            (hf64!("0x1.4b649a5ce2720p-235"),),
+            (hf64!("0x1.b028b028b02a0p-1"),),
+        ],
+    );
+    v
 }
 
 fn log10_cases() -> Vec<TestCase<op::log10::Routine>> {
