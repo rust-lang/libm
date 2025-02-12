@@ -49,8 +49,7 @@ fn cr_log(x: f64) -> f64 {
 
     let (h, l) = cr_log_fast(e, v);
 
-    let err = hf64!("0x1.b6p-69"); /* maximal absolute error from
-    cr_log_fast */
+    let err = hf64!("0x1.b6p-69"); /* maximal absolute error from cr_log_fast */
 
     /* Note: the error analysis is quite tight since if we replace the 0x1.b6p-69
     bound by 0x1.3fp-69, it fails for x=0x1.71f7c59ede8ep+125 (rndz) */
@@ -82,12 +81,11 @@ fn cr_log_fast(mut e: i32, v: u64) -> (f64, f64) {
 
     let offset = 362;
 
-    // #define OFFSET 362
-    // The original does some nasty tricks here, presumably to save an op
     let r: f64 = INVERSE[i as usize - offset];
     let l1: f64 = LOG_INV[i as usize - offset].0;
     let l2: f64 = LOG_INV[i as usize - offset].1;
     let z: f64 = fmaf64(r, y, -1.0); /* exact */
+
     /* evaluate P(z), for |z| < 0.00212097167968735 */
     let mut ph: f64; /* will hold the value of P(z)-z */
     let z2: f64 = z * z; /* |z2| < 4.5e-6 thus the rounding error on z2 is
@@ -237,9 +235,6 @@ struct DInt64 {
 }
 
 impl DInt64 {
-    #[allow(unused)]
-    const ONE: Self = Self { hi: 0x8000000000000000, lo: 0x0, ex: 0, sign: 0x0 };
-
     const M_ONE: Self = Self { hi: 0x8000000000000000, lo: 0x0, ex: 0, sign: 0x1 };
 
     /* the following is an approximation of log(2), with absolute error less
