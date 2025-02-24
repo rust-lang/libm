@@ -8,6 +8,141 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.12](https://github.com/rust-lang/libm/compare/libm-v0.2.11...libm-v0.2.12) - 2025-02-24
+
+### Other
+
+- Gate another assertion behind `compiler-builtins`
+- Configure out remaining formatting when `compiler-builtins` is set
+- Ignore unused variables when `compiler-builtins` is set
+- Resolve monomorphization errors in `compiler-builtins`
+- Make the compiler-builtins test more accurately mirror compiler-builtins
+- Use `git ls-files` rather than manually globbing for tidy
+- Make `fma` a trait method on `Float`
+- fma refactor 3/3: combine `fma` public API with its implementation
+- fma refactor 2/3: move math/generic/fma.rs to math/fma.rs
+- Rename `Float::exp` to `Float::ex`
+- Add `roundeven{,f,f16,f128}`
+- Add `fminimum`, `fmaximum`, `fminimum_num`, and `fmaximum_num`
+- Combine `fmin{,f,f16,f128}` and `fmax{,f,f16,128}` into a single file
+- Small refactor of bigint tests
+- Eliminate the use of `force_eval!` in `ceil`, `floor`, and `trunc`
+- Migrate away from nonfunctional `fenv` stubs
+- Introduce a trait constant for the minimum positive normal value
+- Implement `u256` with two `u128`s rather than `u64`
+- Replace an `assert!` with `debug_assert!` in `u256::shr`
+- Add simple icount benchmarks for `u256` operations
+- Port the CORE-MATH version of `cbrt`
+- Add an enum representation of rounding mode
+- Uncomment some hex float tests that should work now
+- Convert `fmaf` to a generic implementation
+- Remove or reduce the scope of `allow(unused)` where possible
+- fix exponent calculation for subnormals
+- Add better edge case testing for `scalbn`
+- Add `fmaf128`
+- Make it possible to use `hf32!` and similar macros outside of `libm`
+- Improve tidy output
+- Ensure zero has the correct sign
+- Start converting `fma` to a generic function
+- Add checks via annotation that lists are sorted or exhaustive
+- Do not add `libm_helper.rs` to the sources list
+- Add `scalbnf16`, `scalbnf128`, `ldexpf16`, and `ldexpf128`
+- Fix hex float trait recursion problem
+- Rename `EXP_MAX` to `EXP_SAT`
+- Specify license as just MIT
+- Introduce a wrapper type for IEEE hex float formatting
+- Support parsing NaN and infinities from the `hf*` functions
+- Switch musl from a script download to a submodule
+- Ignore specific `atan2` and `sin` tests on i586
+- Rework the available Cargo profiles
+- Remove remnants of the `checked` feature
+- Upgrade all dependencies to the latest version
+- Add `fmodf128`
+- Add `fmodf16` using the generic implementation
+- Add a generic version of `fmod`
+- Add `fminf16`, `fmaxf16`, `fminf128`, and `fmaxf128`
+- Add a generic version of `fmin` and `fmax`
+- Add `roundf16` and `roundf128`
+- Add a generic version of `round`
+- Add a generic version of `scalbn`
+- Change `from_parts` to take a `u32` exponent rather than `i32`
+- Add `hf16!` and `hf128!`
+- Add `rintf16` and `rintf128`
+- Add a generic version of `rint`
+- Adjust `ceil` style to be more similar to `floor`
+- Add `floorf16` and `floorf128`
+- Add a generic version of `floor`
+- Add `ceilf16` and `ceilf128`
+- Add a generic version of `ceil`
+- Make `Float::exp` return an unsigned integer
+- Shift then mask, rather than mask then shift
+- Add `sqrtf16` and `sqrtf128`
+- Copy the u256 implementation from compiler_builtins
+- Port the most recent version of Musl's `sqrt` as a generic algorithm
+- Ignore files relevant to benchmarking
+- Add benchmarks using iai-callgrind
+- Adjust precision and add xfails based on new tests
+- Simplify and optimize `fdim` ([#442](https://github.com/rust-lang/libm/pull/442))
+- Don't set `codegen-units=1` by default in CI
+- Add `fdimf16` and `fdimf128`
+- Add a generic version of `fdim`
+- Add `truncf16` and `truncf128`
+- Add a generic version of `trunc`
+- Add a utility crate for quick evaluation
+- Enable `build-mpfr` and `build-musl` by default
+- Rename the `test-multiprecision` feature to `build-mpfr`
+- Introduce arch::aarch64 and use it for rint{,f}
+- Use wasm32 arch intrinsics for rint{,f}
+- Expose C versions of `libm` functions in the `cb` crate
+- Add `biteq` and `exp_unbiased` to `Float`
+- Add a `release-checked` profile with debug and overflow assertions
+- Remove `ExpInt` from `Float`, always use `i32` instead
+- Split `cast` into `cast` and `cast_lossy`
+- Use `core::arch::wasm` functions rather than intrinsics
+- Account for optimization levels other than numbers
+- Replace "intrinsic" config with "arch" config
+- Don't use intrinsics abs for `f16` and `f128` on wasm32
+- Remove an unused `feature = "force-soft-floats"` gate
+- Switch from using `unstable-intrinsics` to `intrinsics_enabled`
+- Add test infrastructure for `f16` and `f128`
+- Add `fabsf16`, `fabsf128`, `copysignf16`, and `copysignf128`
+- Enable `f16` and `f128` when creating the API change list
+- Add more detailed definition output for `update-api-list.py`
+- Rename `unstable-test-support` to `unstable-public-internals`
+- Add a way for tests to log to a file
+- Use intrinsics for `abs` and `copysign` when available
+- Rename generic `abs` to `fabs`
+- Use `rustdoc` output to create a list of public API
+- Remove an `is_nan` workaround that is no longer needed
+- Update and slightly refactor some of the `Float` trait
+- Add `f16` and `f128` configuration from `compiler-builtins`
+- Introduce generic `abs` and `copysign`
+- Fix new `clippy::precedence` lints
+- Introduce helper types for accessing trait items
+- Fix a bug in `abs_diff`
+- Remove tests against system musl
+- Use `https:` links in `README.md`
+- Move some numeric trait logic to default implementations
+- Resolve clippy errors in `libm` tests and check this in CI
+- Add some more basic docstrings ([#352](https://github.com/rust-lang/libm/pull/352))
+- Introduce `hf32!` and `hf64!` macros for hex float support
+- Fix errors reported by Clippy in `libm`
+- Expose the `support` module publicly with a test feature
+- Update libm `Float` and `Int` with functions from the test traits
+- Change prefixes used by the `Float` trait
+- Remove `libm-bench`
+- Rename `canonical_name` to `base_name`
+- Add float and integer traits from compiler-builtins
+- Move architecture-specific code to `src/math/arch`
+- Update `select_implementation` to accept arch configuration
+- Add an "arch" Cargo feature that is on by default
+- Vendor `cfg_if::cfg_if!`
+- Make use of `select_implementation`
+- Introduce a `select_implementation` macro
+- Introduce `math::arch::intrinsics`
+- Replace `feature = "unstable-intrinsics"` with `intrinsics_enabled`
+- Move the existing "unstable" feature to "unstable-intrinsics"
+
 ## [0.2.11](https://github.com/rust-lang/libm/compare/libm-v0.2.10...libm-v0.2.11) - 2024-10-28
 
 ### Fixed
