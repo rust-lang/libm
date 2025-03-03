@@ -251,13 +251,10 @@ fn floorf16_cases() -> Vec<TestCase<op::floorf16::Routine>> {
 
 fn fma_cases() -> Vec<TestCase<op::fma::Routine>> {
     let mut v = vec![];
-    TestCase::append_pairs(
-        &mut v,
-        &[
-            // Previous failure with incorrect sign
-            ((5e-324, -5e-324, 0.0), Some(-0.0)),
-        ],
-    );
+    TestCase::append_pairs(&mut v, &[
+        // Previous failure with incorrect sign
+        ((5e-324, -5e-324, 0.0), Some(-0.0)),
+    ]);
     v
 }
 
@@ -268,29 +265,26 @@ fn fmaf_cases() -> Vec<TestCase<op::fmaf::Routine>> {
 #[cfg(f128_enabled)]
 fn fmaf128_cases() -> Vec<TestCase<op::fmaf128::Routine>> {
     let mut v = vec![];
-    TestCase::append_pairs(
-        &mut v,
-        &[
+    TestCase::append_pairs(&mut v, &[
+        (
+            // Tricky rounding case that previously failed in extensive tests
             (
-                // Tricky rounding case that previously failed in extensive tests
-                (
-                    hf128!("-0x1.1966cc01966cc01966cc01966f06p-25"),
-                    hf128!("-0x1.669933fe69933fe69933fe6997c9p-16358"),
-                    hf128!("-0x0.000000000000000000000000048ap-16382"),
-                ),
-                Some(hf128!("0x0.c5171470a3ff5e0f68d751491b18p-16382")),
+                hf128!("-0x1.1966cc01966cc01966cc01966f06p-25"),
+                hf128!("-0x1.669933fe69933fe69933fe6997c9p-16358"),
+                hf128!("-0x0.000000000000000000000000048ap-16382"),
             ),
+            Some(hf128!("0x0.c5171470a3ff5e0f68d751491b18p-16382")),
+        ),
+        (
+            // Subnormal edge case that caused a failure
             (
-                // Subnormal edge case that caused a failure
-                (
-                    hf128!("0x0.7ffffffffffffffffffffffffff7p-16382"),
-                    hf128!("0x1.ffffffffffffffffffffffffffffp-1"),
-                    hf128!("0x0.8000000000000000000000000009p-16382"),
-                ),
-                Some(hf128!("0x1.0000000000000000000000000000p-16382")),
+                hf128!("0x0.7ffffffffffffffffffffffffff7p-16382"),
+                hf128!("0x1.ffffffffffffffffffffffffffffp-1"),
+                hf128!("0x0.8000000000000000000000000009p-16382"),
             ),
-        ],
-    );
+            Some(hf128!("0x1.0000000000000000000000000000p-16382")),
+        ),
+    ]);
     v
 }
 
@@ -576,16 +570,13 @@ fn remquof_cases() -> Vec<TestCase<op::remquof::Routine>> {
 
 fn rint_cases() -> Vec<TestCase<op::rint::Routine>> {
     let mut v = vec![];
-    TestCase::append_pairs(
-        &mut v,
-        &[
-            // Known failure on i586
-            #[cfg(not(x86_no_sse))]
-            ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff994000p+38"))),
-            #[cfg(x86_no_sse)]
-            ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff998000p+38"))),
-        ],
-    );
+    TestCase::append_pairs(&mut v, &[
+        // Known failure on i586
+        #[cfg(not(x86_no_sse))]
+        ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff994000p+38"))),
+        #[cfg(x86_no_sse)]
+        ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff998000p+38"))),
+    ]);
     v
 }
 
@@ -628,16 +619,13 @@ fn roundevenf16_cases() -> Vec<TestCase<op::roundevenf16::Routine>> {
 
 fn roundeven_cases() -> Vec<TestCase<op::roundeven::Routine>> {
     let mut v = vec![];
-    TestCase::append_pairs(
-        &mut v,
-        &[
-            // Known failure on i586
-            #[cfg(not(x86_no_sse))]
-            ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff994000p+38"))),
-            #[cfg(x86_no_sse)]
-            ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff998000p+38"))),
-        ],
-    );
+    TestCase::append_pairs(&mut v, &[
+        // Known failure on i586
+        #[cfg(not(x86_no_sse))]
+        ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff994000p+38"))),
+        #[cfg(x86_no_sse)]
+        ((hf64!("-0x1.e3f13ff995ffcp+38"),), Some(hf64!("-0x1.e3f13ff998000p+38"))),
+    ]);
     v
 }
 
