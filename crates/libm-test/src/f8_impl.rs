@@ -499,5 +499,6 @@ impl fmt::LowerHex for f8 {
 }
 
 pub const fn hf8(s: &str) -> f8 {
-    f8(parse_any(s, 8, 3) as u8)
+    let (bits, libm::support::Status::OK) = parse_any(s, 8, 3, libm::support::Round::Nearest) else { panic!() };
+    f8(bits as u8)
 }

@@ -90,24 +90,34 @@ impl Status {
 
     /// True if `UNDERFLOW` is set.
     #[cfg_attr(not(feature = "unstable-public-internals"), allow(dead_code))]
-    pub fn underflow(self) -> bool {
+    pub const fn underflow(self) -> bool {
         self.0 & Self::UNDERFLOW.0 != 0
     }
 
-    pub fn set_underflow(&mut self, val: bool) {
+    /// True if `OVERFLOW` is set.
+    #[cfg_attr(not(feature = "unstable-public-internals"), allow(dead_code))]
+    pub const fn overflow(self) -> bool {
+        self.0 & Self::OVERFLOW.0 != 0
+    }
+
+    pub const fn set_underflow(&mut self, val: bool) {
         self.set_flag(val, Self::UNDERFLOW);
     }
 
+    pub const fn set_overflow(&mut self, val: bool) {
+        self.set_flag(val, Self::OVERFLOW);
+    }
+
     /// True if `INEXACT` is set.
-    pub fn inexact(self) -> bool {
+    pub const fn inexact(self) -> bool {
         self.0 & Self::INEXACT.0 != 0
     }
 
-    pub fn set_inexact(&mut self, val: bool) {
+    pub const fn set_inexact(&mut self, val: bool) {
         self.set_flag(val, Self::INEXACT);
     }
 
-    fn set_flag(&mut self, val: bool, mask: Self) {
+    const fn set_flag(&mut self, val: bool, mask: Self) {
         if val {
             self.0 |= mask.0;
         } else {
