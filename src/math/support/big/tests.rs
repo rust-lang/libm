@@ -112,11 +112,10 @@ fn shr_u256() {
         (u256::MAX, 193, u256 { lo: u64::MAX as u128 >> 1, hi: 0 }),
         (u256::MAX, 254, u256 { lo: 0b11, hi: 0 }),
         (u256::MAX, 255, u256 { lo: 1, hi: 0 }),
-        (
-            u256 { hi: LOHI_SPLIT, lo: 0 },
-            64,
-            u256 { lo: 0xffffffffffffffff0000000000000000, hi: 0xaaaaaaaaaaaaaaaa },
-        ),
+        (u256 { hi: LOHI_SPLIT, lo: 0 }, 64, u256 {
+            lo: 0xffffffffffffffff0000000000000000,
+            hi: 0xaaaaaaaaaaaaaaaa,
+        }),
     ];
 
     for (input, shift, expected) in check {

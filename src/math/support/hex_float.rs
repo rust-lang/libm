@@ -2,7 +2,7 @@
 
 use core::fmt;
 
-use super::{f32_from_bits, f64_from_bits, Float, Round, Status};   
+use super::{Float, Round, Status, f32_from_bits, f64_from_bits};
 
 /// Construct a 16-bit float from hex float representation (C-style)
 #[cfg(f16_enabled)]
@@ -48,9 +48,10 @@ const fn status_panic(status: Status) -> ! {
         assert!(status.inexact());
         panic!("the value is too huge")
     }
-    if status.inexact() { panic!("the value is too precise") }
+    if status.inexact() {
+        panic!("the value is too precise")
+    }
     panic!("unknown issue")
-
 }
 
 /// Parse any float from hex to its bitwise representation.
@@ -85,7 +86,7 @@ pub const fn parse_any(s: &str, bits: u32, sig_bits: u32, round: Round) -> (u128
                 round
             };
             parse_finite(rest, bits, sig_bits, round)
-        },
+        }
         _ => panic!("no hex indicator"),
     };
 
@@ -160,10 +161,8 @@ const fn parse_finite(b: &[u8], bits: u32, sig_bits: u32, rounding_mode: Round) 
             status.set_inexact(true);
             status.set_overflow(true);
             match rounding_mode {
-                Round::Positive
-                | Round::Nearest => (inf, status),
-                Round::Negative
-                | Round::Zero => (inf - 1, status),
+                Round::Positive | Round::Nearest => (inf, status),
+                Round::Negative | Round::Zero => (inf - 1, status),
             }
         }
     }
@@ -171,7 +170,7 @@ const fn parse_finite(b: &[u8], bits: u32, sig_bits: u32, rounding_mode: Round) 
 
 /// Shift right, rounding all inexact divisions to the nearest odd number
 /// E.g. (0 >> 4) -> 0, (1..=31 >> 4) -> 1, (32 >> 4) -> 2, ...
-/// 
+///
 /// Useful for reducing a number before rounding the last two bits, since
 /// the result of the final rounding is preserved for all rounding modes.
 const fn shr_odd_rounding(x: u128, k: u32) -> u128 {
@@ -186,11 +185,12 @@ const fn shr_odd_rounding(x: u128, k: u32) -> u128 {
 /// Divide by 4, rounding accor
 const fn shr2_round(x: u128, round: Round) -> u128 {
     let d = x % 8;
-    (x / 4) + match round {
-        Round::Nearest => (1 & (0b11001000_u8 >> d)) as u128,
-        Round::Negative | Round::Zero => 0,
-        Round::Positive => ((x % 4) != 0) as u128,
-    }
+    (x / 4)
+        + match round {
+            Round::Nearest => (1 & (0b11001000_u8 >> d)) as u128,
+            Round::Negative | Round::Zero => 0,
+            Round::Positive => ((x % 4) != 0) as u128,
+        }
 }
 
 /// A parsed finite and unsigned floating point number.
@@ -200,11 +200,10 @@ struct Parsed {
     exp: i32,
 }
 
-
 struct HexFloatParseError(&'static str);
 
 /// Parse a hexadecimal float x
-const fn parse_hex(mut b: &[u8]) -> Result<Parsed,HexFloatParseError> {
+const fn parse_hex(mut b: &[u8]) -> Result<Parsed, HexFloatParseError> {
     let mut sig: u128 = 0;
     let mut exp: i32 = 0;
 
@@ -217,14 +216,16 @@ const fn parse_hex(mut b: &[u8]) -> Result<Parsed,HexFloatParseError> {
 
         match c {
             b'.' => {
-                if seen_point { return Err(HexFloatParseError("unexpected '.' parsing fractional digits")) }
+                if seen_point {
+                    return Err(HexFloatParseError("unexpected '.' parsing fractional digits"));
+                }
                 seen_point = true;
                 continue;
             }
             b'p' | b'P' => break,
             c => {
                 let Some(digit) = hex_digit(c) else {
-                    return Err(HexFloatParseError("expected hexadecimal digit"));   
+                    return Err(HexFloatParseError("expected hexadecimal digit"));
                 };
                 some_digits = true;
 
@@ -266,7 +267,7 @@ const fn parse_hex(mut b: &[u8]) -> Result<Parsed,HexFloatParseError> {
     while let &[c, ref rest @ ..] = b {
         b = rest;
         let Some(digit) = dec_digit(c) else {
-            return Err(HexFloatParseError("expected decimal digit"));   
+            return Err(HexFloatParseError("expected decimal digit"));
         };
         some_digits = true;
         let of;
@@ -467,7 +468,7 @@ mod parse_tests {
             assert_eq!(xd, xz);
             assert_eq!(xd, xn);
         } else {
-            assert!([s0,s1,s2,s3].into_iter().all(Status::inexact));
+            assert!([s0, s1, s2, s3].into_iter().all(Status::inexact));
 
             let xd = f16::from_bits(xd as u16);
             let xu = f16::from_bits(xu as u16);
@@ -476,7 +477,7 @@ mod parse_tests {
 
             assert_biteq!(xd.next_up(), xu, "s={s}, xd={xd:?}, xu={xu:?}");
 
-            let signs = [xd,xu,xz,xn].map(f16::is_sign_negative);
+            let signs = [xd, xu, xz, xn].map(f16::is_sign_negative);
 
             if signs == [true; 4] {
                 assert_biteq!(xz, xu);
@@ -495,7 +496,7 @@ mod parse_tests {
         let n = 1_i32 << 14;
         for i in -n..n {
             let u = i.rotate_right(11) as u32;
-            let s = format!("{}",Hexf(f32::from_bits(u)));
+            let s = format!("{}", Hexf(f32::from_bits(u)));
             rounding_properties(&s);
         }
     }
@@ -561,17 +562,11 @@ mod parse_tests {
         let s = format!("{}", Hexf(pi));
 
         for k in 0..=111 {
-            let (bits, status) = parse_any(&s, 128-k, 112-k, Round::Nearest);
-            let scale = (1u128 << (112-k-1)) as f128;
+            let (bits, status) = parse_any(&s, 128 - k, 112 - k, Round::Nearest);
+            let scale = (1u128 << (112 - k - 1)) as f128;
             let expected = (pi * scale).round_ties_even() / scale;
-            assert_eq!(
-                f128::from_bits(bits << k),
-                expected,
-            );
-            assert_eq!(
-                expected != pi,
-                status.inexact(),
-            );
+            assert_eq!(f128::from_bits(bits << k), expected,);
+            assert_eq!(expected != pi, status.inexact(),);
         }
     }
     #[test]
@@ -1048,7 +1043,6 @@ mod print_tests {
             let s16 = format!("{}", Hexf(f16));
             let f32 = f16 as f32;
             let s32 = format!("{}", Hexf(f32));
-
 
             let a = hf32(&s16);
             let b = hf32(&s32);
