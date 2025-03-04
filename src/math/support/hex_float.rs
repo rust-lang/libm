@@ -240,8 +240,9 @@ const fn parse_hex(mut b: &[u8]) -> Result<Parsed, HexFloatParseError> {
             }
             b'p' | b'P' => break,
             c => {
-                let Some(digit) = hex_digit(c) else {
-                    return Err(HexFloatParseError("expected hexadecimal digit"));
+                let digit = match hex_digit(c) {
+                    Some(d) => d,
+                    None => return Err(HexFloatParseError("expected hexadecimal digit")),
                 };
                 some_digits = true;
 
@@ -282,8 +283,9 @@ const fn parse_hex(mut b: &[u8]) -> Result<Parsed, HexFloatParseError> {
     let mut pexp: u32 = 0;
     while let &[c, ref rest @ ..] = b {
         b = rest;
-        let Some(digit) = dec_digit(c) else {
-            return Err(HexFloatParseError("expected decimal digit"));
+        let digit = match dec_digit(c) {
+            Some(d) => d,
+            None => return Err(HexFloatParseError("expected decimal digit")),
         };
         some_digits = true;
         pexp = pexp.saturating_mul(10);
@@ -599,7 +601,7 @@ mod parse_tests {
             let (bits, status) = parse_any(&s, 128 - k, 112 - k, Round::Nearest).unwrap();
             let scale = (1u128 << (112 - k - 1)) as f128;
             let expected = (pi * scale).round_ties_even() / scale;
-            assert_eq!(bits << k, expected.to_bits());
+            assert_eq!(bits << k, expected.to_bits(), "k = {k}, s = {s}");
             assert_eq!(expected != pi, status.inexact());
         }
     }
@@ -1086,7 +1088,7 @@ mod print_tests {
 
             assert_eq!(
                 f32.to_bits(),
-                (a as f32).to_bits(),
+                a.to_bits(),
                 "{f16:?} : f16 formatted as {s16} which parsed as {a:?} : f16"
             );
             assert_eq!(
