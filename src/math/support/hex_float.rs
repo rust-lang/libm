@@ -2,71 +2,77 @@
 
 use core::fmt;
 
-use super::{Float, Round, Status, f32_from_bits, f64_from_bits};
+use super::{Float, Round, Status};
 
 /// Construct a 16-bit float from hex float representation (C-style)
 #[cfg(f16_enabled)]
 pub const fn hf16(s: &str) -> f16 {
-    match parse_any(s, 16, 10, Round::Nearest) {
-        (bits, Status::OK) => f16::from_bits(bits as u16),
-        (_, status) => status_panic(status),
+    match parse_hex_exact(s, 16, 10) {
+        Ok(bits) => f16::from_bits(bits as u16),
+        Err(HexFloatParseError(s)) => panic!("{}", s),
     }
 }
 
 /// Construct a 32-bit float from hex float representation (C-style)
 #[allow(unused)]
 pub const fn hf32(s: &str) -> f32 {
-    match parse_any(s, 32, 23, Round::Nearest) {
-        (bits, Status::OK) => f32_from_bits(bits as u32),
-        (_, status) => status_panic(status),
+    match parse_hex_exact(s, 32, 23) {
+        Ok(bits) => f32::from_bits(bits as u32),
+        Err(HexFloatParseError(s)) => panic!("{}", s),
     }
 }
 
 /// Construct a 64-bit float from hex float representation (C-style)
 pub const fn hf64(s: &str) -> f64 {
-    match parse_any(s, 64, 52, Round::Nearest) {
-        (bits, Status::OK) => f64_from_bits(bits as u64),
-        (_, status) => status_panic(status),
+    match parse_hex_exact(s, 64, 52) {
+        Ok(bits) => f64::from_bits(bits as u64),
+        Err(HexFloatParseError(s)) => panic!("{}", s),
     }
 }
 
 /// Construct a 128-bit float from hex float representation (C-style)
 #[cfg(f128_enabled)]
 pub const fn hf128(s: &str) -> f128 {
-    match parse_any(s, 128, 112, Round::Nearest) {
-        (bits, Status::OK) => f128::from_bits(bits),
-        (_, status) => status_panic(status),
+    match parse_hex_exact(s, 128, 112) {
+        Ok(bits) => f128::from_bits(bits),
+        Err(HexFloatParseError(s)) => panic!("{}", s),
     }
 }
+#[derive(Copy, Clone, Debug)]
+pub struct HexFloatParseError(&'static str);
 
-const fn status_panic(status: Status) -> ! {
-    if status.underflow() {
-        assert!(status.inexact());
-        panic!("the value is too tiny")
+/// Parses any float to its bitwise representation, returning an error if it cannot be represented exactly
+pub const fn parse_hex_exact(
+    s: &str,
+    bits: u32,
+    sig_bits: u32,
+) -> Result<u128, HexFloatParseError> {
+    match parse_any(s, bits, sig_bits, Round::Nearest) {
+        Err(e) => Err(e),
+        Ok((bits, Status::OK)) => Ok(bits),
+        Ok((_, status)) if status.overflow() => Err(HexFloatParseError("the value is too huge")),
+        Ok((_, status)) if status.underflow() => Err(HexFloatParseError("the value is too tiny")),
+        Ok((_, status)) if status.inexact() => Err(HexFloatParseError("the value is too precise")),
+        Ok(_) => unreachable!(),
     }
-    if status.overflow() {
-        assert!(status.inexact());
-        panic!("the value is too huge")
-    }
-    if status.inexact() {
-        panic!("the value is too precise")
-    }
-    panic!("unknown issue")
 }
 
 /// Parse any float from hex to its bitwise representation.
-pub const fn parse_any(s: &str, bits: u32, sig_bits: u32, round: Round) -> (u128, Status) {
+pub const fn parse_any(
+    s: &str,
+    bits: u32,
+    sig_bits: u32,
+    round: Round,
+) -> Result<(u128, Status), HexFloatParseError> {
     let mut b = s.as_bytes();
 
-    assert!(sig_bits <= 119);
-    assert!(bits <= 128);
-    assert!(bits >= sig_bits + 3);
-    assert!(bits <= sig_bits + 30);
+    if sig_bits > 119 || bits > 128 || bits < sig_bits + 3 || bits > sig_bits + 30 {
+        return Err(HexFloatParseError("unsupported target float configuration"));
+    }
 
-    let mut neg = false;
-    if let &[c @ (b'-' | b'+'), ref rest @ ..] = b {
+    let neg = matches!(b, [b'-', ..]);
+    if let &[b'-' | b'+', ref rest @ ..] = b {
         b = rest;
-        neg = c == b'-';
     }
 
     let sign_bit = 1 << (bits - 1);
@@ -74,38 +80,46 @@ pub const fn parse_any(s: &str, bits: u32, sig_bits: u32, round: Round) -> (u128
     let nan = sign_bit - quiet_bit;
     let inf = nan - quiet_bit;
 
-    let (mut x, status) = match b {
-        &[b'i' | b'I', b'n' | b'N', b'f' | b'F'] => (inf, Status::OK),
-        &[b'n' | b'N', b'a' | b'A', b'n' | b'N'] => (nan, Status::OK),
-        &[b'0', b'x' | b'X', ref rest @ ..] => {
-            let round = if neg && matches!(round, Round::Positive) {
-                Round::Negative
-            } else if neg && matches!(round, Round::Negative) {
-                Round::Positive
-            } else {
-                round
+    let (mut x, status) = match *b {
+        [b'i' | b'I', b'n' | b'N', b'f' | b'F'] => (inf, Status::OK),
+        [b'n' | b'N', b'a' | b'A', b'n' | b'N'] => (nan, Status::OK),
+        [b'0', b'x' | b'X', ref rest @ ..] => {
+            let round = match (neg, round) {
+                // parse("-x", Round::Positive) == -parse("x", Round::Negative)
+                (true, Round::Positive) => Round::Negative,
+                (true, Round::Negative) => Round::Positive,
+                // rounding toward nearest or zero are symmetric
+                (true, Round::Nearest | Round::Zero) | (false, _) => round,
             };
-            parse_finite(rest, bits, sig_bits, round)
+            match parse_finite(rest, bits, sig_bits, round) {
+                Err(e) => return Err(e),
+                Ok(res) => res,
+            }
         }
-        _ => panic!("no hex indicator"),
+        _ => return Err(HexFloatParseError("no hex indicator")),
     };
 
     if neg {
         x ^= sign_bit;
     }
 
-    (x, status)
+    Ok((x, status))
 }
 
-const fn parse_finite(b: &[u8], bits: u32, sig_bits: u32, rounding_mode: Round) -> (u128, Status) {
+const fn parse_finite(
+    b: &[u8],
+    bits: u32,
+    sig_bits: u32,
+    rounding_mode: Round,
+) -> Result<(u128, Status), HexFloatParseError> {
     let exp_bits: u32 = bits - sig_bits - 1;
     let max_msb: i32 = (1 << (exp_bits - 1)) - 1;
     // The exponent of one ULP in the subnormals
     let min_lsb: i32 = 1 - max_msb - sig_bits as i32;
 
     let (mut sig, mut exp) = match parse_hex(b) {
-        Err(e) => panic!("{}", e.0),
-        Ok(Parsed { sig: 0, .. }) => return (0, Status::OK),
+        Err(e) => return Err(e),
+        Ok(Parsed { sig: 0, .. }) => return Ok((0, Status::OK)),
         Ok(Parsed { sig, exp }) => (sig, exp),
     };
 
@@ -143,29 +157,32 @@ const fn parse_finite(b: &[u8], bits: u32, sig_bits: u32, rounding_mode: Round) 
     let uexp = (exp - min_lsb) as u128;
     let uexp = uexp << sig_bits;
 
+    // Note that it is possible for the exponent bits to equal 2 here
+    // if the value rounded up, but that means the mantissa is all zeroes
+    // so the value is still correct
     debug_assert!(sig <= 2 << sig_bits);
 
     let inf = ((1 << exp_bits) - 1) << sig_bits;
 
-    match sig.checked_add(uexp) {
+    let bits = match sig.checked_add(uexp) {
         Some(bits) if bits < inf => {
-            if status.inexact() {
-                if bits < (1 << sig_bits) {
-                    status.set_underflow(true);
-                }
+            // inexact subnormal or zero?
+            if status.inexact() && bits < (1 << sig_bits) {
+                status.set_underflow(true);
             }
-            (bits, status)
+            bits
         }
         _ => {
             // overflow to infinity
             status.set_inexact(true);
             status.set_overflow(true);
             match rounding_mode {
-                Round::Positive | Round::Nearest => (inf, status),
-                Round::Negative | Round::Zero => (inf - 1, status),
+                Round::Positive | Round::Nearest => inf,
+                Round::Negative | Round::Zero => inf - 1,
             }
         }
-    }
+    };
+    Ok((bits, status))
 }
 
 /// Shift right, rounding all inexact divisions to the nearest odd number
@@ -183,14 +200,15 @@ const fn shr_odd_rounding(x: u128, k: u32) -> u128 {
 }
 
 /// Divide by 4, rounding accor
-const fn shr2_round(x: u128, round: Round) -> u128 {
-    let d = x % 8;
-    (x / 4)
-        + match round {
-            Round::Nearest => (1 & (0b11001000_u8 >> d)) as u128,
-            Round::Negative | Round::Zero => 0,
-            Round::Positive => ((x % 4) != 0) as u128,
-        }
+const fn shr2_round(mut x: u128, round: Round) -> u128 {
+    let t = (x as u32) & 0b111;
+    x >>= 2;
+    match round {
+        Round::Nearest => x + ((0b11001000_u8 >> t) & 1) as u128,
+        Round::Negative => x,
+        Round::Zero => x,
+        Round::Positive => x + (t & 0b11 != 0) as u128,
+    }
 }
 
 /// A parsed finite and unsigned floating point number.
@@ -199,8 +217,6 @@ struct Parsed {
     sig: u128,
     exp: i32,
 }
-
-struct HexFloatParseError(&'static str);
 
 /// Parse a hexadecimal float x
 const fn parse_hex(mut b: &[u8]) -> Result<Parsed, HexFloatParseError> {
@@ -233,6 +249,7 @@ const fn parse_hex(mut b: &[u8]) -> Result<Parsed, HexFloatParseError> {
                     sig <<= 4;
                     sig |= digit as u128;
                 } else {
+                    // FIXME: it is technically possible for exp to overflow if parsing a string with >500M digits
                     exp += 4;
                     inexact |= digit != 0;
                 }
@@ -257,36 +274,49 @@ const fn parse_hex(mut b: &[u8]) -> Result<Parsed, HexFloatParseError> {
 
     some_digits = false;
 
-    let mut negate_exp = false;
-    if let &[c @ (b'-' | b'+'), ref rest @ ..] = b {
+    let negate_exp = matches!(b, [b'-', ..]);
+    if let &[b'-' | b'+', ref rest @ ..] = b {
         b = rest;
-        negate_exp = c == b'-';
     }
 
-    let mut pexp: i32 = 0;
+    let mut pexp: u32 = 0;
     while let &[c, ref rest @ ..] = b {
         b = rest;
         let Some(digit) = dec_digit(c) else {
             return Err(HexFloatParseError("expected decimal digit"));
         };
         some_digits = true;
-        let of;
-        (pexp, of) = pexp.overflowing_mul(10);
-        if of {
-            return Err(HexFloatParseError("too many exponent digits"));
-        }
-        pexp += digit as i32;
+        pexp = pexp.saturating_mul(10);
+        pexp += digit as u32;
     }
 
     if !some_digits {
         return Err(HexFloatParseError("at least one exponent digit is required"));
     };
 
-    if negate_exp {
-        exp -= pexp;
-    } else {
-        exp += pexp;
+    {
+        let e;
+        if negate_exp {
+            e = (exp as i64) - (pexp as i64);
+        } else {
+            e = (exp as i64) + (pexp as i64);
+        };
+
+        exp = if e < i32::MIN as i64 {
+            i32::MIN
+        } else if e > i32::MAX as i64 {
+            i32::MAX
+        } else {
+            e as i32
+        };
     }
+    /* FIXME(msrv): once MSRV >= 1.66, replace the above workaround block with:
+    if negate_exp {
+        exp = exp.saturating_sub_unsigned(pexp);
+    } else {
+        exp = exp.saturating_add_unsigned(pexp);
+    };
+    */
 
     Ok(Parsed { sig, exp })
 }
@@ -449,11 +479,12 @@ mod parse_tests {
 
     use super::*;
 
-    fn rounding_properties(s: &str) {
-        let (xd, s0) = parse_any(s, 16, 10, Round::Negative);
-        let (xu, s1) = parse_any(s, 16, 10, Round::Positive);
-        let (xz, s2) = parse_any(s, 16, 10, Round::Zero);
-        let (xn, s3) = parse_any(s, 16, 10, Round::Nearest);
+    #[cfg(f16_enabled)]
+    fn rounding_properties(s: &str) -> Result<(), HexFloatParseError> {
+        let (xd, s0) = parse_any(s, 16, 10, Round::Negative)?;
+        let (xu, s1) = parse_any(s, 16, 10, Round::Positive)?;
+        let (xz, s2) = parse_any(s, 16, 10, Round::Zero)?;
+        let (xn, s3) = parse_any(s, 16, 10, Round::Nearest)?;
 
         // FIXME: A value between the least normal and largest subnormal
         // could have underflow status depend on rounding mode.
@@ -490,14 +521,16 @@ mod parse_tests {
                 assert_biteq!(xn, xu);
             }
         }
+        Ok(())
     }
     #[test]
+    #[cfg(f16_enabled)]
     fn test_rounding() {
         let n = 1_i32 << 14;
         for i in -n..n {
             let u = i.rotate_right(11) as u32;
             let s = format!("{}", Hexf(f32::from_bits(u)));
-            rounding_properties(&s);
+            assert!(rounding_properties(&s).is_ok());
         }
     }
 
@@ -557,23 +590,24 @@ mod parse_tests {
         }
     }
     #[test]
+    #[cfg(f128_enabled)]
     fn rounding() {
         let pi = std::f128::consts::PI;
         let s = format!("{}", Hexf(pi));
 
         for k in 0..=111 {
-            let (bits, status) = parse_any(&s, 128 - k, 112 - k, Round::Nearest);
+            let (bits, status) = parse_any(&s, 128 - k, 112 - k, Round::Nearest).unwrap();
             let scale = (1u128 << (112 - k - 1)) as f128;
             let expected = (pi * scale).round_ties_even() / scale;
-            assert_eq!(f128::from_bits(bits << k), expected,);
-            assert_eq!(expected != pi, status.inexact(),);
+            assert_eq!(bits << k, expected.to_bits());
+            assert_eq!(expected != pi, status.inexact());
         }
     }
     #[test]
     fn rounding_extreme_underflow() {
         for k in 1..1000 {
             let s = format!("0x1p{}", -149 - k);
-            let (bits, status) = parse_any(&s, 32, 23, Round::Nearest);
+            let Ok((bits, status)) = parse_any(&s, 32, 23, Round::Nearest) else { unreachable!() };
             assert_eq!(bits, 0, "{s} should round to zero, got bits={bits}");
             assert!(status.underflow(), "should indicate underflow when parsing {s}");
             assert!(status.inexact(), "should indicate inexact when parsing {s}");
@@ -583,13 +617,11 @@ mod parse_tests {
     fn long_tail() {
         for k in 1..1000 {
             let s = format!("0x1.{}p0", "0".repeat(k));
-            let (bits, Status::OK) = parse_any(&s, 32, 23, Round::Nearest) else {
-                panic!("parsing {s} failed")
-            };
+            let Ok(bits) = parse_hex_exact(&s, 32, 23) else { panic!("parsing {s} failed") };
             assert_eq!(f32::from_bits(bits as u32), 1.0);
 
             let s = format!("0x1.{}1p0", "0".repeat(k));
-            let (bits, status) = parse_any(&s, 32, 23, Round::Nearest);
+            let Ok((bits, status)) = parse_any(&s, 32, 23, Round::Nearest) else { unreachable!() };
             if status.inexact() {
                 assert!(1.0 == f32::from_bits(bits as u32));
             } else {
@@ -634,7 +666,7 @@ mod parse_tests {
                 ];
                 for (s, exp) in checks {
                     println!("parsing {s}");
-                    rounding_properties(s);
+                    assert!(rounding_properties(s).is_ok());
                     let act = hf16(s).to_bits();
                     assert_eq!(
                         act, exp,
