@@ -46,7 +46,7 @@ pub enum Round {
 }
 
 /// IEEE 754 exception status flags.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Status(u8);
 
 impl Status {
@@ -100,11 +100,11 @@ impl Status {
         self.0 & Self::OVERFLOW.0 != 0
     }
 
-    pub const fn set_underflow(&mut self, val: bool) {
+    pub fn set_underflow(&mut self, val: bool) {
         self.set_flag(val, Self::UNDERFLOW);
     }
 
-    pub const fn set_overflow(&mut self, val: bool) {
+    pub fn set_overflow(&mut self, val: bool) {
         self.set_flag(val, Self::OVERFLOW);
     }
 
@@ -113,15 +113,19 @@ impl Status {
         self.0 & Self::INEXACT.0 != 0
     }
 
-    pub const fn set_inexact(&mut self, val: bool) {
+    pub fn set_inexact(&mut self, val: bool) {
         self.set_flag(val, Self::INEXACT);
     }
 
-    const fn set_flag(&mut self, val: bool, mask: Self) {
+    fn set_flag(&mut self, val: bool, mask: Self) {
         if val {
             self.0 |= mask.0;
         } else {
             self.0 &= !mask.0;
         }
+    }
+
+    pub(crate) const fn with(self, rhs: Self) -> Self {
+        Self(self.0 | rhs.0)
     }
 }

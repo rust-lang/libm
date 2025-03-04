@@ -2,7 +2,7 @@
 
 use core::fmt;
 
-use super::{Float, Round, Status};
+use super::{Float, Round, Status, f32_from_bits, f64_from_bits};
 
 /// Construct a 16-bit float from hex float representation (C-style)
 #[cfg(f16_enabled)]
@@ -17,7 +17,7 @@ pub const fn hf16(s: &str) -> f16 {
 #[allow(unused)]
 pub const fn hf32(s: &str) -> f32 {
     match parse_hex_exact(s, 32, 23) {
-        Ok(bits) => f32::from_bits(bits as u32),
+        Ok(bits) => f32_from_bits(bits as u32),
         Err(HexFloatParseError(s)) => panic!("{}", s),
     }
 }
@@ -25,7 +25,7 @@ pub const fn hf32(s: &str) -> f32 {
 /// Construct a 64-bit float from hex float representation (C-style)
 pub const fn hf64(s: &str) -> f64 {
     match parse_hex_exact(s, 64, 52) {
-        Ok(bits) => f64::from_bits(bits as u64),
+        Ok(bits) => f64_from_bits(bits as u64),
         Err(HexFloatParseError(s)) => panic!("{}", s),
     }
 }
@@ -168,14 +168,13 @@ const fn parse_finite(
         Some(bits) if bits < inf => {
             // inexact subnormal or zero?
             if status.inexact() && bits < (1 << sig_bits) {
-                status.set_underflow(true);
+                status = status.with(Status::UNDERFLOW);
             }
             bits
         }
         _ => {
             // overflow to infinity
-            status.set_inexact(true);
-            status.set_overflow(true);
+            status = status.with(Status::OVERFLOW).with(Status::INEXACT);
             match rounding_mode {
                 Round::Positive | Round::Nearest => inf,
                 Round::Negative | Round::Zero => inf - 1,

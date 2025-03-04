@@ -11,6 +11,7 @@ pub use big::{i256, u256};
 pub use env::{FpResult, Round, Status};
 #[allow(unused_imports)]
 pub use float_traits::{DFloat, Float, HFloat, IntTy};
+pub(crate) use float_traits::{f32_from_bits, f64_from_bits};
 #[cfg(f16_enabled)]
 #[allow(unused_imports)]
 pub use hex_float::hf16;
