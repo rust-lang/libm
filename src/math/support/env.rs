@@ -104,10 +104,6 @@ impl Status {
         self.set_flag(val, Self::UNDERFLOW);
     }
 
-    pub fn set_overflow(&mut self, val: bool) {
-        self.set_flag(val, Self::OVERFLOW);
-    }
-
     /// True if `INEXACT` is set.
     pub const fn inexact(self) -> bool {
         self.0 & Self::INEXACT.0 != 0
