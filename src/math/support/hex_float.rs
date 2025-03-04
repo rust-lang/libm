@@ -590,6 +590,9 @@ mod parse_tests {
             }
         }
     }
+
+    // FIXME: this test is causing failures that are likely UB on various platforms
+    #[cfg(all(target_arch = "x86_64", target_os = "linux"))]
     #[test]
     #[cfg(f128_enabled)]
     fn rounding() {
