@@ -1,7 +1,7 @@
 [package]
 name = "libm-macros"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 publish = false
 
 [lib]
@@ -9,9 +9,9 @@ proc-macro = true
 
 [dependencies]
 heck = "0.5.0"
-proc-macro2 = "1.0.93"
-quote = "1.0.38"
-syn = { version = "2.0.96", features = ["full", "extra-traits", "visit-mut"] }
+proc-macro2 = "1.0.94"
+quote = "1.0.40"
+syn = { version = "2.0.100", features = ["full", "extra-traits", "visit-mut"] }
 
 [lints.rust]
 # Values used during testing
