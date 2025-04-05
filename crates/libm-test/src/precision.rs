@@ -106,11 +106,10 @@ pub fn default_ulp(ctx: &CheckCtx) -> u32 {
     }
 
     if cfg!(target_arch = "x86") {
-        match ctx.fn_ident {
-            // Input `fma(0.999999999999999, 1.0000000000000013, 0.0) = 1.0000000000000002` is
-            // incorrect on i586 and i686.
-            Id::Fma => ulp = 1,
-            _ => (),
+        // Input `fma(0.999999999999999, 1.0000000000000013, 0.0) = 1.0000000000000002` is
+        // incorrect on i586 and i686.
+        if ctx.fn_ident == Id::Fma {
+            ulp = 1
         }
     }
 

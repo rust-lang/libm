@@ -5,7 +5,11 @@ pub fn sqrt(x: f64) -> f64 {
         name: sqrt,
         use_arch: any(
             all(target_arch = "wasm32", intrinsics_enabled),
-            target_feature = "sse2"
+            // Codegen backends (e.g. rustc_codegen_gcc) that implement intrinsics like simd_fsqrt
+            // by calling sqrt on every element of the vector ends up with an infinite recursion
+            // without the force-soft-floats feature because sqrt would call simd_fsqrt, which in
+            // turn calls sqrt on those codegen backends.
+            all(target_feature = "sse2", not(feature = "force-soft-floats"))
         ),
         args: x,
     }
