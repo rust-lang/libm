@@ -21,7 +21,7 @@ ETC_DIR = SELF_PATH.parent
 ROOT_DIR = ETC_DIR.parent
 
 # These files do not trigger a retest.
-IGNORED_SOURCES = ["src/libm_helper.rs", "src/math/support/float_traits.rs"]
+IGNORED_SOURCES = ["libm/src/libm_helper.rs", "libm/src/math/support/float_traits.rs"]
 
 IndexTy: TypeAlias = dict[str, dict[str, Any]]
 """Type of the `index` item in rustdoc's JSON output"""
@@ -66,7 +66,7 @@ class Crate:
         j = sp.check_output(
             [
                 "rustdoc",
-                "src/lib.rs",
+                "libm/src/lib.rs",
                 "--edition=2021",
                 "--document-private-items",
                 "--output-format=json",
@@ -94,7 +94,9 @@ class Crate:
         # Collect a list of source IDs for reexported items in `lib.rs` or `mod math`.
         use = (i for i in public if "use" in i["inner"])
         use = (
-            i for i in use if i["span"]["filename"] in ["src/math/mod.rs", "src/lib.rs"]
+            i
+            for i in use
+            if i["span"]["filename"] in ["libm/src/math/mod.rs", "libm/src/lib.rs"]
         )
         reexported_ids = [item["inner"]["use"]["id"] for item in use]
 
@@ -121,7 +123,7 @@ class Crate:
 
         # A lot of the `arch` module is often configured out so doesn't show up in docs. Use
         # string matching as a fallback.
-        for fname in glob("src/math/arch/**.rs", root_dir=ROOT_DIR):
+        for fname in glob("libm/src/math/arch/**.rs", root_dir=ROOT_DIR):
             contents = (ROOT_DIR.joinpath(fname)).read_text()
 
             for name in self.public_functions:

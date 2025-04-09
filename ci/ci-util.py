@@ -24,7 +24,7 @@ USAGE = cleandoc(
     COMMAND:
         generate-matrix
             Calculate a matrix of which functions had source change, print that as
-             a JSON object.
+            a JSON object.
 
         locate-baseline [--download] [--extract]
             Locate the most recent benchmark baseline available in CI and, if flags
@@ -55,9 +55,9 @@ REGRESSION_DIRECTIVE = "ci: allow-regressions"
 # Don't run exhaustive tests if these files change, even if they contaiin a function
 # definition.
 IGNORE_FILES = [
-    "src/math/support/",
-    "src/libm_helper.rs",
-    "src/math/arch/intrinsics.rs",
+    "libm/src/math/support/",
+    "libm/src/libm_helper.rs",
+    "libm/src/math/arch/intrinsics.rs",
 ]
 
 TYPES = ["f16", "f32", "f64", "f128"]
