@@ -198,7 +198,7 @@ const fn shr_odd_rounding(x: u128, k: u32) -> u128 {
     }
 }
 
-/// Divide by 4, rounding accor
+/// Divide by 4, rounding with the given mode
 const fn shr2_round(mut x: u128, round: Round) -> u128 {
     let t = (x as u32) & 0b111;
     x >>= 2;
