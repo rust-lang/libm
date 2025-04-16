@@ -1,84 +1,63 @@
-/* SPDX-License-Identifier: MIT */
-/* origin: musl src/math/fmod.c. Ported to generic Rust algorithm in 2025, TG. */
-
 use super::super::{CastFrom, Float, Int, MinInt};
+
+/// Given the bits of a positive float, clamp the exponent field to [0,1]
+fn collapse_exponent<F: Float>(bits: F::Int) -> F::Int {
+    let sig = bits & F::SIG_MASK;
+    if sig == bits { sig } else { sig | F::IMPLICIT_BIT }
+}
+
+/// Computes (x << e) % y
+fn reduction<I: Int>(mut x: I, e: u32, y: I) -> I {
+    x %= y;
+    for _ in 0..e {
+        x <<= 1;
+        x = x.checked_sub(y).unwrap_or(x);
+    }
+    x
+}
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fmod<F: Float>(x: F, y: F) -> F {
-    let zero = F::Int::ZERO;
-    let one = F::Int::ONE;
+    let _1 = F::Int::ONE;
     let mut ix = x.to_bits();
     let mut iy = y.to_bits();
-    let mut ex = x.ex().signed();
-    let mut ey = y.ex().signed();
+
     let sx = ix & F::SIGN_MASK;
+    ix &= !F::SIGN_MASK;
+    iy &= !F::SIGN_MASK;
 
-    if iy << 1 == zero || y.is_nan() || ex == F::EXP_SAT as i32 {
-        return (x * y) / (x * y);
+    if ix >= F::EXP_MASK {
+        // x is nan or inf
+        return F::NAN;
     }
 
-    if ix << 1 <= iy << 1 {
-        if ix << 1 == iy << 1 {
-            return F::ZERO * x;
-        }
+    if iy.wrapping_sub(_1) >= F::EXP_MASK {
+        // y is nan or zero
+        return F::NAN;
+    }
+
+    if ix < iy {
+        // |x| < |y|
         return x;
-    }
+    };
 
-    /* normalize x and y */
-    if ex == 0 {
-        let i = ix << F::EXP_BITS;
-        ex -= i.leading_zeros() as i32;
-        ix <<= -ex + 1;
+    let ex: u32 = x.ex().saturating_sub(1);
+    let ey: u32 = y.ex().saturating_sub(1);
+
+    let num = collapse_exponent::<F>(ix);
+    let div = collapse_exponent::<F>(iy);
+
+    let num = reduction(num, ex - ey, div);
+
+    if num.is_zero() {
+        F::from_bits(sx)
     } else {
-        ix &= F::Int::MAX >> F::EXP_BITS;
-        ix |= one << F::SIG_BITS;
+        let ilog = num.ilog2();
+        let shift = (ey + ilog).min(F::SIG_BITS) - ilog;
+        let scale = (ey + ilog).saturating_sub(F::SIG_BITS);
+
+        let normalized = num << shift;
+        let scaled = normalized + (F::Int::cast_from(scale) << F::SIG_BITS);
+        F::from_bits(sx | scaled)
     }
-
-    if ey == 0 {
-        let i = iy << F::EXP_BITS;
-        ey -= i.leading_zeros() as i32;
-        iy <<= -ey + 1;
-    } else {
-        iy &= F::Int::MAX >> F::EXP_BITS;
-        iy |= one << F::SIG_BITS;
-    }
-
-    /* x mod y */
-    while ex > ey {
-        let i = ix.wrapping_sub(iy);
-        if i >> (F::BITS - 1) == zero {
-            if i == zero {
-                return F::ZERO * x;
-            }
-            ix = i;
-        }
-
-        ix <<= 1;
-        ex -= 1;
-    }
-
-    let i = ix.wrapping_sub(iy);
-    if i >> (F::BITS - 1) == zero {
-        if i == zero {
-            return F::ZERO * x;
-        }
-
-        ix = i;
-    }
-
-    let shift = ix.leading_zeros().saturating_sub(F::EXP_BITS);
-    ix <<= shift;
-    ex -= shift as i32;
-
-    /* scale result */
-    if ex > 0 {
-        ix -= one << F::SIG_BITS;
-        ix |= F::Int::cast_from(ex) << F::SIG_BITS;
-    } else {
-        ix >>= -ex + 1;
-    }
-
-    ix |= sx;
-
-    F::from_bits(ix)
 }
