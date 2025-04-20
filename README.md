@@ -2,6 +2,10 @@
 
 A port of [MUSL]'s libm to Rust.
 
+> [!NOTE]  
+> The `libm` crate has been merged into the `compiler-builtins` repository. Future
+> development work will take place there: https://github.com/rust-lang/compiler-builtins.
+
 [MUSL]: https://musl.libc.org/
 
 ## Goals
